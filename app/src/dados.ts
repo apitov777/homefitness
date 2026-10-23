@@ -1,0 +1,154 @@
+import { supabase } from './supabase'
+import type { Atividade, Objetivo, Sexo } from './calc'
+
+export type TipoRefeicao =
+  | 'cafe' | 'lanche_manha' | 'almoco' | 'lanche_tarde' | 'jantar' | 'ceia' | 'pre_treino' | 'pos_treino' | 'outro'
+
+export const TIPOS_REFEICAO: { valor: TipoRefeicao; nome: string }[] = [
+  { valor: 'cafe', nome: 'Café da manhã' },
+  { valor: 'lanche_manha', nome: 'Lanche da manhã' },
+  { valor: 'almoco', nome: 'Almoço' },
+  { valor: 'lanche_tarde', nome: 'Lanche da tarde' },
+  { valor: 'jantar', nome: 'Jantar' },
+  { valor: 'ceia', nome: 'Ceia' },
+  { valor: 'pre_treino', nome: 'Pré-treino' },
+  { valor: 'pos_treino', nome: 'Pós-treino' },
+  { valor: 'outro', nome: 'Outro' },
+]
+
+export interface Pessoa {
+  id: string
+  familia_id: string
+  user_id: string | null
+  nome: string
+  sexo: Sexo | null
+  data_nascimento: string | null
+  altura_cm: number | null
+  nivel_atividade: Atividade | null
+  objetivo: Objetivo | null
+  compartilha_exames: boolean
+}
+
+export interface Meta {
+  id: string
+  pessoa_id: string
+  inicio: string
+  fim: string | null
+  tmb_kcal: number | null
+  tdee_kcal: number | null
+  kcal: number
+  proteina_g: number | null
+  carboidrato_g: number | null
+  gordura_g: number | null
+  fibra_g: number | null
+  agua_ml: number | null
+  metodo: string | null
+}
+
+export interface AlimentoResumo {
+  id: string
+  nome: string
+  categoria: string | null
+  fonte: string
+  familia_id: string | null
+  busca: string
+}
+
+/** Nutrientes por 100 g, por código (energia, proteina…). */
+export type Composicao = Record<string, number>
+
+export function semAcento(s: string): string {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+}
+
+export function hojeISO(d = new Date()): string {
+  const off = d.getTimezoneOffset()
+  return new Date(d.getTime() - off * 60000).toISOString().slice(0, 10)
+}
+
+export function somarDias(iso: string, dias: number): string {
+  const d = new Date(iso + 'T12:00:00')
+  d.setDate(d.getDate() + dias)
+  return hojeISO(d)
+}
+
+export function erroTexto(e: unknown): string {
+  if (e && typeof e === 'object' && 'message' in e) return String((e as { message: unknown }).message)
+  return String(e)
+}
+
+export async function carregarPessoas(familiaId: string): Promise<Pessoa[]> {
+  const { data, error } = await supabase.from('pessoa').select('*').eq('familia_id', familiaId).order('created_at')
+  if (error) throw error
+  return data as Pessoa[]
+}
+
+export async function carregarMetasVigentes(pessoaIds: string[]): Promise<Record<string, Meta>> {
+  if (!pessoaIds.length) return {}
+  const { data, error } = await supabase.from('meta').select('*').in('pessoa_id', pessoaIds).is('fim', null)
+  if (error) throw error
+  return Object.fromEntries((data as Meta[]).map((m) => [m.pessoa_id, m]))
+}
+
+let cacheAlimentos: AlimentoResumo[] | null = null
+
+export async function carregarAlimentos(forcar = false): Promise<AlimentoResumo[]> {
+  if (cacheAlimentos && !forcar) return cacheAlimentos
+  const lista: AlimentoResumo[] = []
+  // PostgREST devolve no máximo 1000 linhas por chamada; paginamos.
+  for (let de = 0; ; de += 1000) {
+    const { data, error } = await supabase
+      .from('alimento')
+      .select('id, nome, categoria, fonte, familia_id')
+      .eq('ativo', true)
+      .order('nome')
+      .range(de, de + 999)
+    if (error) throw error
+    for (const a of data) lista.push({ ...(a as Omit<AlimentoResumo, 'busca'>), busca: semAcento(a.nome) })
+    if (data.length < 1000) break
+  }
+  cacheAlimentos = lista
+  return lista
+}
+
+export function buscarAlimentos(lista: AlimentoResumo[], termo: string, limite = 30): AlimentoResumo[] {
+  const partes = semAcento(termo).split(/[\s,]+/).filter(Boolean)
+  if (!partes.length) return []
+  return lista
+    .filter((a) => partes.every((p) => a.busca.includes(p)))
+    .sort((a, b) => {
+      // os da família primeiro, depois os que começam com o termo
+      if (!!a.familia_id !== !!b.familia_id) return a.familia_id ? -1 : 1
+      const ia = a.busca.startsWith(partes[0]) ? 0 : 1
+      const ib = b.busca.startsWith(partes[0]) ? 0 : 1
+      return ia - ib || a.nome.length - b.nome.length
+    })
+    .slice(0, limite)
+}
+
+const cacheComposicao = new Map<string, Composicao>()
+
+export async function carregarComposicao(ids: string[]): Promise<Map<string, Composicao>> {
+  const faltam = ids.filter((id) => !cacheComposicao.has(id))
+  if (faltam.length) {
+    const { data, error } = await supabase
+      .from('alimento_nutriente')
+      .select('alimento_id, valor_por_100g, nutriente:nutriente_id(codigo)')
+      .in('alimento_id', faltam)
+    if (error) throw error
+    for (const id of faltam) cacheComposicao.set(id, {})
+    for (const linha of data as unknown as { alimento_id: string; valor_por_100g: number; nutriente: { codigo: string } }[]) {
+      cacheComposicao.get(linha.alimento_id)![linha.nutriente.codigo] = Number(linha.valor_por_100g)
+    }
+  }
+  return new Map(ids.map((id) => [id, cacheComposicao.get(id)!]))
+}
+
+export function esquecerComposicao(id: string) {
+  cacheComposicao.delete(id)
+}
+
+export function fmt(n: number | null | undefined, casas = 0): string {
+  if (n == null || Number.isNaN(n)) return '–'
+  return n.toLocaleString('pt-BR', { maximumFractionDigits: casas, minimumFractionDigits: 0 })
+}
