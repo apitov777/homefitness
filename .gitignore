@@ -6,3 +6,6 @@ node_modules/
 dist/
 .DS_Store
 *.skill
+!.env.example
+!app/.env.production
+*.tsbuildinfo
