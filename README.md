@@ -59,3 +59,10 @@ python skills/nutricao-saude/scripts/calc_nutricional.py \
 ## Aviso
 
 O conteúdo da skill é informativo. Faixas de referência variam entre laboratórios; interpretação clínica, prescrição de suplementos e reposição hormonal são do médico.
+
+## Publicação
+
+O app sai em `https://apitov777.github.io/homefitness/` pelo workflow `.github/workflows/pages.yml`,
+a cada push na `main` que mexa em `app/`. Requer o repositório público e, em
+Settings › Pages, a fonte "GitHub Actions". No Supabase, Authentication › URL Configuration ›
+Site URL deve apontar para esse endereço.
