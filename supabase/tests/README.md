@@ -10,4 +10,5 @@ cat supabase/tests/00_stub_auth.sql $(ls supabase/migrations/*.sql | grep -v avi
 psql -d hf -f supabase/tests/rls.sql     # todas as linhas NOTICE devem começar com "ok"
 psql -d hf -f supabase/tests/plano.sql   # NOTICE "ok" e as contagens batendo com o "esperado"
 psql -d hf -f supabase/tests/familia.sql # papéis, convites, entrar, sair e remover: NOTICE "ok" e "esperado"
+psql -d hf -f supabase/tests/semana.sql  # receitas, cardápio do dia, treinos e meta do dia: NOTICE "ok" e "esperado"
 ```

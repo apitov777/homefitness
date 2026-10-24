@@ -30,6 +30,9 @@ export interface Pessoa {
   preferencias: string | null
   compartilha_exames: boolean
   aviso_resumo: string | null
+  /** TMB × fator da rotina sem o treino; o treino entra à parte quando a meta acompanha o treino. */
+  fator_rotina: number
+  meta_pelo_treino: boolean
 }
 
 /** Sem estes dados não dá para calcular a meta; o app abre o cadastro inicial. */
@@ -152,6 +155,12 @@ export function somarDias(iso: string, dias: number): string {
   const d = new Date(iso + 'T12:00:00')
   d.setDate(d.getDate() + dias)
   return hojeISO(d)
+}
+
+/** Número digitado com vírgula ou ponto; vazio, negativo ou inválido vira 0. */
+export function lerNumero(s: string): number {
+  const n = parseFloat(s.replace(',', '.'))
+  return Number.isFinite(n) && n > 0 ? n : 0
 }
 
 export function erroTexto(e: unknown): string {

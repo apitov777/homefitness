@@ -4,9 +4,12 @@ import { supabase } from '../supabase'
 import { avisoDeTeste, desligarAvisos, estadoAvisos, ligarAvisos, type EstadoAvisos } from '../avisos'
 import {
   buscarAlimentos, carregarAlimentos, carregarComposicao, carregarMetasVigentes, carregarPlanos, DIAS_SEMANA,
-  descreverDias, erroTexto, fmt, nomeTipo, somarItens, TIPOS_REFEICAO,
+  descreverDias, erroTexto, fmt, lerNumero, nomeTipo, somarItens, TIPOS_REFEICAO,
   type AlimentoResumo, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
+import Semana from './Semana'
+import Receitas from './Receitas'
+import Treinos from './Treinos'
 
 function AvisosCartao({ ctx, eu }: { ctx: Contexto; eu: Pessoa }) {
   const [estado, setEstado] = useState<EstadoAvisos | null>(null)
@@ -92,10 +95,7 @@ function AvisosCartao({ ctx, eu }: { ctx: Contexto; eu: Pessoa }) {
 
 interface ItemEditado { alimento: AlimentoResumo | { id: string; nome: string }; gramas: string }
 
-const num = (s: string) => {
-  const n = parseFloat(s.replace(',', '.'))
-  return Number.isFinite(n) && n > 0 ? n : 0
-}
+const num = lerNumero
 
 function EditorRefeicao({ pessoa, original, onFim }: { pessoa: Pessoa; original: PlanoRefeicao | null; onFim: (salvou: boolean) => void }) {
   const [tipo, setTipo] = useState<TipoRefeicao>(original?.tipo ?? 'almoco')
@@ -224,8 +224,8 @@ function EditorRefeicao({ pessoa, original, onFim }: { pessoa: Pessoa; original:
   )
 }
 
-export default function Plano({ ctx }: { ctx: Contexto }) {
-  const [sel, setSel] = useState(ctx.eu?.id ?? ctx.pessoas[0]?.id)
+/** As refeições de sempre: horários e gramas que valem para os dias da semana marcados. */
+function Refeicoes({ ctx, sel }: { ctx: Contexto; sel: string | undefined }) {
   const [dia, setDia] = useState(new Date().getDay())
   const [planos, setPlanos] = useState<PlanoRefeicao[]>([])
   const [comp, setComp] = useState<Map<string, Composicao>>(new Map())
@@ -274,30 +274,24 @@ export default function Plano({ ctx }: { ctx: Contexto }) {
       p_avisar: p.avisar, p_itens: p.plano_item.map((i) => ({ alimento_id: i.alimento.id, quantidade_g: i.quantidade_g })),
     })
     if (error) setErro(erroTexto(error))
-    else setMsg(`Copiada para ${para.nome}. Ajuste as gramas no plano dele.`)
+    else setMsg(`Copiada para ${para.nome}. Ajuste as gramas no plano de ${para.nome}.`)
   }
 
   if (pessoa && editando) {
     return (
-      <div className="tela">
-        <EditorRefeicao
-          pessoa={pessoa}
-          original={editando === 'nova' ? null : editando}
-          onFim={(salvou) => { setEditando(null); if (salvou) setTick((t) => t + 1) }}
-        />
-      </div>
+      <EditorRefeicao
+        pessoa={pessoa}
+        original={editando === 'nova' ? null : editando}
+        onFim={(salvou) => { setEditando(null); if (salvou) setTick((t) => t + 1) }}
+      />
     )
   }
 
   return (
-    <div className="tela">
-      <h1>Plano</h1>
-      <div className="chips">
-        {ctx.pessoas.map((x) => (
-          <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
-        ))}
-      </div>
-
+    <>
+      <p className="dica">
+        O que você come em cada horário nos dias marcados. Na Semana dá para trocar uma refeição por uma receita só naquele dia.
+      </p>
       <section className="cartao">
         <div className="dias">
           {DIAS_SEMANA.map((d, i) => (
@@ -351,6 +345,44 @@ export default function Plano({ ctx }: { ctx: Contexto }) {
       <button className="primario" onClick={() => setEditando('nova')}>＋ Adicionar refeição ao plano</button>
 
       {pessoa && pessoa.user_id === ctx.session.user.id && <AvisosCartao ctx={ctx} eu={pessoa} />}
+    </>
+  )
+}
+
+type Parte = 'semana' | 'refeicoes' | 'receitas' | 'treinos'
+
+const PARTES: { id: Parte; nome: string }[] = [
+  { id: 'semana', nome: 'Semana' },
+  { id: 'refeicoes', nome: 'Refeições' },
+  { id: 'receitas', nome: 'Receitas' },
+  { id: 'treinos', nome: 'Treinos' },
+]
+
+export default function Plano({ ctx }: { ctx: Contexto }) {
+  const [parte, setParte] = useState<Parte>('semana')
+  const [sel, setSel] = useState(ctx.eu?.id ?? ctx.pessoas[0]?.id)
+
+  return (
+    <div className="tela">
+      <h1>Plano</h1>
+      <div className="segmentos" role="tablist">
+        {PARTES.map((p) => (
+          <button key={p.id} role="tab" aria-selected={parte === p.id} className={parte === p.id ? 'ativa' : ''} onClick={() => setParte(p.id)}>
+            {p.nome}
+          </button>
+        ))}
+      </div>
+      {parte !== 'receitas' && (
+        <div className="chips">
+          {ctx.pessoas.map((x) => (
+            <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
+          ))}
+        </div>
+      )}
+      {parte === 'semana' && sel && <Semana ctx={ctx} sel={sel} onIrPara={setParte} />}
+      {parte === 'refeicoes' && <Refeicoes ctx={ctx} sel={sel} />}
+      {parte === 'receitas' && <Receitas />}
+      {parte === 'treinos' && sel && <Treinos ctx={ctx} sel={sel} />}
     </div>
   )
 }
