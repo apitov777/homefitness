@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { supabase } from '../supabase'
+import { FaixaConvite } from './Convite'
 
-export default function Login() {
-  const [modo, setModo] = useState<'entrar' | 'criar'>('entrar')
+export default function Login({ convite }: { convite: string | null }) {
+  // Quem chega por convite quase sempre ainda não tem conta.
+  const [modo, setModo] = useState<'entrar' | 'criar'>(convite ? 'criar' : 'entrar')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
@@ -47,6 +49,7 @@ export default function Login() {
     <div className="tela login">
       <h1>Homefitness</h1>
       <p className="sub">Dieta e saúde da família</p>
+      {convite && <FaixaConvite codigo={convite} />}
       <form onSubmit={enviar} className="cartao">
         <label>
           E-mail
@@ -72,7 +75,10 @@ export default function Login() {
           {modo === 'entrar' ? 'Primeira vez? Criar conta' : 'Já tenho conta'}
         </button>
       </form>
-      <p className="dica">Depois de entrar uma vez, o app abre direto. No iPhone, toque em Compartilhar e “Adicionar à Tela de Início”.</p>
+      <p className="dica">
+        Depois de entrar uma vez, o app abre direto. No iPhone, toque em Compartilhar e “Adicionar à Tela de Início”; no
+        Android, no menu ⋮ do Chrome, toque em “Instalar app”.
+      </p>
     </div>
   )
 }

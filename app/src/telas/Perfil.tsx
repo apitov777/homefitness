@@ -9,8 +9,7 @@ import {
   carregarAlimentos, carregarMetasVigentes, erroTexto, esquecerComposicao, fmt, hojeISO, salvarMeta,
   type Meta, type Pessoa,
 } from '../dados'
-
-interface Convite { id: string; email: string; pessoa_id: string | null; aceito_em: string | null }
+import Familia, { Avatar } from './Familia'
 
 function DadosPessoa({ ctx, p }: { ctx: Contexto; p: Pessoa }) {
   const [nome, setNome] = useState(p.nome)
@@ -191,65 +190,6 @@ function DadosPessoa({ ctx, p }: { ctx: Contexto; p: Pessoa }) {
   )
 }
 
-function Familia({ ctx }: { ctx: Contexto }) {
-  const [convites, setConvites] = useState<Convite[]>([])
-  const [nome, setNome] = useState('')
-  const [email, setEmail] = useState('')
-  const [erro, setErro] = useState<string | null>(null)
-
-  async function carregar() {
-    const { data } = await supabase.from('familia_convite').select('id, email, pessoa_id, aceito_em').eq('familia_id', ctx.familiaId)
-    setConvites((data ?? []) as Convite[])
-  }
-  useEffect(() => { carregar() }, [])
-
-  async function adicionar(ev: FormEvent) {
-    ev.preventDefault()
-    setErro(null)
-    const { data, error } = await supabase.from('pessoa').insert({ familia_id: ctx.familiaId, nome }).select('id').single()
-    if (error) return setErro(erroTexto(error))
-    if (email) {
-      const { error: e2 } = await supabase
-        .from('familia_convite')
-        .insert({ familia_id: ctx.familiaId, email: email.trim().toLowerCase(), pessoa_id: data.id, criado_por: ctx.session.user.id })
-      if (e2) return setErro(erroTexto(e2))
-    }
-    setNome('')
-    setEmail('')
-    await Promise.all([ctx.recarregarPessoas(), carregar()])
-  }
-
-  return (
-    <section className="cartao">
-      <h2>Família</h2>
-      <ul className="lista">
-        {ctx.pessoas.map((p) => {
-          const c = convites.find((x) => x.pessoa_id === p.id)
-          return (
-            <li key={p.id}>
-              {p.nome}{' '}
-              <small>
-                {p.user_id === ctx.session.user.id ? '(você)'
-                  : p.user_id ? '(tem login)'
-                  : c ? `(convite para ${c.email}${c.aceito_em ? ', aceito' : ', pendente'})` : '(sem login)'}
-              </small>
-            </li>
-          )
-        })}
-      </ul>
-      <form onSubmit={adicionar}>
-        <div className="linha">
-          <label>Nome<input required value={nome} onChange={(e) => setNome(e.target.value)} /></label>
-          <label>E-mail para login<input type="email" placeholder="opcional" value={email} onChange={(e) => setEmail(e.target.value)} /></label>
-        </div>
-        <button>Adicionar pessoa</button>
-        <p className="dica">Com e-mail, a pessoa cria a conta no app com esse mesmo e-mail e já entra na família.</p>
-      </form>
-      {erro && <p className="erro">{erro}</p>}
-    </section>
-  )
-}
-
 const CAMPOS_ROTULO = [
   { cod: 'energia', nome: 'Energia', un: 'kcal' },
   { cod: 'proteina', nome: 'Proteína', un: 'g' },
@@ -329,11 +269,24 @@ function AlimentoRotulo({ ctx }: { ctx: Contexto }) {
 
 export default function Perfil({ ctx }: { ctx: Contexto }) {
   const [sel, setSel] = useState(ctx.eu?.id ?? ctx.pessoas[0]?.id)
+  const [verFamilia, setVerFamilia] = useState(false)
   const p = ctx.pessoas.find((x) => x.id === sel)
+
+  if (verFamilia) return <Familia ctx={ctx} onVoltar={() => setVerFamilia(false)} />
 
   return (
     <div className="tela">
       <h1>Perfil</h1>
+      <button className="cartao entrada-familia" onClick={() => setVerFamilia(true)}>
+        <span className="avatares" aria-hidden>
+          {ctx.pessoas.slice(0, 4).map((x) => <Avatar key={x.id} id={x.id} nome={x.nome} />)}
+        </span>
+        <span className="membro-texto">
+          <strong>Família</strong>
+          <small>{ctx.pessoas.map((x) => x.nome).join(', ')} · convites e papéis</small>
+        </span>
+        <span className="seta" aria-hidden>›</span>
+      </button>
       <div className="chips">
         {ctx.pessoas.map((x) => (
           <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
@@ -345,7 +298,6 @@ export default function Perfil({ ctx }: { ctx: Contexto }) {
         </button>
       )}
       {p && <DadosPessoa key={p.id} ctx={ctx} p={p} />}
-      <Familia ctx={ctx} />
       <AlimentoRotulo ctx={ctx} />
       <button className="link" onClick={() => supabase.auth.signOut()}>Sair ({ctx.session.user.email})</button>
     </div>

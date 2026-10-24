@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react'
 import { supabase } from '../supabase'
 import { erroTexto } from '../dados'
 
-export default function Onboarding({ onPronto }: { onPronto: () => void }) {
+export default function Onboarding({ onPronto, onConvite }: { onPronto: () => void; onConvite: (codigo: string) => void }) {
+  const [codigo, setCodigo] = useState('')
   const [familia, setFamilia] = useState('Nossa casa')
   const [nome, setNome] = useState('')
   const [erro, setErro] = useState<string | null>(null)
@@ -20,16 +21,32 @@ export default function Onboarding({ onPronto }: { onPronto: () => void }) {
 
   return (
     <div className="tela">
-      <h1>Bem-vindo</h1>
+      <h1>Boas-vindas</h1>
+      <form
+        className="cartao"
+        onSubmit={(ev) => { ev.preventDefault(); onConvite(codigo) }}
+      >
+        <h2>Tenho um convite</h2>
+        <p className="dica">Digite o código que veio no convite, ou abra o link que recebeu.</p>
+        <div className="linha alinhada">
+          <input
+            aria-label="Código do convite"
+            placeholder="XXXXX-XXXXX"
+            autoCapitalize="characters"
+            autoComplete="off"
+            required
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+          />
+          <button>Ver convite</button>
+        </div>
+        <button type="button" className="link" onClick={onPronto}>Meu convite veio por e-mail</button>
+      </form>
       <p>
-        Crie a família para começar. Depois, em Perfil, você cadastra a outra pessoa e o e-mail dela; quando ela criar a
-        conta com esse e-mail, entra direto na família.
-      </p>
-      <p className="dica">
-        Recebeu um convite? Use o mesmo e-mail do convite e toque em{' '}
-        <button type="button" className="link inline" onClick={onPronto}>verificar convite</button>.
+        Ou crie a sua família. Depois, em Perfil › Família, você convida as pessoas da casa por link, QR code ou e-mail.
       </p>
       <form onSubmit={criar} className="cartao">
+        <h2>Criar família</h2>
         <label>
           Seu nome
           <input required value={nome} onChange={(e) => setNome(e.target.value)} />

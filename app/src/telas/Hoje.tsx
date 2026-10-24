@@ -7,6 +7,7 @@ import {
   type Checagem, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
 import { idadeEm } from '../calc'
+import CartaoInstalar from './Instalar'
 
 interface ItemDia {
   id: string
@@ -266,6 +267,7 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
       {!ehHoje && <button className="link" onClick={() => setData(hojeISO())}>Voltar para hoje</button>}
       {erro && <p className="erro">{erro}</p>}
       {carregando && !refeicoes.length && <p className="dica">Carregando…</p>}
+      <CartaoInstalar dispensavel />
 
       {ctx.pessoas.map((p) => {
         const minhas = refeicoes.filter((r) => r.pessoa_id === p.id)

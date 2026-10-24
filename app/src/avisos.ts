@@ -1,5 +1,6 @@
 // Avisos do plano por Web Push. No iPhone só funcionam com o app instalado na Tela de Início (iOS 16.4+).
 import { supabase } from './supabase'
+import { ehIOS, instalado } from './plataforma'
 
 export type EstadoAvisos =
   | 'sem_suporte' // navegador sem Push API
@@ -7,14 +8,6 @@ export type EstadoAvisos =
   | 'bloqueado' // permissão negada nos Ajustes
   | 'desligado'
   | 'ligado'
-
-function ehIOS(): boolean {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-}
-
-function instalado(): boolean {
-  return window.matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone === true
-}
 
 async function inscricaoAtual(): Promise<PushSubscription | null> {
   const reg = await navigator.serviceWorker.getRegistration()

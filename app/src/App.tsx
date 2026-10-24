@@ -2,9 +2,11 @@ import { useCallback, useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
 import { cadastroIncompleto, carregarPessoas, erroTexto, type Pessoa } from './dados'
+import { convitePendente, guardarConvitePendente } from './familia'
 import Login from './telas/Login'
 import Onboarding from './telas/Onboarding'
 import Cadastro from './telas/Cadastro'
+import TelaConvite from './telas/Convite'
 import Hoje from './telas/Hoje'
 import Plano from './telas/Plano'
 import Registrar from './telas/Registrar'
@@ -17,6 +19,8 @@ export interface Contexto {
   pessoas: Pessoa[]
   eu: Pessoa | undefined
   recarregarPessoas: () => Promise<void>
+  /** Depois de entrar, sair ou ser removido de uma família. */
+  recarregarFamilia: () => Promise<void>
   abrirCadastro: (pessoaId: string) => void
 }
 
@@ -39,6 +43,8 @@ export default function App() {
   const [versaoHoje, setVersaoHoje] = useState(0)
   // Pessoa em cadastro guiado; abre sozinho no primeiro acesso enquanto faltarem dados.
   const [cadastro, setCadastro] = useState<string | null>(null)
+  // Código de convite aberto pelo link ou digitado; mostra a tela de aceitar depois do login.
+  const [convite, setConvite] = useState<string | null>(convitePendente)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
@@ -74,7 +80,7 @@ export default function App() {
   }, [session, carregarFamilia])
 
   if (session === undefined) return <div className="carregando">Carregando…</div>
-  if (!session) return <Login />
+  if (!session) return <Login convite={convite} />
   if (erro)
     return (
       <div className="tela">
@@ -83,7 +89,17 @@ export default function App() {
       </div>
     )
   if (familiaId === undefined) return <div className="carregando">Carregando…</div>
-  if (familiaId === null) return <Onboarding onPronto={carregarFamilia} />
+  if (convite)
+    return (
+      <TelaConvite
+        codigo={convite}
+        temFamilia={familiaId !== null}
+        onPronto={() => { setConvite(null); setAba('hoje'); carregarFamilia() }}
+        onFechar={() => setConvite(null)}
+      />
+    )
+  if (familiaId === null)
+    return <Onboarding onPronto={carregarFamilia} onConvite={(c) => { guardarConvitePendente(c); setConvite(c) }} />
 
   const ctx: Contexto = {
     session,
@@ -91,6 +107,7 @@ export default function App() {
     pessoas,
     eu: pessoas.find((p) => p.user_id === session.user.id),
     recarregarPessoas: async () => setPessoas(await carregarPessoas(familiaId)),
+    recarregarFamilia: carregarFamilia,
     abrirCadastro: setCadastro,
   }
 
