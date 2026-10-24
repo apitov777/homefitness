@@ -5,6 +5,8 @@ import {
   buscarAlimentos, carregarAlimentos, carregarComposicao, erroTexto, fmt, hojeISO, TIPOS_REFEICAO,
   type AlimentoResumo, type Composicao, type TipoRefeicao,
 } from '../dados'
+import { porcaoDe, type Receita } from '../semana'
+import FavoritasSemana from './FavoritasSemana'
 
 interface Item {
   alimento: { id: string; nome: string }
@@ -52,17 +54,20 @@ export default function Registrar({ ctx, inicial, onSalvo }: { ctx: Contexto; in
   const resultados = useMemo(() => buscarAlimentos(alimentos, termo), [alimentos, termo])
   const pessoasSel = ctx.pessoas.filter((p) => quem.includes(p.id))
 
-  async function adicionar(a: AlimentoResumo) {
+  async function incluir(alimento: { id: string; nome: string }, gramas: number) {
     setTermo('')
-    const g = Object.fromEntries(ctx.pessoas.map((p) => [p.id, '100']))
-    setItens((xs) => [...xs, { alimento: a, gramas: g }])
+    const g = Object.fromEntries(ctx.pessoas.map((p) => [p.id, String(gramas)]))
+    setItens((xs) => [...xs, { alimento, gramas: g }])
     try {
-      const c = await carregarComposicao([...itens.map((i) => i.alimento.id), a.id])
+      const c = await carregarComposicao([...itens.map((i) => i.alimento.id), alimento.id])
       setComp(c)
     } catch (e) {
       setErro(erroTexto(e))
     }
   }
+  const adicionar = (a: AlimentoResumo) => incluir(a, 100)
+  // Receita da semana: entra na porção dela para cada pessoa (ajusta-se depois, se quiser).
+  const adicionarReceita = (r: Receita) => incluir({ id: r.alimento_id, nome: r.nome }, porcaoDe(r))
 
   function mudarGramas(idx: number, pessoaId: string, valor: string) {
     setItens((xs) => xs.map((it, i) => (i === idx ? { ...it, gramas: { ...it.gramas, [pessoaId]: valor } } : it)))
@@ -144,10 +149,11 @@ export default function Registrar({ ctx, inicial, onSalvo }: { ctx: Contexto; in
 
       <section className="cartao">
         <h2>Alimentos</h2>
+        <FavoritasSemana pessoas={pessoasSel} tipo={tipo} onEscolher={adicionarReceita} />
         <input
           className="busca"
           type="search"
-          placeholder="Buscar: arroz, feijão, frango…"
+          placeholder="Buscar outro alimento: arroz, feijão, frango…"
           value={termo}
           onChange={(e) => setTermo(e.target.value)}
         />

@@ -157,6 +157,12 @@ export function receitasDoPlano(receitas: Receita[], favs: Favorita[], pessoaIds
   return receitas.filter((r) => r.ativa && (r.familia_id || pessoaIds.some((p) => ehFavorita(favs, p, r.id))))
 }
 
+/** As mesmas receitas, para montar ou registrar uma refeição: as que servem para esse tipo vêm primeiro, depois as outras, cada grupo por nome. */
+export function receitasParaRefeicao(receitas: Receita[], favs: Favorita[], pessoaIds: string[], tipo: TipoRefeicao | null): Receita[] {
+  const serve = (r: Receita) => (tipo ? r.tipos.includes(tipo) : true)
+  return receitasDoPlano(receitas, favs, pessoaIds).sort((a, b) => Number(serve(b)) - Number(serve(a)) || a.nome.localeCompare(b.nome, 'pt-BR'))
+}
+
 // ---------------------------------------------------------------------------
 // Treinos
 // ---------------------------------------------------------------------------

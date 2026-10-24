@@ -7,6 +7,8 @@ import {
   descreverDias, erroTexto, fmt, lerNumero, nomeTipo, somarItens, TIPOS_REFEICAO,
   type AlimentoResumo, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
+import { porcaoDe } from '../semana'
+import FavoritasSemana from './FavoritasSemana'
 import Semana from './Semana'
 import Treinos from './Treinos'
 
@@ -175,6 +177,11 @@ function EditorRefeicao({ pessoa, original, onFim }: { pessoa: Pessoa; original:
       </label>
 
       <h2>Alimentos</h2>
+      <FavoritasSemana
+        pessoas={[pessoa]}
+        tipo={tipo}
+        onEscolher={(r) => setItens((xs) => [...xs, { alimento: { id: r.alimento_id, nome: r.nome }, gramas: String(porcaoDe(r)) }])}
+      />
       {itens.map((it, idx) => {
         const c = comp.get(it.alimento.id)
         return (
@@ -194,7 +201,7 @@ function EditorRefeicao({ pessoa, original, onFim }: { pessoa: Pessoa; original:
           </div>
         )
       })}
-      <input className="busca" type="search" placeholder="Adicionar: arroz, ovo, frango…" value={termo} onChange={(e) => setTermo(e.target.value)} />
+      <input className="busca" type="search" placeholder="Adicionar outro alimento: arroz, ovo, frango…" value={termo} onChange={(e) => setTermo(e.target.value)} />
       {termo && (
         <ul className="resultados">
           {resultados.map((a) => (
