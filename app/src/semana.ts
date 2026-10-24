@@ -73,6 +73,8 @@ export interface Receita {
   modo_preparo: string | null
   tipos: TipoRefeicao[]
   tags: string[]
+  /** 'fotos/<slug>.jpg' (arquivo do app, catálogo) ou '<familia_id>/<receita_id>.jpg' (Storage, da família). */
+  foto: string | null
   ativa: boolean
   /** Vazio no item avulso do catálogo: o alimento é o próprio da TACO. */
   item_receita: ItemReceita[]
@@ -87,7 +89,7 @@ export const TAGS: Record<string, string> = {
 export async function carregarReceitas(): Promise<Receita[]> {
   const { data, error } = await supabase
     .from('receita')
-    .select('id, familia_id, nome, descricao, alimento_id, rendimento_g, porcao_g, modo_preparo, tipos, tags, ativa, item_receita(id, quantidade_g, alimento:alimento_id(id, nome, categoria))')
+    .select('id, familia_id, nome, descricao, alimento_id, rendimento_g, porcao_g, modo_preparo, tipos, tags, foto, ativa, item_receita(id, quantidade_g, alimento:alimento_id(id, nome, categoria))')
     .order('nome')
   if (error) throw error
   return (data as unknown as Receita[]).map((r) => ({

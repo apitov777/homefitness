@@ -3,6 +3,7 @@ import {
   buscarAlimentos, carregarAlimentos, carregarComposicao, erroTexto, fmt, lerNumero, somarItens, TIPOS_REFEICAO,
   type AlimentoResumo, type Composicao, type TipoRefeicao,
 } from '../dados'
+import { definirFoto, enviarFotoReceita, removerFotoReceita } from '../fotos'
 import { arquivarReceita, formatarPeso, salvarReceita, type Receita } from '../semana'
 
 interface Ingrediente { alimento: { id: string; nome: string }; gramas: string }
@@ -11,12 +12,19 @@ interface Ingrediente { alimento: { id: string; nome: string }; gramas: string }
  * Cria ou edita uma receita da família. Com `base` de uma receita do catálogo, abre uma cópia para adaptar
  * (a do catálogo não muda).
  */
-export default function EditorReceita({ original, base, onFim }: {
+export default function EditorReceita({ original, base, familiaId, fotoAtual, onFim }: {
   original: Receita | null
   base?: Receita | null
+  familiaId: string
+  /** URL da foto atual (da receita editada ou da base adaptada), já assinada quando for do Storage. */
+  fotoAtual?: string | null
   onFim: (salvou: boolean) => void
 }) {
   const modelo = original ?? base ?? null
+  const [novaFoto, setNovaFoto] = useState<File | null>(null)
+  const [previa, setPrevia] = useState<string | null>(null)
+  const [semFoto, setSemFoto] = useState(false)
+  const fotoMostrada = semFoto ? null : previa ?? fotoAtual ?? null
   const [nome, setNome] = useState(modelo?.nome ?? '')
   const [descricao, setDescricao] = useState(modelo?.descricao ?? '')
   const [tipos, setTipos] = useState<TipoRefeicao[]>(modelo?.tipos ?? ['almoco'])
@@ -35,6 +43,15 @@ export default function EditorReceita({ original, base, onFim }: {
   useEffect(() => {
     carregarAlimentos().then(setAlimentos).catch((e) => setErro(erroTexto(e)))
   }, [])
+  useEffect(() => () => { if (previa) URL.revokeObjectURL(previa) }, [previa])
+
+  function escolherFoto(f: File | undefined) {
+    if (!f) return
+    if (!f.type.startsWith('image/')) return setErro('Escolha uma imagem.')
+    setNovaFoto(f)
+    setPrevia(URL.createObjectURL(f))
+    setSemFoto(false)
+  }
   useEffect(() => {
     carregarComposicao(itens.map((i) => i.alimento.id)).then(setComp).catch((e) => setErro(erroTexto(e)))
   }, [itens.length])
@@ -57,7 +74,7 @@ export default function EditorReceita({ original, base, onFim }: {
     if (!pronto) return setErro('Informe o peso da receita pronta.')
     setSalvando(true)
     try {
-      await salvarReceita({
+      const id = await salvarReceita({
         id: original?.id ?? null,
         alimentoAntigo: original?.alimento_id ?? null,
         nome,
@@ -68,6 +85,10 @@ export default function EditorReceita({ original, base, onFim }: {
         modo_preparo: preparo,
         itens: lista.map((i) => ({ alimento_id: i.alimento.id, quantidade_g: i.quantidade_g })),
       })
+      // Foto: nova vai para o Storage; adaptada herda a do catálogo; "tirar foto" apaga a da família.
+      if (novaFoto) await enviarFotoReceita(familiaId, id, novaFoto)
+      else if (semFoto && original?.foto) await removerFotoReceita(id, original.foto)
+      else if (!original && base?.foto && !semFoto) await definirFoto(id, base.foto)
       onFim(true)
     } catch (e) {
       setErro(erroTexto(e))
@@ -90,6 +111,16 @@ export default function EditorReceita({ original, base, onFim }: {
       <h2>{original ? 'Editar receita' : base ? `Adaptar: ${base.nome}` : 'Nova receita'}</h2>
       <label>Nome<input value={nome} placeholder="ex.: frango com arroz e feijão" onChange={(e) => setNome(e.target.value)} /></label>
       <label>Descrição (opcional)<input value={descricao} placeholder="ex.: o almoço de sempre, rende 3 marmitas" onChange={(e) => setDescricao(e.target.value)} /></label>
+      <div className="foto-editor">
+        {fotoMostrada ? <img src={fotoMostrada} alt="Foto da receita" /> : <div className="sem-foto" aria-hidden>♨</div>}
+        <div className="linha">
+          <label className="botao-arquivo">
+            📷 {fotoMostrada ? 'Trocar foto' : 'Tirar ou escolher foto'}
+            <input type="file" accept="image/*" aria-label="Foto da receita" onChange={(e) => escolherFoto(e.target.files?.[0])} />
+          </label>
+          {fotoMostrada && <button className="link" onClick={() => { setNovaFoto(null); setPrevia(null); setSemFoto(true) }}>Tirar foto</button>}
+        </div>
+      </div>
       <fieldset className="quem">
         <legend>Entra em</legend>
         <div className="chips quebra">
