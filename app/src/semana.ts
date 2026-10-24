@@ -441,6 +441,8 @@ export interface LinhaCompra {
   id: string
   nome: string
   gramas: number
+  /** Pessoa → gramas, para mostrar de quem é cada parte. */
+  porPessoa: Record<string, number>
 }
 
 export interface Compras {
@@ -457,9 +459,10 @@ export function montarCompras(
   const porAlimento = new Map(receitas.map((r) => [r.alimento_id, r]))
   const panelas = new Map<string, Panela>()
   const linhas = new Map<string, LinhaCompra & { categoria: string }>()
-  const somar = (a: { id: string; nome: string; categoria?: string | null }, g: number) => {
-    const l = linhas.get(a.id) ?? { id: a.id, nome: a.nome, gramas: 0, categoria: a.categoria ?? categoriaDe(a.id) ?? 'Outros' }
+  const somar = (a: { id: string; nome: string; categoria?: string | null }, g: number, pessoaId: string) => {
+    const l = linhas.get(a.id) ?? { id: a.id, nome: a.nome, gramas: 0, porPessoa: {}, categoria: a.categoria ?? categoriaDe(a.id) ?? 'Outros' }
     l.gramas += g
+    l.porPessoa[pessoaId] = (l.porPessoa[pessoaId] ?? 0) + g
     linhas.set(a.id, l)
   }
   for (const ref of refeicoes) {
@@ -468,20 +471,20 @@ export function montarCompras(
       const rec = porAlimento.get(it.alimento.id)
       // Item avulso do catálogo é o próprio alimento da TACO: vai direto para a lista.
       if (!rec || !rec.item_receita.length) {
-        somar(it.alimento, g)
+        somar(it.alimento, g, ref.pessoaId)
         continue
       }
       const p = panelas.get(rec.id) ?? { receita: rec, gramas: 0, vezes: 0, porDia: [] }
       p.gramas += g
       p.porDia.push({ data: ref.data, pessoaId: ref.pessoaId, gramas: g })
       panelas.set(rec.id, p)
-      for (const ing of rec.item_receita) somar(ing.alimento, (Number(ing.quantidade_g) * g) / rec.rendimento_g)
+      for (const ing of rec.item_receita) somar(ing.alimento, (Number(ing.quantidade_g) * g) / rec.rendimento_g, ref.pessoaId)
     }
   }
   const grupos = new Map<string, LinhaCompra[]>()
   for (const l of linhas.values()) {
     const g = grupos.get(l.categoria) ?? []
-    g.push({ id: l.id, nome: l.nome, gramas: l.gramas })
+    g.push({ id: l.id, nome: l.nome, gramas: l.gramas, porPessoa: l.porPessoa })
     grupos.set(l.categoria, g)
   }
   return {

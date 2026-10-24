@@ -474,3 +474,20 @@ button.coracao.ativa { color: var(--alerta); }
 .escolher .linha .primario { margin-top: 0; }
 .extra { border-top: 1px solid var(--linha); margin-top: 8px; padding-top: 4px; }
 .extra h3 { font-size: 0.95rem; margin: 6px 0 2px; }
+
+/* Compra da semana: lista das dietas do plano, marcada pelos dois */
+.icone-entrada { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--verde-claro); color: var(--verde); font-size: 1.1rem; }
+.compras .periodo small { display: block; font-size: 0.78rem; font-weight: 400; color: var(--suave); }
+.resumo-compra { display: flex; align-items: center; gap: 10px; }
+.resumo-compra > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.resumo-compra small { color: var(--suave); font-size: 0.82rem; }
+.aviso-compra { background: var(--alerta-claro); color: var(--alerta); padding: 10px 12px; border-radius: 10px; }
+.item-compra label { display: flex; align-items: center; gap: 10px; flex-direction: row; color: var(--texto); font-size: 0.95rem; padding: 6px 0; }
+.item-compra input[type='checkbox'] { width: 22px; height: 22px; flex: 0 0 auto; margin: 0; accent-color: var(--verde); }
+.item-compra .nome { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.item-compra small { color: var(--suave); font-size: 0.78rem; }
+.item-compra .quanto { display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.categoria-compra .itens li.item-compra { display: block; }
+.item-compra.pego .nome, .item-compra.pego .quanto { text-decoration: line-through; opacity: 0.6; }
+.no-carrinho { margin-top: 12px; border-top: 1px solid var(--linha); padding-top: 8px; }
+.no-carrinho summary { color: var(--suave); font-size: 0.9rem; }
