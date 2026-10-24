@@ -8,9 +8,10 @@ import {
   type AlimentoResumo, type Composicao, type Pessoa, type PlanoItem, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
 import {
-  carregarDias, carregarMetasDia, carregarReceitas, carregarTreinos, definirDias, diaDaSemana, diasEntre, formatarPeso,
-  gramasParaFechar, inicioSemana, kcalItens, mesDe, montarCompras, montarSemana, refeicoesDoDia, rotuloDia, rotuloMes,
-  rotuloSemana, situacaoDia, type DiaDefinido, type DiaPlano, type MetaDia, type Receita, type RefeicaoDoDia, type Treino,
+  carregarDias, carregarFavoritas, ehFavorita, carregarMetasDia, carregarReceitas, carregarTreinos, definirDias, diaDaSemana, diasEntre,
+  formatarPeso, gramasParaFechar, inicioSemana, kcalItens, mesDe, montarCompras, montarSemana, porcaoDe, receitasDoPlano,
+  refeicoesDoDia, rotuloDia, rotuloMes, rotuloSemana, situacaoDia,
+  type DiaDefinido, type DiaPlano, type Favorita, type MetaDia, type Receita, type RefeicaoDoDia, type Treino,
 } from '../semana'
 import Folha from './Folha'
 
@@ -21,6 +22,7 @@ interface Dados {
   dias: DiaPlano[]
   metas: MetaDia[]
   receitas: Receita[]
+  favoritas: Favorita[]
   treinos: Treino[]
   comidos: { pessoa_id: string; data: string; kcal: number | null }[]
   comp: Map<string, Composicao>
@@ -71,8 +73,10 @@ function EditorDia({ pessoa, refeicao, data, dados, pessoas, onFim }: {
   pessoas: Pessoa[]
   onFim: (salvou: boolean) => void
 }) {
-  const doTipo = dados.receitas.filter((r) => r.ativa && r.tipos.includes(refeicao.plano.tipo))
-  const outrasReceitas = dados.receitas.filter((r) => r.ativa && !r.tipos.includes(refeicao.plano.tipo))
+  // Primeiro as favoritas da pessoa e as da família que servem para esta refeição; o resto do catálogo depois.
+  const minhas = receitasDoPlano(dados.receitas, dados.favoritas, [pessoa.id])
+  const doTipo = minhas.filter((r) => r.tipos.includes(refeicao.plano.tipo))
+  const outrasReceitas = dados.receitas.filter((r) => r.ativa && !doTipo.includes(r))
   const ehReceita = (id: string) => dados.receitas.some((r) => r.alimento_id === id)
   const [itens, setItens] = useState<ItemEditado[]>(refeicao.itens.map((i) => ({ alimento: i.alimento, gramas: String(i.quantidade_g) })))
   const [receitaId, setReceitaId] = useState<string | null>(refeicao.dia?.receita_id ?? null)
@@ -110,7 +114,7 @@ function EditorDia({ pessoa, refeicao, data, dados, pessoas, onFim }: {
           const slot = refeicoesDoDia(dados.planos, dados.dias, p.id, data).find((r) => r.plano.tipo === refeicao.plano.tipo)
           const m = metaDe(dados, p.id, data)?.kcal
           if (!slot || !m) return null
-          return { pessoa: p, plano: slot.plano.id, gramas: gramasParaFechar(m - outrasDoDia(p.id), k100) }
+          return { pessoa: p, plano: slot.plano.id, gramas: gramasParaFechar(m - outrasDoDia(p.id), k100, receita.porcao_g) }
         })
         .filter((x): x is { pessoa: Pessoa; plano: string; gramas: number } => !!x)
     : []
@@ -120,7 +124,7 @@ function EditorDia({ pessoa, refeicao, data, dados, pessoas, onFim }: {
     if (!r) return
     const resto = itens.filter((i) => !ehReceita(i.alimento.id))
     const kResto = kcalItens(resto.map((i, idx) => ({ id: String(idx), ordem: idx, alimento: i.alimento, quantidade_g: lerNumero(i.gramas) })), comp)
-    const g = meta ? gramasParaFechar(meta - outras - kResto, comp.get(r.alimento_id)?.energia ?? 0) : Math.round(r.rendimento_g / 2)
+    const g = meta ? gramasParaFechar(meta - outras - kResto, comp.get(r.alimento_id)?.energia ?? 0, r.porcao_g) : porcaoDe(r)
     setReceitaId(r.id)
     setItens([{ alimento: { id: r.alimento_id, nome: r.nome }, gramas: String(g) }, ...resto])
   }
@@ -177,7 +181,7 @@ function EditorDia({ pessoa, refeicao, data, dados, pessoas, onFim }: {
           )}
         </select>
       </label>
-      {!dados.receitas.some((r) => r.ativa) && <p className="dica">Cadastre suas receitas na aba Receitas.</p>}
+      {!minhas.length && <p className="dica">Favorite receitas na aba Receitas (ou crie as suas) para elas aparecerem primeiro aqui.</p>}
 
       {itens.map((it, idx) => (
         <div key={idx} className="item-plano">
@@ -254,7 +258,10 @@ function Montar({ datas, dados, pessoas, onFim }: {
   const tiposNoPlano = TIPOS_REFEICAO.filter((t) => dados.planos.some((p) => p.tipo === t.valor))
   const [tipos, setTipos] = useState<TipoRefeicao[]>(tiposNoPlano.some((t) => t.valor === 'almoco') ? ['almoco'] : tiposNoPlano.slice(0, 1).map((t) => t.valor))
   const [quem, setQuem] = useState<Set<string>>(new Set(pessoas.map((p) => p.id)))
-  const ativas = dados.receitas.filter((r) => r.ativa)
+  // Só as receitas da própria família e as favoritas de cada pessoa; o catálogo inteiro não.
+  const ativas = receitasDoPlano(dados.receitas, dados.favoritas, pessoas.map((p) => p.id))
+  const favoritaDe = (r: Receita) => pessoas.filter((p) => ehFavorita(dados.favoritas, p.id, r.id))
+  const deQuem = (r: Receita) => (r.familia_id ? 'da família' : favoritaDe(r).map((p) => `♥ ${p.nome}`).join(' '))
   const [escolhidas, setEscolhidas] = useState<Set<string>>(new Set(ativas.map((r) => r.id)))
   const [semanais, setSemanais] = useState<number[]>([0, 1, 2, 3, 4, 5, 6])
   const [erro, setErro] = useState<string | null>(null)
@@ -262,7 +269,8 @@ function Montar({ datas, dados, pessoas, onFim }: {
 
   const hoje = hojeISO()
   const alvo = datas.filter((d) => d >= hoje && semanais.includes(diaDaSemana(d)))
-  const candidatas = ativas.filter((r) => r.tipos.some((t) => tipos.includes(t)))
+  // Entram as da família e as favoritas de quem está marcado; quem está junto come da mesma panela.
+  const candidatas = ativas.filter((r) => r.tipos.some((t) => tipos.includes(t)) && (r.familia_id || favoritaDe(r).some((p) => quem.has(p.id))))
   const resultado = montarSemana(
     { datas: alvo, pessoas: pessoas.filter((p) => quem.has(p.id)).map((p) => p.id), tipos, receitas: candidatas.filter((r) => escolhidas.has(r.id)) },
     dados.planos, dados.dias, dados.metas, dados.comp,
@@ -294,7 +302,7 @@ function Montar({ datas, dados, pessoas, onFim }: {
   return (
     <Folha titulo="Montar com receitas" onFechar={() => onFim(false)}>
       {!ativas.length ? (
-        <p className="dica">Cadastre primeiro as receitas que você faz, na aba Receitas.</p>
+        <p className="dica">Favorite receitas na aba Receitas (toque no ♡), ou crie as suas, para montar a semana com elas.</p>
       ) : (
         <>
           <fieldset className="quem">
@@ -317,14 +325,14 @@ function Montar({ datas, dados, pessoas, onFim }: {
             ))}
           </fieldset>
           <fieldset className="quem">
-            <legend>Receitas que se revezam</legend>
+            <legend>Receitas que se revezam (da família e favoritas de quem está marcado)</legend>
             {candidatas.map((r) => (
               <label key={r.id} className="check">
                 <input type="checkbox" checked={escolhidas.has(r.id)} onChange={() => setEscolhidas((s) => alternar(s, r.id))} />
-                {r.nome} <small className="dica">({r.tipos.map(nomeTipo).join(', ').toLowerCase()})</small>
+                {r.nome} <small className="dica">({r.tipos.map(nomeTipo).join(', ').toLowerCase()}) · {deQuem(r)}</small>
               </label>
             ))}
-            {!candidatas.length && <p className="dica">Nenhuma receita marcada para essas refeições.</p>}
+            {!candidatas.length && <p className="dica">Nenhuma receita da família ou favorita de quem está marcado entra nessas refeições.</p>}
           </fieldset>
           <fieldset className="quem">
             <legend>Dias da semana</legend>
@@ -484,7 +492,7 @@ function Compras({ de, ate, rotulo, dados, pessoas, onVoltar }: {
 // Semana e mês
 // ---------------------------------------------------------------------------
 
-export default function Semana({ ctx, sel, onIrPara }: { ctx: Contexto; sel: string; onIrPara: (p: 'refeicoes' | 'receitas' | 'treinos') => void }) {
+export default function Semana({ ctx, sel, onIrPara }: { ctx: Contexto; sel: string; onIrPara: (p: 'refeicoes' | 'treinos') => void }) {
   const hoje = hojeISO()
   const [modo, setModo] = useState<'semana' | 'mes'>('semana')
   const [ancora, setAncora] = useState(hoje)
@@ -508,10 +516,11 @@ export default function Semana({ ctx, sel, onIrPara }: { ctx: Contexto; sel: str
     ;(async () => {
       try {
         const planos = await carregarPlanos(ids)
-        const [dias, metas, receitas, treinos, { data: comidos, error }] = await Promise.all([
+        const [dias, metas, receitas, favoritas, treinos, { data: comidos, error }] = await Promise.all([
           carregarDias(planos.map((p) => p.id), de, ate),
           carregarMetasDia(ids, de, ate),
           carregarReceitas(),
+          carregarFavoritas(ids),
           carregarTreinos(ids),
           supabase.from('v_dia_vs_meta').select('pessoa_id, data, kcal').in('pessoa_id', ids).gte('data', de).lte('data', ate),
         ])
@@ -522,7 +531,7 @@ export default function Semana({ ctx, sel, onIrPara }: { ctx: Contexto; sel: str
           ...receitas.map((r) => r.alimento_id),
         ])])
         if (!vivo) return
-        setDados({ de, ate, planos, dias, metas, receitas, treinos, comidos: comidos ?? [], comp })
+        setDados({ de, ate, planos, dias, metas, receitas, favoritas, treinos, comidos: comidos ?? [], comp })
         setErro(null)
       } catch (e) {
         if (vivo) setErro(erroTexto(e))

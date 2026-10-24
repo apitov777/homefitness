@@ -62,36 +62,54 @@ export interface ItemReceita {
 
 export interface Receita {
   id: string
+  /** Nulo: receita do catálogo, igual para todas as famílias. */
+  familia_id: string | null
   nome: string
+  descricao: string | null
   alimento_id: string
   rendimento_g: number
+  /** Porção sugerida para uma pessoa; sem ela, a Semana usa de 100 g a 1 kg. */
+  porcao_g: number | null
   modo_preparo: string | null
   tipos: TipoRefeicao[]
+  tags: string[]
   ativa: boolean
+  /** Vazio no item avulso do catálogo: o alimento é o próprio da TACO. */
   item_receita: ItemReceita[]
 }
 
-/** Todas as receitas da família, inclusive as arquivadas (o cardápio antigo ainda aponta para elas). */
+export const TAGS: Record<string, string> = {
+  fitness: 'fitness', proteico: 'proteico', doce: 'doce', avulso: 'avulso', vegetariano: 'vegetariano', rápido: 'rápido',
+  forno: 'forno', fibra: 'fibra', 'ômega-3': 'ômega-3', leve: 'leve', lanche: 'lanche', 'sem glúten': 'sem glúten',
+}
+
+/** Todas as receitas: catálogo e da família, inclusive as arquivadas (o cardápio antigo ainda aponta para elas). */
 export async function carregarReceitas(): Promise<Receita[]> {
   const { data, error } = await supabase
     .from('receita')
-    .select('id, nome, alimento_id, rendimento_g, modo_preparo, tipos, ativa, item_receita(id, quantidade_g, alimento:alimento_id(id, nome, categoria))')
+    .select('id, familia_id, nome, descricao, alimento_id, rendimento_g, porcao_g, modo_preparo, tipos, tags, ativa, item_receita(id, quantidade_g, alimento:alimento_id(id, nome, categoria))')
     .order('nome')
   if (error) throw error
-  return (data as unknown as Receita[]).map((r) => ({ ...r, rendimento_g: Number(r.rendimento_g) }))
+  return (data as unknown as Receita[]).map((r) => ({
+    ...r, rendimento_g: Number(r.rendimento_g), porcao_g: r.porcao_g == null ? null : Number(r.porcao_g),
+    item_receita: r.item_receita.map((i) => ({ ...i, quantidade_g: Number(i.quantidade_g) })),
+  }))
 }
 
 export async function salvarReceita(r: {
   id: string | null
   alimentoAntigo: string | null
   nome: string
+  descricao: string
   tipos: TipoRefeicao[]
   rendimento_g: number
+  porcao_g: number | null
   modo_preparo: string
   itens: { alimento_id: string; quantidade_g: number }[]
 }): Promise<string> {
   const { data, error } = await supabase.rpc('salvar_receita', {
     p_id: r.id, p_nome: r.nome, p_tipos: r.tipos, p_rendimento_g: r.rendimento_g, p_modo_preparo: r.modo_preparo, p_itens: r.itens,
+    p_porcao_g: r.porcao_g, p_descricao: r.descricao,
   })
   if (error) throw error
   // O valor por 100 g mudou e pode ter nascido um alimento novo: recarrega as listas.
@@ -104,6 +122,37 @@ export async function arquivarReceita(id: string): Promise<void> {
   const { error } = await supabase.rpc('arquivar_receita', { p_id: id })
   if (error) throw error
   await carregarAlimentos(true)
+}
+
+/** Porção da receita em gramas: a sugerida, ou a receita inteira quando não há. */
+export function porcaoDe(r: Pick<Receita, 'porcao_g' | 'rendimento_g'>): number {
+  return r.porcao_g ?? r.rendimento_g
+}
+
+// Favoritas: por pessoa. São as que a Semana oferece.
+
+export interface Favorita { pessoa_id: string; receita_id: string }
+
+export async function carregarFavoritas(pessoaIds: string[]): Promise<Favorita[]> {
+  if (!pessoaIds.length) return []
+  const { data, error } = await supabase.from('receita_favorita').select('pessoa_id, receita_id').in('pessoa_id', pessoaIds)
+  if (error) throw error
+  return data as Favorita[]
+}
+
+export async function favoritar(pessoaId: string, receitaId: string, sim: boolean): Promise<void> {
+  const { error } = sim
+    ? await supabase.from('receita_favorita').upsert({ pessoa_id: pessoaId, receita_id: receitaId })
+    : await supabase.from('receita_favorita').delete().eq('pessoa_id', pessoaId).eq('receita_id', receitaId)
+  if (error) throw error
+}
+
+export const ehFavorita = (favs: Favorita[], pessoaId: string, receitaId: string) =>
+  favs.some((f) => f.pessoa_id === pessoaId && f.receita_id === receitaId)
+
+/** Receitas que entram no plano dessas pessoas: as favoritas de qualquer uma delas e as da família. Ativas só. */
+export function receitasDoPlano(receitas: Receita[], favs: Favorita[], pessoaIds: string[]): Receita[] {
+  return receitas.filter((r) => r.ativa && (r.familia_id || pessoaIds.some((p) => ehFavorita(favs, p, r.id))))
 }
 
 // ---------------------------------------------------------------------------
@@ -293,11 +342,16 @@ export function situacaoDia(planejado: number, meta: number | null): 'ok' | 'fal
   return r < 0.95 ? 'falta' : r > 1.05 ? 'passou' : 'ok'
 }
 
-/** Gramas da receita para cobrir as calorias que faltam, de 10 em 10 g, entre 100 g e 1 kg. */
-export function gramasParaFechar(kcalFaltando: number, kcalPor100g: number): number {
-  if (!kcalPor100g) return 100
+/**
+ * Gramas da receita para cobrir as calorias que faltam, de 10 em 10 g.
+ * Com porção sugerida, fica entre metade e o dobro dela (um doce não vira o almoço); sem, entre 100 g e 1 kg.
+ */
+export function gramasParaFechar(kcalFaltando: number, kcalPor100g: number, porcao: number | null = null): number {
+  const min = porcao ? Math.round(porcao / 2) : 100
+  const max = porcao ? porcao * 2 : 1000
+  if (!kcalPor100g) return porcao ?? 100
   const g = Math.round(((kcalFaltando / kcalPor100g) * 100) / 10) * 10
-  return Math.min(1000, Math.max(100, g))
+  return Math.min(max, Math.max(min, g))
 }
 
 export interface PedidoSemana {
@@ -355,7 +409,7 @@ export function montarSemana(
           plano: v.plano.id,
           data,
           receita: rec.id,
-          itens: [{ alimento_id: rec.alimento_id, quantidade_g: gramasParaFechar(porVaga, k100) }],
+          itens: [{ alimento_id: rec.alimento_id, quantidade_g: gramasParaFechar(porVaga, k100, rec.porcao_g) }],
         })
       })
     }
@@ -404,7 +458,8 @@ export function montarCompras(
     for (const it of ref.itens) {
       const g = Number(it.quantidade_g)
       const rec = porAlimento.get(it.alimento.id)
-      if (!rec) {
+      // Item avulso do catálogo é o próprio alimento da TACO: vai direto para a lista.
+      if (!rec || !rec.item_receita.length) {
         somar(it.alimento, g)
         continue
       }

@@ -308,9 +308,29 @@ details summary { color: var(--verde); padding: 8px 0 0; cursor: pointer; }
 .periodo { flex: 1; text-align: center; }
 button.cartao.receita { width: 100%; display: flex; flex-direction: column; align-items: stretch; gap: 4px; text-align: left; }
 button.cartao.receita small { color: var(--suave); }
-.saldo .numeros { display: flex; gap: 8px; text-align: center; margin-bottom: 8px; }
-.saldo .numeros span { flex: 1; display: flex; flex-direction: column; font-size: 0.8rem; color: var(--suave); background: var(--fundo); border-radius: 10px; padding: 8px 4px; }
-.saldo .numeros strong { font-size: 1.15rem; color: var(--texto); font-variant-numeric: tabular-nums; }
+.numeros { display: flex; gap: 8px; text-align: center; margin-bottom: 8px; }
+.numeros span { flex: 1; display: flex; flex-direction: column; font-size: 0.8rem; color: var(--suave); background: var(--fundo); border-radius: 10px; padding: 8px 4px; }
+.numeros strong { font-size: 1.15rem; color: var(--texto); font-variant-numeric: tabular-nums; }
+
+/* Aba Receitas: catálogo, favoritas (coração) e detalhe. */
+.receita-item { display: flex; align-items: stretch; gap: 4px; padding: 0; }
+.receita-item .abrir { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 4px; text-align: left; border: none; background: none; border-radius: 14px 0 0 14px; padding: 12px 0 12px 14px; color: var(--texto); }
+.receita-item .abrir small { color: var(--suave); font-size: 0.82rem; }
+.receita-item .abrir .refeicao-topo strong { flex: 1; min-width: 0; }
+.receita-item.favorita { border-left: 3px solid var(--verde); }
+button.coracao { border: none; background: none; color: var(--suave); font-size: 1.5rem; line-height: 1; padding: 0 14px; border-radius: 0 14px 14px 0; flex: 0 0 auto; display: flex; align-items: center; }
+button.coracao.ativa { color: var(--alerta); }
+.receita-topo { display: flex; align-items: flex-start; gap: 8px; }
+.receita-topo h1 { flex: 1; min-width: 0; }
+.receita-topo button.coracao { padding: 6px 8px; }
+.etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.selo.neutro { background: var(--fundo); color: var(--suave); border: 1px solid var(--linha); }
+.ingredientes { list-style: none; padding: 0; margin: 0; }
+.ingredientes li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid var(--linha); font-size: 0.92rem; }
+.ingredientes li:first-child { border-top: none; }
+.ingredientes li span:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--suave); }
+.ingredientes li span:last-child small { display: block; font-size: 0.78rem; }
+.preparo { white-space: pre-line; line-height: 1.5; margin: 0; }
 .aviso-caixa { color: var(--alerta); background: var(--alerta-claro); padding: 10px 12px; border-radius: 10px; }
 .saldo .linha button { flex: 1; }
 .dia-semana { padding: 12px 14px; }

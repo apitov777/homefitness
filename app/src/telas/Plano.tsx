@@ -8,7 +8,6 @@ import {
   type AlimentoResumo, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
 import Semana from './Semana'
-import Receitas from './Receitas'
 import Treinos from './Treinos'
 
 function AvisosCartao({ ctx, eu }: { ctx: Contexto; eu: Pessoa }) {
@@ -349,12 +348,11 @@ function Refeicoes({ ctx, sel }: { ctx: Contexto; sel: string | undefined }) {
   )
 }
 
-type Parte = 'semana' | 'refeicoes' | 'receitas' | 'treinos'
+type Parte = 'semana' | 'refeicoes' | 'treinos'
 
 const PARTES: { id: Parte; nome: string }[] = [
   { id: 'semana', nome: 'Semana' },
   { id: 'refeicoes', nome: 'Refeições' },
-  { id: 'receitas', nome: 'Receitas' },
   { id: 'treinos', nome: 'Treinos' },
 ]
 
@@ -372,16 +370,13 @@ export default function Plano({ ctx }: { ctx: Contexto }) {
           </button>
         ))}
       </div>
-      {parte !== 'receitas' && (
-        <div className="chips">
-          {ctx.pessoas.map((x) => (
-            <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
-          ))}
-        </div>
-      )}
+      <div className="chips">
+        {ctx.pessoas.map((x) => (
+          <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
+        ))}
+      </div>
       {parte === 'semana' && sel && <Semana ctx={ctx} sel={sel} onIrPara={setParte} />}
       {parte === 'refeicoes' && <Refeicoes ctx={ctx} sel={sel} />}
-      {parte === 'receitas' && <Receitas />}
       {parte === 'treinos' && sel && <Treinos ctx={ctx} sel={sel} />}
     </div>
   )

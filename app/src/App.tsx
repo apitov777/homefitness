@@ -9,7 +9,8 @@ import Cadastro from './telas/Cadastro'
 import TelaConvite from './telas/Convite'
 import Hoje from './telas/Hoje'
 import Plano from './telas/Plano'
-import Registrar from './telas/Registrar'
+import Registrar, { type ItemInicial } from './telas/Registrar'
+import Receitas from './telas/Receitas'
 import Exames from './telas/Exames'
 import Perfil from './telas/Perfil'
 
@@ -24,12 +25,13 @@ export interface Contexto {
   abrirCadastro: (pessoaId: string) => void
 }
 
-type Aba = 'hoje' | 'plano' | 'registrar' | 'exames' | 'perfil'
+type Aba = 'hoje' | 'plano' | 'receitas' | 'registrar' | 'exames' | 'perfil'
 
+// Registrar não fica na barra: abre pelo botão do Hoje e pelo "Registrar agora" de uma receita.
 const ABAS: { id: Aba; nome: string; icone: string }[] = [
   { id: 'hoje', nome: 'Hoje', icone: '◔' },
   { id: 'plano', nome: 'Plano', icone: '☷' },
-  { id: 'registrar', nome: 'Registrar', icone: '＋' },
+  { id: 'receitas', nome: 'Receitas', icone: '♨' },
   { id: 'exames', nome: 'Exames', icone: '⚗' },
   { id: 'perfil', nome: 'Perfil', icone: '☺' },
 ]
@@ -41,6 +43,7 @@ export default function App() {
   const [aba, setAba] = useState<Aba>('hoje')
   const [erro, setErro] = useState<string | null>(null)
   const [versaoHoje, setVersaoHoje] = useState(0)
+  const [registrarInicial, setRegistrarInicial] = useState<ItemInicial | null>(null)
   // Pessoa em cadastro guiado; abre sozinho no primeiro acesso enquanto faltarem dados.
   const [cadastro, setCadastro] = useState<string | null>(null)
   // Código de convite aberto pelo link ou digitado; mostra a tela de aceitar depois do login.
@@ -111,6 +114,11 @@ export default function App() {
     abrirCadastro: setCadastro,
   }
 
+  function abrirRegistrar(inicial?: ItemInicial) {
+    setRegistrarInicial(inicial ?? null)
+    setAba('registrar')
+  }
+
   const emCadastro = pessoas.find((p) => p.id === cadastro)
   if (emCadastro)
     return (
@@ -128,11 +136,12 @@ export default function App() {
   return (
     <div className="app">
       <main className="conteudo">
-        {aba === 'hoje' && <Hoje ctx={ctx} versao={versaoHoje} onRegistrar={() => setAba('registrar')} />}
+        {aba === 'hoje' && <Hoje ctx={ctx} versao={versaoHoje} onRegistrar={() => abrirRegistrar()} />}
         {aba === 'registrar' && (
-          <Registrar ctx={ctx} onSalvo={() => { setVersaoHoje((v) => v + 1); setAba('hoje') }} />
+          <Registrar key={registrarInicial?.alimento.id ?? ''} ctx={ctx} inicial={registrarInicial} onSalvo={() => { setVersaoHoje((v) => v + 1); setAba('hoje') }} />
         )}
         {aba === 'plano' && <Plano ctx={ctx} />}
+        {aba === 'receitas' && <Receitas ctx={ctx} onRegistrar={abrirRegistrar} />}
         {aba === 'exames' && <Exames ctx={ctx} />}
         {aba === 'perfil' && <Perfil ctx={ctx} />}
       </main>
