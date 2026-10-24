@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { Composicao, PlanoRefeicao } from './dados'
 import {
   diasEntre, ehFavorita, formatarPeso, gramasParaFechar, inicioSemana, kcalTreino, mesDe, montarCompras, montarSemana,
-  receitasDoPlano, refeicoesDoDia, situacaoDia, type DiaPlano, type MetaDia, type Receita,
+  receitasDoPlano, receitasParaRefeicao, refeicoesDoDia, situacaoDia, type DiaPlano, type MetaDia, type Receita,
 } from './semana'
 
 // Só as contas; nada aqui fala com o banco.
@@ -95,6 +95,10 @@ describe('catálogo e favoritas', () => {
     expect(receitasDoPlano([r1, catalogo, outra], favs, ['d']).map((r) => r.id)).toEqual(['r1', 'c1'])
     expect(receitasDoPlano([r1, catalogo, outra], favs, ['m']).map((r) => r.id)).toEqual(['r1'])
     expect(receitasDoPlano([r1, catalogo, outra], favs, ['d', 'm']).map((r) => r.id)).toEqual(['r1', 'c1'])
+    // Para uma refeição: as que servem para o tipo vêm primeiro; o resto do catálogo continua de fora.
+    expect(receitasParaRefeicao([r1, catalogo, outra], favs, ['d'], 'lanche_tarde').map((r) => r.id)).toEqual(['c1', 'r1'])
+    expect(receitasParaRefeicao([r1, catalogo, outra], favs, ['d'], 'cafe').map((r) => r.id)).toEqual(['r1', 'c1'])
+    expect(receitasParaRefeicao([r1, catalogo, outra], favs, ['m'], 'lanche_tarde').map((r) => r.id)).toEqual(['r1'])
   })
 })
 

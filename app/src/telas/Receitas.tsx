@@ -342,7 +342,8 @@ export default function Receitas({ ctx, onRegistrar }: { ctx: Contexto; onRegist
       </div>
     )
 
-  const nFav = sel ? favs.filter((f) => f.pessoa_id === sel).length : 0
+  const minhasDaSemana = sel && receitas ? receitas.filter((x) => x.ativa && ehFavorita(favs, sel, x.id)) : []
+  const nFav = minhasDaSemana.length
   return (
     <div className="tela">
       <div className="instalar-topo">
@@ -350,8 +351,8 @@ export default function Receitas({ ctx, onRegistrar }: { ctx: Contexto; onRegist
         <button className="link" onClick={() => onRegistrar()}>Registrar à mão</button>
       </div>
       <p className="dica">
-        {nFav} {nFav === 1 ? 'favorita' : 'favoritas'} de {pessoa?.nome ?? 'você'} · {receitas?.length ?? '…'} receitas.
-        Toque no ♡: as favoritas entram na Semana do plano.
+        Toque no ♡ para guardar as receitas que vai fazer na semana: elas ficam aqui em cima e aparecem prontas em Registrar,
+        no Plano e na Semana. {receitas?.length ?? '…'} receitas no catálogo.
       </p>
       {ctx.pessoas.length > 1 && (
         <div className="chips">
@@ -360,6 +361,22 @@ export default function Receitas({ ctx, onRegistrar }: { ctx: Contexto; onRegist
           ))}
         </div>
       )}
+      <section className="cartao tira-semana" aria-label="Favoritas da semana">
+        <div className="fav-topo">
+          <h3>Favoritas da semana de {pessoa?.nome ?? 'você'}</h3>
+          <small>{nFav ? `${nFav} ${nFav === 1 ? 'receita' : 'receitas'} · entram em Registrar, no Plano e na Semana` : 'Nenhuma ainda. Toque no ♡ das receitas que vai fazer.'}</small>
+        </div>
+        {!!minhasDaSemana.length && (
+          <div className="tira">
+            {minhasDaSemana.map((x) => (
+              <button key={x.id} type="button" className="tira-item" onClick={() => setAberta(x.id)}>
+                <Foto src={fotoDe(x)} className="tira-foto" />
+                <span>{x.nome}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
       <input className="busca" type="search" placeholder="Buscar receita ou ingrediente" value={termo} onChange={(e) => setTermo(e.target.value)} />
       <div className="chips">
         {FILTROS.map((f) => (
