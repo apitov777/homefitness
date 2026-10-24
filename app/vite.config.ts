@@ -15,8 +15,13 @@ export default defineConfig({
         description: 'Refeições, metas e exames da família',
         lang: 'pt-BR',
         display: 'standalone',
+        id: '.',
         start_url: '.',
         scope: '.',
+        orientation: 'portrait',
+        categories: ['health', 'food', 'lifestyle'],
+        // Android: link de convite aberto com o app instalado cai no app que já está aberto.
+        launch_handler: { client_mode: ['navigate-existing', 'auto'] },
         background_color: '#f6f5f1',
         theme_color: '#2f6b4f',
         icons: [

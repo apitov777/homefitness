@@ -235,3 +235,67 @@ button.link.perigo { color: var(--alerta); }
 .botoes-marcar button.fiz { background: var(--verde); border-color: var(--verde); color: #fff; font-weight: 600; }
 .ajuste { margin-top: 6px; }
 .ajuste .primario { margin-top: 0; }
+
+/* Família */
+.avatar { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; display: inline-grid; place-items: center; color: #fff; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.02em; }
+.avatar.grande { width: 72px; height: 72px; font-size: 1.6rem; }
+.avatares { display: inline-flex; }
+.avatares .avatar { width: 34px; height: 34px; font-size: 0.8rem; border: 2px solid var(--cartao); }
+.avatares .avatar + .avatar { margin-left: -10px; }
+.familia-topo { text-align: center; margin: 4px 0 14px; }
+.familia-topo .avatares .avatar { width: 52px; height: 52px; font-size: 1.1rem; border-width: 3px; border-color: var(--fundo); }
+.familia-topo h1 { margin: 10px 0 2px; }
+.familia-topo form { margin-top: 10px; }
+button.voltar { padding: 0 0 8px; font-size: 1rem; }
+.linha.alinhada { align-items: center; }
+.linha.alinhada input, .linha.alinhada select { flex: 1; min-width: 0; }
+.membros { list-style: none; padding: 0; margin: 0 0 4px; }
+.membros li { border-top: 1px solid var(--linha); }
+.membros li:first-child { border-top: none; }
+.membro, .entrada-familia { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; border: none; background: none; padding: 10px 0; border-radius: 0; color: var(--texto); }
+.entrada-familia { background: var(--cartao); border-radius: 14px; padding: 12px 14px; }
+.membro-texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.membro-texto small { color: var(--suave); font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.membro-papel { color: var(--suave); font-size: 0.85rem; }
+.seta { color: var(--suave); font-size: 1.3rem; }
+.convite-enviado { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px 0; }
+.convite-enviado .acoes { gap: 10px; font-size: 0.88rem; }
+.convite-enviado .acoes button:not(.link) { padding: 6px 10px; }
+.compartilha { list-style: none; padding: 0; margin: 0; }
+.compartilha li { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-top: 1px solid var(--linha); }
+.compartilha li:first-child { border-top: none; }
+.compartilha span { color: var(--suave); font-size: 0.88rem; }
+details summary { color: var(--verde); padding: 8px 0 0; cursor: pointer; }
+.destaque-convite { border: 1px solid var(--verde); background: var(--verde-claro); }
+.recebido + .recebido { border-top: 1px solid var(--linha); margin-top: 8px; }
+.recebido .acoes button { padding: 9px 18px; }
+.recebido .acoes button.fiz { background: var(--verde); border-color: var(--verde); color: #fff; font-weight: 600; }
+
+.folha-fundo { position: fixed; inset: 0; z-index: 20; background: rgba(0, 0, 0, 0.35); display: flex; align-items: flex-end; justify-content: center; }
+.folha { width: 100%; max-width: 560px; max-height: 92dvh; overflow-y: auto; background: var(--cartao); border-radius: 18px 18px 0 0; padding: 14px 16px calc(20px + env(safe-area-inset-bottom)); box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.18); }
+.folha-topo { display: flex; justify-content: space-between; align-items: center; position: sticky; top: -14px; background: var(--cartao); padding: 4px 0 6px; }
+.folha-topo h2 { margin: 0; }
+.folha-topo .link { font-weight: 600; }
+.detalhe-topo { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; margin: 6px 0 12px; }
+.detalhe-topo strong { font-size: 1.15rem; margin-top: 4px; }
+.lista-ajustes { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--linha); }
+.lista-ajustes li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--linha); }
+.lista-ajustes li small { color: var(--suave); text-align: right; }
+.lista-ajustes .check { margin: 0; flex: 0 1 auto; font-size: 0.9rem; }
+.lista-ajustes select { width: auto; }
+.acoes-coluna { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.convite-pronto .primario { margin-bottom: 14px; }
+.codigo-convite { font-size: 1.7rem; font-weight: 700; letter-spacing: 0.08em; text-align: center; font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.centro { text-align: center; margin-top: 2px; }
+.qr { width: 200px; margin: 6px auto 0; background: #fff; border-radius: 12px; padding: 6px; }
+.qr svg { display: block; width: 100%; height: auto; }
+.convite-pronto .link { display: block; margin: 0 auto; }
+
+.convite { display: flex; flex-direction: column; justify-content: center; min-height: 100dvh; }
+.convite-icone { width: 72px; height: 72px; border-radius: 20px; background: var(--verde); color: #fff; display: grid; place-items: center; font-size: 2.2rem; margin-bottom: 12px; }
+.convite .compartilha { margin: 6px 0 10px; }
+
+.instalar-topo { display: flex; align-items: center; justify-content: space-between; }
+.instalar-topo h2 { margin: 0; }
+.passos { margin: 8px 0 0; padding-left: 20px; color: var(--suave); font-size: 0.9rem; }
+.passos li { margin: 4px 0; }
