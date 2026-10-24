@@ -1,0 +1,42 @@
+name: Baixar a TBCA
+
+# A TBCA não abre a partir das sessões do Claude; a coleta roda aqui e guarda
+# data/tbca/tbca.jsonl no próprio branch. Retomável: rodar de novo só baixa o que faltou.
+on:
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: "Quantos alimentos baixar nesta rodada (0 = todos)"
+        default: "0"
+  push:
+    branches: [feat/alimentos-dieta]
+    paths: ['scripts/tbca/coletar.py', '.github/workflows/tbca.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tbca-${{ github.ref }}
+
+jobs:
+  tbca:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests==2.32.3 beautifulsoup4==4.12.3
+      - run: python scripts/tbca/coletar.py --limite=${{ github.event.inputs.limite || '0' }}
+        timeout-minutes: 280
+      - name: Guardar no branch
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/tbca
+          git diff --cached --quiet && echo "nada mudou" && exit 0
+          git commit -m "TBCA: composição e medidas caseiras baixadas do site"
+          git pull --rebase
+          git push
