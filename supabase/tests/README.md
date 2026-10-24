@@ -14,4 +14,5 @@ psql -d hf -f supabase/tests/semana.sql  # receitas, cardápio do dia, treinos e
 psql -d hf -f supabase/tests/catalogo.sql # catálogo de receitas (só leitura), favoritas por pessoa e cópia adaptada: NOTICE "ok" e "esperado"
 psql -d hf -f supabase/tests/dietas.sql  # dietas por dia da semana, opções A/B/C e marcar com a opção comida: NOTICE "ok" e "esperado"
 psql -d hf -f supabase/tests/hoje.sql    # "comeu outra coisa" (trocada), "comeu algo a mais" e o resumo da noite: NOTICE "ok" e "esperado"
+psql -d hf -f supabase/tests/compras.sql # compra da semana: "já peguei" e opção escolhida, iguais para a família e fechados para quem é de fora: NOTICE "ok" e "esperado"
 ```

@@ -152,7 +152,7 @@ function NovoExame({ pessoaId, marcadores, onSalvo }: { pessoaId: string; marcad
   )
 }
 
-export default function Exames({ ctx }: { ctx: Contexto }) {
+export default function Exames({ ctx, onVoltar }: { ctx: Contexto; onVoltar?: () => void }) {
   const meuId = ctx.session.user.id
   const visiveis = ctx.pessoas.filter((p) => p.user_id === meuId || p.user_id === null || p.compartilha_exames)
   const [sel, setSel] = useState(ctx.eu?.id ?? visiveis[0]?.id)
@@ -201,6 +201,7 @@ export default function Exames({ ctx }: { ctx: Contexto }) {
 
   return (
     <div className="tela">
+      {onVoltar && <button className="link voltar" onClick={onVoltar}>‹ Perfil</button>}
       <h1>Exames</h1>
       <div className="chips">
         {visiveis.map((p) => (
