@@ -6,9 +6,6 @@ on:
       refazer:
         description: "Slugs para refazer, separados por vírgula (ou 'todos')"
         default: ""
-  push:
-    branches-ignore: [main]
-    paths: ['scripts/fotos/receitas.json', 'scripts/fotos/baixar.mjs', '.github/workflows/fotos.yml']
 
 permissions:
   contents: write
