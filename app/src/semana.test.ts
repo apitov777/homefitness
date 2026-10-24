@@ -153,10 +153,10 @@ describe('montarCompras', () => {
     ], [r1, r2], (id) => [arroz, frango, feijao, ovo].find((a) => a.id === id)?.categoria ?? null)
     expect(c.panelas.map((p) => [p.receita.id, p.gramas, p.vezes])).toEqual([['r1', 750, 1.5]])
     expect(c.categorias).toEqual([
-      ['Carnes e derivados', [{ id: 'frango', nome: frango.nome, gramas: 300 }]],
-      ['Cereais e derivados', [{ id: 'arroz', nome: arroz.nome, gramas: 450 + 150 }]],
-      ['Leguminosas e derivados', [{ id: 'feijao', nome: feijao.nome, gramas: 150 }]],
-      ['Ovos e derivados', [{ id: 'ovo', nome: ovo.nome, gramas: 100 }]],
+      ['Carnes e derivados', [{ id: 'frango', nome: frango.nome, gramas: 300, porPessoa: { d: 180, m: 120 } }]],
+      ['Cereais e derivados', [{ id: 'arroz', nome: arroz.nome, gramas: 450 + 150, porPessoa: { d: 270 + 150, m: 180 } }]],
+      ['Leguminosas e derivados', [{ id: 'feijao', nome: feijao.nome, gramas: 150, porPessoa: { d: 90, m: 60 } }]],
+      ['Ovos e derivados', [{ id: 'ovo', nome: ovo.nome, gramas: 100, porPessoa: { d: 100 } }]],
     ])
   })
   it('item avulso (sem ingredientes) vai direto para a lista', () => {
@@ -167,7 +167,7 @@ describe('montarCompras', () => {
       { data: '2026-10-27', pessoaId: 'd', itens: [{ id: '2', quantidade_g: 30, ordem: 0, alimento: chocolate }] },
     ], [r1, avulso], () => null)
     expect(c.panelas).toEqual([])
-    expect(c.categorias).toEqual([['Produtos açucarados', [{ id: 'choc', nome: chocolate.nome, gramas: 60 }]]])
+    expect(c.categorias).toEqual([['Produtos açucarados', [{ id: 'choc', nome: chocolate.nome, gramas: 60, porPessoa: { d: 60 } }]]])
   })
   it('formata o peso', () => {
     expect(formatarPeso(853)).toBe('850 g')

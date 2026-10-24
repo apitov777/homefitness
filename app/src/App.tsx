@@ -11,7 +11,7 @@ import Hoje from './telas/Hoje'
 import Plano from './telas/Plano'
 import Registrar, { type ItemInicial } from './telas/Registrar'
 import Receitas from './telas/Receitas'
-import Exames from './telas/Exames'
+import Compras from './telas/Compras'
 import Perfil from './telas/Perfil'
 
 export interface Contexto {
@@ -25,14 +25,15 @@ export interface Contexto {
   abrirCadastro: (pessoaId: string) => void
 }
 
-type Aba = 'hoje' | 'plano' | 'receitas' | 'registrar' | 'exames' | 'perfil'
+type Aba = 'hoje' | 'plano' | 'receitas' | 'registrar' | 'compras' | 'perfil'
 
 // Registrar não fica na barra: abre pelo botão do Hoje e pelo "Registrar agora" de uma receita.
+// Exames ficam no Perfil.
 const ABAS: { id: Aba; nome: string; icone: string }[] = [
   { id: 'hoje', nome: 'Hoje', icone: '◔' },
   { id: 'plano', nome: 'Plano', icone: '☷' },
   { id: 'receitas', nome: 'Receitas', icone: '♨' },
-  { id: 'exames', nome: 'Exames', icone: '⚗' },
+  { id: 'compras', nome: 'Compras', icone: '☑' },
   { id: 'perfil', nome: 'Perfil', icone: '☺' },
 ]
 
@@ -142,7 +143,7 @@ export default function App() {
         )}
         {aba === 'plano' && <Plano ctx={ctx} />}
         {aba === 'receitas' && <Receitas ctx={ctx} onRegistrar={abrirRegistrar} />}
-        {aba === 'exames' && <Exames ctx={ctx} />}
+        {aba === 'compras' && <Compras ctx={ctx} />}
         {aba === 'perfil' && <Perfil ctx={ctx} />}
       </main>
       <nav className="abas">

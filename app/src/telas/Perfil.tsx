@@ -9,6 +9,7 @@ import {
   carregarAlimentos, carregarMetasVigentes, erroTexto, esquecerComposicao, fmt, hojeISO, salvarMeta,
   type Meta, type Pessoa,
 } from '../dados'
+import Exames from './Exames'
 import Familia, { Avatar } from './Familia'
 
 function DadosPessoa({ ctx, p }: { ctx: Contexto; p: Pessoa }) {
@@ -270,9 +271,11 @@ function AlimentoRotulo({ ctx }: { ctx: Contexto }) {
 export default function Perfil({ ctx }: { ctx: Contexto }) {
   const [sel, setSel] = useState(ctx.eu?.id ?? ctx.pessoas[0]?.id)
   const [verFamilia, setVerFamilia] = useState(false)
+  const [verExames, setVerExames] = useState(false)
   const p = ctx.pessoas.find((x) => x.id === sel)
 
   if (verFamilia) return <Familia ctx={ctx} onVoltar={() => setVerFamilia(false)} />
+  if (verExames) return <Exames ctx={ctx} onVoltar={() => setVerExames(false)} />
 
   return (
     <div className="tela">
@@ -284,6 +287,14 @@ export default function Perfil({ ctx }: { ctx: Contexto }) {
         <span className="membro-texto">
           <strong>Família</strong>
           <small>{ctx.pessoas.map((x) => x.nome).join(', ')} · convites e papéis</small>
+        </span>
+        <span className="seta" aria-hidden>›</span>
+      </button>
+      <button className="cartao entrada-familia" onClick={() => setVerExames(true)}>
+        <span className="icone-entrada" aria-hidden>⚗</span>
+        <span className="membro-texto">
+          <strong>Exames</strong>
+          <small>Resultados de laboratório e a relação com a dieta</small>
         </span>
         <span className="seta" aria-hidden>›</span>
       </button>
