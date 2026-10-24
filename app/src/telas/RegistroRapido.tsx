@@ -8,6 +8,7 @@ import { opcoesDe } from '../dietas'
 import { A_MAIS, tipoPelaHora } from '../hoje'
 import { porcaoDe, type Receita } from '../semana'
 import FavoritasSemana from './FavoritasSemana'
+import Medidas from './Medidas'
 
 interface Escolhido { chave: number; alimento: { id: string; nome: string }; gramas: string }
 
@@ -65,9 +66,9 @@ export function EscolherComida({ pessoa, tipo, acao, ocupado, onConfirmar, onCan
         <ul className="resultados">
           {resultados.map((a) => (
             <li key={a.id}>
-              <button type="button" onClick={() => incluir(a, 100)}>
+              <button type="button" onClick={() => incluir(a, a.medidas_caseiras?.[0]?.g ?? 100)}>
                 {a.nome}
-                <small>{a.familia_id ? `${a.fonte} · da família` : a.categoria}</small>
+                <small>{a.familia_id ? `${a.fonte} · da família` : a.categoria}{a.medidas_caseiras?.[0] ? ` · ${a.medidas_caseiras[0].nome.toLowerCase()} = ${fmt(a.medidas_caseiras[0].g)} g` : ''}</small>
               </button>
             </li>
           ))}
@@ -75,7 +76,8 @@ export function EscolherComida({ pessoa, tipo, acao, ocupado, onConfirmar, onCan
         </ul>
       )}
       {itens.map((it) => (
-        <label key={it.chave} className="item-plano">
+        <div key={it.chave}>
+        <label className="item-plano">
           <span className="nome">{it.alimento.nome}</span>
           <span className="com-unidade">
             <input inputMode="decimal" aria-label={`Gramas de ${it.alimento.nome}`} value={it.gramas}
@@ -85,6 +87,12 @@ export function EscolherComida({ pessoa, tipo, acao, ocupado, onConfirmar, onCan
           <small>{fmt(kcalDe(it))} kcal</small>
           <button type="button" className="apagar" aria-label={`Tirar ${it.alimento.nome}`} onClick={() => setItens((xs) => xs.filter((x) => x.chave !== it.chave))}>×</button>
         </label>
+        <Medidas
+          medidas={alimentos.find((a) => a.id === it.alimento.id)?.medidas_caseiras}
+          gramas={lerNumero(it.gramas)}
+          onEscolher={(g) => setItens((xs) => xs.map((x) => (x.chave === it.chave ? { ...x, gramas: String(g) } : x)))}
+        />
+        </div>
       ))}
       {itens.length > 0 && <p className="total"><span>Total</span><strong>{fmt(total)} kcal</strong></p>}
       {!itens.length && <p className="dica">Toque numa favorita ou busque o alimento.</p>}

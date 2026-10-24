@@ -211,7 +211,28 @@ export interface AlimentoResumo {
   categoria: string | null
   fonte: string
   familia_id: string | null
+  /** Da lista de alimentos de dieta (TBCA, com nome simples e medidas caseiras). */
+  lista_dieta: boolean
+  /** Medidas caseiras em gramas: [{ nome: "Colher de sopa cheia", g: 25 }]. */
+  medidas_caseiras: MedidaCaseira[]
   busca: string
+}
+
+export interface MedidaCaseira { nome: string; g: number }
+
+/** A medida mais perto de uma quantidade, para mostrar "≈ 2 colheres de sopa" ao lado das gramas. */
+export function emMedidas(medidas: MedidaCaseira[] | undefined, gramas: number): string | null {
+  if (!medidas?.length || !(gramas > 0)) return null
+  let melhor: { m: MedidaCaseira; n: number; erro: number } | null = null
+  for (const m of medidas) {
+    const n = Math.round((gramas / m.g) * 2) / 2 // de meia em meia
+    if (n < 0.5 || n > 10) continue
+    const erro = Math.abs(n * m.g - gramas) / gramas
+    if (!melhor || erro < melhor.erro - 0.01 || (Math.abs(erro - melhor.erro) <= 0.01 && n < melhor.n)) melhor = { m, n, erro }
+  }
+  if (!melhor || melhor.erro > 0.15) return null
+  const n = melhor.n.toLocaleString('pt-BR')
+  return `${melhor.erro < 0.02 ? '' : '≈ '}${n} × ${melhor.m.nome.toLowerCase()}`
 }
 
 /** Nutrientes por 100 g, por código (energia, proteina…). */
@@ -286,7 +307,7 @@ export async function carregarAlimentos(forcar = false): Promise<AlimentoResumo[
   for (let de = 0; ; de += 1000) {
     const { data, error } = await supabase
       .from('alimento')
-      .select('id, nome, categoria, fonte, familia_id')
+      .select('id, nome, categoria, fonte, familia_id, lista_dieta, medidas_caseiras')
       .eq('ativo', true)
       .order('nome')
       .range(de, de + 999)
@@ -304,8 +325,9 @@ export function buscarAlimentos(lista: AlimentoResumo[], termo: string, limite =
   return lista
     .filter((a) => partes.every((p) => a.busca.includes(p)))
     .sort((a, b) => {
-      // os da família primeiro, depois os que começam com o termo
+      // os da família primeiro, depois a lista de alimentos de dieta, depois os que começam com o termo
       if (!!a.familia_id !== !!b.familia_id) return a.familia_id ? -1 : 1
+      if (a.lista_dieta !== b.lista_dieta) return a.lista_dieta ? -1 : 1
       const ia = a.busca.startsWith(partes[0]) ? 0 : 1
       const ib = b.busca.startsWith(partes[0]) ? 0 : 1
       return ia - ib || a.nome.length - b.nome.length

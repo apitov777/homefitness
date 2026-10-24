@@ -1,0 +1,491 @@
+# Lista de alimentos de dieta: grupo|nome no app|regex da descrição na TBCA (o gerar_sql.py escolhe a descrição mais curta
+# que casa, evitando as de marca). Para trocar o alimento de uma linha, ajuste a regex e rode o gerar_sql.py de novo.
+# Cereais e pães
+Cereais e pães|Arroz branco cozido|^Arroz, polido, cozido, c/ óleo, cebola e alho, c/ sal
+Cereais e pães|Arroz branco cozido sem óleo|^Arroz, polido, cozido, s/ sal, s/ óleo
+Cereais e pães|Arroz integral cozido|^Arroz, integral, cozido, c/ óleo, cebola e alho, c/ sal
+Cereais e pães|Arroz integral cozido sem óleo|^Arroz, integral, cozido, s/ sal, s/ óleo
+Cereais e pães|Arroz cru|^Arroz, polido, cru
+Cereais e pães|Macarrão cozido|^Macarrão, trigo, (s/ ovos, )?cozido, drenado, s/ óleo, c/ sal
+Cereais e pães|Macarrão integral cozido|^Macarrão, trigo, integral, cozido, drenado, s/ óleo, c/ sal
+Cereais e pães|Macarrão cru|^Macarrão, trigo, s/ ovos, seco, cru
+Cereais e pães|Macarrão com molho de tomate|^Macarrão, trigo, c/ molho de tomate
+Cereais e pães|Macarrão à bolonhesa|^Macarrão, c/ molho bolonhesa, c/ sal
+Cereais e pães|Nhoque de batata|^Nhoque
+Cereais e pães|Lasanha à bolonhesa|^Lasanha.*bolonhesa
+Cereais e pães|Aveia em flocos|^Aveia, flocos, finos, Avena sativa,Float|^Aveia, crua \(média
+Cereais e pães|Farelo de aveia|^Aveia,\s+farelo, cru|^Aveia, fibras
+Cereais e pães|Farinha de aveia|^Aveia, farinha, crua
+Cereais e pães|Granola caseira|^Granola, caseira, simples
+Cereais e pães|Pão francês|^Pão, (trigo, )?francês,?$|^Pão, (trigo, )?francês \(média|^Pão, francês, trigo
+Cereais e pães|Pão de forma branco|^Pão, trigo, branco, forma, tradicional
+Cereais e pães|Pão de forma integral|^Pão, trigo, integral, forma \(média
+Cereais e pães|Pão integral|^Pão, trigo, integral,$
+Cereais e pães|Pão sírio|^Pão, sírio, trigo
+Cereais e pães|Pão de hambúrguer|^Pão, trigo, p/ hambúrguer
+Cereais e pães|Pão de leite|^Pão, trigo, leite, industrializado
+Cereais e pães|Bisnaguinha|^Pão, trigo, bisnaguinha
+Cereais e pães|Pão de centeio|^Pão, trigo/centeio, preto
+Cereais e pães|Pão de queijo assado|^Pão, de queijo, industrializado, assado
+Cereais e pães|Torrada|^Torrada, trigo, tradicional
+Cereais e pães|Torrada integral|^Torrada, trigo, integral, Bauducco
+Cereais e pães|Biscoito cream cracker|^Biscoito, salgado, cream cracker
+Cereais e pães|Biscoito de água e sal|^Biscoito, salgado, água e sal
+Cereais e pães|Biscoito de polvilho|^Biscoito, polvilho
+Cereais e pães|Biscoito maisena|^Biscoito, doce, maisena|^Biscoito, maisena
+Cereais e pães|Biscoito recheado de chocolate|^Biscoito, doce, recheado, recheio sabor chocolate
+Cereais e pães|Biscoito de arroz|^Biscoito, arroz|^Bolacha, arroz|^Arroz, biscoito
+Cereais e pães|Tapioca (só a massa)|^Tapioca, sem manteiga, sem recheio
+Cereais e pães|Goma de tapioca (crua)|^Mandioca \(aipim, macaxeira\), fécula|^Goma, tapioca|^Tapioca, goma
+Cereais e pães|Tapioca com queijo|^Tapioca, c/ queijo (coalho|muçarela),$|^Tapioca, c/ queijo
+Cereais e pães|Cuscuz de milho cozido|^Cuscuz de milho, cozido, c/ sal
+Cereais e pães|Cuscuz marroquino cozido|^Cuscuz, semolina, marroquino, cozido
+Cereais e pães|Quinoa cozida|^Quinoa, grão, cozida
+Cereais e pães|Quinoa crua|^Quinoa, grão, crua
+Cereais e pães|Polenta cozida|^Milho, polenta/fubá, cozido, c/ sal
+Cereais e pães|Fubá|^Milho, fubá, cru \(média
+Cereais e pães|Milho verde assado|^Milho, verde, grão, assado, c/ sal
+Cereais e pães|Milho verde cozido no vapor|^Milho, verde, grão, cozido no vapor
+Cereais e pães|Pipoca com óleo|^Milho, pipoca, s/ sal, preparado com óleo|^Milho, pipoca, c/ (óleo|sal)
+Cereais e pães|Pipoca de micro-ondas|^Milho, pipoca, micro-ondas, light, preparado
+Cereais e pães|Farinha de mandioca|^Mandioca, farinha, crua
+Cereais e pães|Farofa pronta|^Mandioca, farofa, temperada
+Cereais e pães|Farinha de trigo|^Trigo, farinha, (branca|refinada|c/ fermento|tipo 1)|^Farinha, trigo
+Cereais e pães|Farinha de trigo integral|^Trigo, farinha, integral|^Farinha, trigo, integral
+Cereais e pães|Cereal matinal de milho|^Cereal matinal, milho
+Cereais e pães|Sucrilhos (cereal açucarado)|^Cereal, matinal, milho, açucarado|^Milho, flocos, açucarado|Sucrilhos
+Cereais e pães|Tortilha de trigo (wrap)|^Tortilha, c/ farinha de trigo
+Cereais e pães|Panqueca de banana e aveia|^Panqueca, banana e aveia
+Cereais e pães|Pamonha|^Pamonha, milho verde,? (doce|salgada|c/ açúcar)|^Pamonha
+Cereais e pães|Bolo simples|^Bolo, (simples|comum|massa simples|de massa pronta)|^Bolo, trigo, simples
+Cereais e pães|Bolo de chocolate|^Bolo, chocolate
+Cereais e pães|Bolo de cenoura|^Bolo, cenoura
+Cereais e pães|Bolo de fubá|^Bolo, (de )?fubá|^Bolo, milho
+
+# Tubérculos e raízes
+Tubérculos|Batata inglesa cozida|^Batata, inglesa, s/ casca, cozida.*c/ sal|^Batata, inglesa, cozida
+Tubérculos|Batata inglesa assada|^Batata, inglesa, (s/ casca, )?assada
+Tubérculos|Batata frita|^Batata, inglesa, frita, c/ sal|^Batata, inglesa, frita
+Tubérculos|Purê de batata|^Purê, batata, inglesa, c/ sal
+Tubérculos|Batata doce cozida|^Batata, doce, s/ casca, cozida.*c/ sal|^Batata, doce, cozida
+Tubérculos|Batata doce assada|^Batata, doce, s/ casca, assada, s/ óleo|^Batata, doce, s/ casca, assada
+Tubérculos|Batata doce crua|^Batata, doce, s/ casca, crua
+Tubérculos|Batata inglesa crua|^Batata, inglesa, s/ casca, crua
+Tubérculos|Mandioca cozida|^Mandioca \(aipim, macaxeira\), s/ casca, cozida, drenada, s/ óleo, c/ sal
+Tubérculos|Mandioca frita|^Mandioca \(aipim, macaxeira\), (s/ casca, )?frita|^Mandioca, frita
+Tubérculos|Inhame cozido|^Inhame, s/ casca, cozido|^Inhame, cozido
+Tubérculos|Cará cozido|^Cará, cozido, drenada, s/ óleo, c/ sal
+Tubérculos|Mandioquinha cozida|^Batata, baroa \(mandioquinha, batata salsa\), s/ casca, cozida
+Tubérculos|Abóbora cozida|^Abóbora, cabotiá, cozida|^Abóbora, (japonesa|cabotiã|cabotian).*cozida|^Abóbora.*cozida
+
+# Leguminosas
+Leguminosas|Feijão carioca cozido|^Feijão, carioca, cozido \(50% grão e 50% caldo\), c/ óleo, cebola e alho, c/ sal
+Leguminosas|Feijão carioca cozido sem óleo|^Feijão, carioca, cozido \(50% grão e 50% caldo\), s/ óleo, s/ sal
+Leguminosas|Feijão preto cozido|^Feijão, preto, cozido \(50% grão e 50% caldo\), c/ óleo e cebola e alho, c/ sal
+Leguminosas|Feijão preto cozido sem óleo|^Feijão, preto, cozido \(50% grão e 50% caldo\), s/ óleo, s/ sal
+Leguminosas|Feijão branco cozido|^Feijão, branco, cozido
+Leguminosas|Feijão fradinho cozido|^Feijão, fradinho, cozido|^Feijão, corda.*cozido
+Leguminosas|Feijoada|^Feijoada, c/ sal
+Leguminosas|Tutu de feijão|^Tutu de feijão
+Leguminosas|Lentilha cozida|^Lentilha, cozida, drenada, c/ óleo, cebola e alho, c/ sal
+Leguminosas|Lentilha cozida sem óleo|^Lentilha, cozida, drenada, s/ óleo, s/ sal
+Leguminosas|Grão-de-bico cozido|^Grão de bico, cozido, drenado, s/ óleo, s/ sal
+Leguminosas|Grão-de-bico em conserva|^Grão-de-bico, conserva
+Leguminosas|Ervilha cozida|^Ervilha, grão, fresca, cozida, drenada, s/ óleo, c/ sal
+Leguminosas|Ervilha em conserva|^Ervilha, enlatada, drenada, Pisum sativum L.,$
+Leguminosas|Soja cozida|^Soja, grão, cozid
+Leguminosas|Proteína de soja (PTS) crua|^Soja, proteína, texturizada, Glycine max L. Merril,$
+Leguminosas|Proteína de soja (PTS) hidratada refogada|^Soja, proteína, texturizada, (hidratada|refogada|cozida)
+Leguminosas|Tofu|^Soja, tofu
+Leguminosas|Edamame|^Soja, (verde|edamame)|^Edamame
+Leguminosas|Amendoim torrado|^Amendoim, torrado, c/ sal
+Leguminosas|Pasta de amendoim|^Amendoim, pasta|^Pasta de amendoim|^Manteiga, amendoim|^Amendoim, manteiga
+
+# Carnes bovinas e suínas
+Carnes|Carne moída refogada|^Carne, boi, acém, moída, refogada \(c/ óleo, cebola e alho\), s/ sal|^Carne, boi, moída, refogada
+Carnes|Carne moída crua|^Carne, boi, moída, s/ gordura, crua
+Carnes|Patinho grelhado|^Carne, boi, patinho, s/ gordura, grelhada, s/ óleo, s/ sal
+Carnes|Patinho cru|^Carne, boi, patinho, crua
+Carnes|Alcatra grelhada|^Carne, boi, miolo de alcatra, grelhada/assada, s/ óleo, c/ sal
+Carnes|Alcatra crua|^Carne, boi, (miolo de )?alcatra, crua
+Carnes|Contra-filé grelhado|^Carne, boi, contra-filé, grelhado/frito, s/ sal
+Carnes|Contra-filé cru|^Carne, boi, contra-filé, (s/ gordura, )?cru
+Carnes|Filé mignon grelhado|^Carne, boi, filé mignon, (s/ gordura, )?grelhad
+Carnes|Maminha grelhada|^Carne, boi, maminha, grelhada, s/ óleo, s/ sal
+Carnes|Picanha grelhada|^Carne, bovina, picanha, c/ gordura, grelhada, s/ óleo, c/ sal
+Carnes|Picanha sem gordura grelhada|^Carne, bovina, picanha, s/ gordura, grelhada, s/ óleo, c/ sal
+Carnes|Fraldinha grelhada|^Carne, bovina, fraldinha, c/ gordura, grelhada/assada, s/ óleo
+Carnes|Coxão mole cozido|^Carne, boi, coxão mole, (s/ gordura, )?cozid
+Carnes|Coxão duro cozido|^Carne, bovina, coxão duro \(chã de fora\), s/ gordura, cozida, s/ óleo
+Carnes|Músculo cozido|^Carne, boi, músculo, (s/ gordura, )?cozid|^Carne, bovina, músculo, s/ gordura, refogada \(c/ óleo, cebola e alho\), c/ sal
+Carnes|Acém cozido|^Carne, boi, acém, (s/ gordura, )?cozid
+Carnes|Cupim assado|^Carne, boi, cupim, assad
+Carnes|Costela bovina assada|^Carne, boi, costela, assad
+Carnes|Bife acebolado|^Carne, bovina, alcatra, acebolada
+Carnes|Bife à milanesa|^Carne, boi, alcatra, à milanesa .*c/ sal
+Carnes|Fígado bovino grelhado|^Carne, boi, fígado, grelhada, s/ óleo, c/ sal
+Carnes|Carne seca cozida|^Carne, boi, charque \(carne seca, carne de sol, jaba\), cozido
+Carnes|Lombo de porco assado|^Carne, porco, lombo, assad
+Carnes|Bisteca de porco grelhada|^Carne, porco, bisteca, (grelhad|frit)
+Carnes|Pernil assado|^Carne, porco, pernil, assad
+Carnes|Costela de porco assada|^Carne, porco, costela, assad
+Carnes|Bacon frito|^Carne, porco, toucinho defumado \(bacon\), frito
+Carnes|Linguiça de porco grelhada|^Linguiça, porco, grelhada
+Carnes|Linguiça de frango grelhada|^Linguiça, frango, (grelhad|frit|assad)
+Carnes|Linguiça calabresa|^Linguiça, calabresa
+Carnes|Salsicha|^Salsicha, aquecida
+Carnes|Hambúrguer bovino grelhado|^Hambúrguer, bovino, grelhado|^Hambúrguer, carne bovina, (grelhado|frito)
+Carnes|Almôndega frita|^Almôndega, carne, boi, industrializada, frita
+
+# Aves
+Aves|Peito de frango grelhado|^Carne, frango, peito, s/ pele, grelhada, s/ gordura, s/ óleo, c/ sal
+Aves|Peito de frango grelhado sem sal|^Carne, frango, peito, s/ pele, grelhada, s/ óleo, s/ sal
+Aves|Peito de frango cozido|^Carne, frango, peito, s/ pele, cozida, drenada, s/ óleo, c/ sal
+Aves|Peito de frango assado|^Carne, frango, peito, s/ pele, assada, s/ óleo, s/ sal
+Aves|Peito de frango cru|^Carne, frango, peito, s/ pele, crua
+Aves|Filé de frango empanado|^Carne, frango, empanado, tipo nuggets, congelado, assado
+Aves|Coxa de frango assada|^Carne, frango, coxa, c/ pele, assada, s/ óleo, c/ sal
+Aves|Coxa de frango cozida sem pele|^Carne, frango, coxa, s/ pele, cozida, s/ óleo, c/ sal
+Aves|Sobrecoxa assada sem pele|^Carne, frango, sobrecoxa, s/ pele, assada, s/ óleo, c/ sal
+Aves|Sobrecoxa assada com pele|^Carne, frango, sobrecoxa, c/ pele, assada
+Aves|Asa de frango assada|^Carne, frango, asa, c/ pele, assad
+Aves|Coração de frango grelhado|^Carne, frango, coração, (grelhad|assad)
+Aves|Fígado de frango frito|^Carne, frango, fígado, frita
+Aves|Frango xadrez|^Frango xadrez, c/ molho shoyu
+Aves|Estrogonofe de frango|^Estrogonoffe de frango, c/ sal
+Aves|Peito de peru defumado|^Peru , peito, defumado|^Peru, peito, defumado
+Aves|Peru assado|^Peru, congelado, assado
+
+# Peixes e frutos do mar
+Peixes e frutos do mar|Tilápia grelhada|^Peixe, água doce, Tilápia, filé s/ pele, grelhado, c/ óleo de soja, c/ sal
+Peixes e frutos do mar|Tilápia crua|^Peixe, água doce, tilápia, filé, cru
+Peixes e frutos do mar|Salmão grelhado|^Peixe, água salgada, salmão, s/ pele, fresco, grelhado, s/ óleo, s/ sal
+Peixes e frutos do mar|Salmão cru|^Peixe, água salgada, salmão, s/ pele, fresco, cru
+Peixes e frutos do mar|Atum em lata light|^Peixe, água salgada, atum, sólido, conserva, light
+Peixes e frutos do mar|Atum em lata (em óleo)|^Peixe, água salgada, atum, sólido, conserva em óleo
+Peixes e frutos do mar|Sardinha em lata (em óleo)|^Peixe, água salgada, sardinha, filé, conserva, em óleo
+Peixes e frutos do mar|Sardinha com molho de tomate|^Peixe, água salgada, sardinha, conserva, c/ molho de tomate
+Peixes e frutos do mar|Sardinha assada|^Peixe, água salgada, sardinha, assada
+Peixes e frutos do mar|Merluza assada|^Peixe, água salgada, Merluza, filé, assado
+Peixes e frutos do mar|Pescada cozida|^Peixe, água salgada, pescada, cozido, drenado, s/ óleo, c/ sal
+Peixes e frutos do mar|Peixe frito empanado|^Peixe, água salgada, pescada, filé, frito|^Peixe.*empanado
+Peixes e frutos do mar|Bacalhau cozido|^Peixe, água salgada, bacalhau, salgado, dessalgado, cozido, s/ óleo
+Peixes e frutos do mar|Bacalhoada|^Bacalhoada
+Peixes e frutos do mar|Camarão refogado|^Crustáceo, camarão, s/ casca, refogado
+Peixes e frutos do mar|Camarão frito|^Crustáceo, camarão.*frit
+Peixes e frutos do mar|Sushi|^Sushi
+Peixes e frutos do mar|Lula frita|^Molusco, lula, cozido, frito
+Peixes e frutos do mar|Polvo|^Molusco, polvo|^Polvo
+Peixes e frutos do mar|Mexilhão|^Molusco, mexilhão|^Mexilhão
+Peixes e frutos do mar|Moqueca de peixe|^Moqueca, de peixe, capixaba
+
+# Ovos
+Ovos|Ovo cozido|^Ovo, galinha, inteiro, cozido, c/ sal
+Ovos|Ovo frito|^Ovo, galinha, inteiro, frito \(c/ óleo de soja\), c/ sal
+Ovos|Ovo mexido|^Ovo, galinha, mexido, c/ margarina, c/ sal
+Ovos|Ovo cru|^Ovo, galinha, branco, inteiro, cru
+Ovos|Clara de ovo cozida|^Ovo, galinha, clara, cozida
+Ovos|Clara de ovo crua|^Ovo, galinha, clara, crua
+Ovos|Gema de ovo cozida|^Ovo, galinha, gema, cozida
+Ovos|Ovo de codorna cozido|^Ovo, codorna, inteiro, cozido
+Ovos|Omelete com queijo|^Omelete, c/ espinafre, c/ queijo muçarela, salsinha e cebolinha, c/ óleo e cebola, c/ sal
+Ovos|Omelete de frios|^Omelete, frios
+
+# Leite e derivados
+Leite e derivados|Leite integral|^Leite, vaca, integral, fluído
+Leite e derivados|Leite desnatado|^Leite, vaca, desnatado, fluído
+Leite e derivados|Leite semidesnatado|^Leite, vaca, semidesnatado, UHT
+Leite e derivados|Leite sem lactose|^Leite, vaca, fluído, s/ lactose
+Leite e derivados|Leite em pó integral|^Leite, vaca, integral, em pó
+Leite e derivados|Leite em pó desnatado|^Leite, vaca, desnatado, em pó
+Leite e derivados|Leite fermentado|^Leite, vaca, fermentado
+Leite e derivados|Achocolatado pronto|^Leite, vaca, c/chocolate, (integral|$)|^Bebida láctea, chocolate
+Leite e derivados|Iogurte natural integral|^Iogurte, natural \(média
+Leite e derivados|Iogurte natural desnatado|^Iogurte, natural, desnatado,$
+Leite e derivados|Iogurte grego|^Iogurte, grego, simples, integral
+Leite e derivados|Iogurte grego com frutas|^Iogurte, grego, c/ frutas
+Leite e derivados|Iogurte de morango|^Iogurte, integral, morango
+Leite e derivados|Iogurte com granola|^Iogurte, natural, c/ granola, caseira
+Leite e derivados|Bebida láctea|^Bebida láctea, (morango|sabor|fermentada)
+Leite e derivados|Kefir|^Kefir|^Leite, fermentado, kefir
+Leite e derivados|Queijo muçarela|^Queijo, muçarela \(média
+Leite e derivados|Queijo muçarela light|^Queijo, muçarela, light
+Leite e derivados|Queijo minas frescal|^Queijo, minas, frescal,$
+Leite e derivados|Queijo minas frescal light|^Queijo, minas, frescal, light,$
+Leite e derivados|Queijo minas padrão|^Queijo, minas, padrão,? \(média|^Queijo, minas, padrão,$|^Queijo, minas, padrão, Teixeira
+Leite e derivados|Queijo prato|^Queijo, prato,$
+Leite e derivados|Queijo parmesão ralado|^Queijo, parmesão, ralado
+Leite e derivados|Ricota|^Queijo, ricota,$
+Leite e derivados|Ricota light|^Queijo, ricota, light
+Leite e derivados|Queijo coalho|^Queijo, coalho
+Leite e derivados|Queijo provolone|^Queijo, provolone
+Leite e derivados|Queijo gorgonzola|^Queijo, gorgonzola
+Leite e derivados|Queijo cheddar|^Queijo, cheddar
+Leite e derivados|Requeijão cremoso|^Queijo, requeijão, (cremoso|Vigor)
+Leite e derivados|Requeijão light|^Queijo, requeijão, light
+Leite e derivados|Cream cheese|^Queijo, cream cheese|^Cream cheese
+Leite e derivados|Creme de leite|^Creme de leite \(25% de gordura
+Leite e derivados|Leite condensado|^Leite, vaca, condensado
+Leite e derivados|Manteiga com sal|^Manteiga, c/ sal
+Leite e derivados|Manteiga sem sal|^Manteiga, s/ sal
+Leite e derivados|Doce de leite|^Doce, leite, cremoso \(média
+
+# Frutas
+Frutas|Banana prata|^Banana, prata, in natura
+Frutas|Banana nanica|^Banana, nanica, in natura
+Frutas|Banana maçã|^Banana, maçã, in natura
+Frutas|Banana da terra cozida|^Banana, da terra, (cozida|assada)
+Frutas|Maçã com casca|^Maçã, c/ casca, in natura
+Frutas|Pera|^Pera, (c/ casca, )?(Williams, )?in natura|^Pera, .*in natura
+Frutas|Laranja pera|^Laranja, Pera, in natura
+Frutas|Laranja lima|^Laranja, (Lima|lima), in natura
+Frutas|Mexerica (tangerina)|^Tangerina, Ponkã, in natura
+Frutas|Mamão papaia|^Mamão, Papaia, polpa, in natura
+Frutas|Mamão formosa|^Mamão, (Formosa, )?polpa, in natura
+Frutas|Melão|^Melão, polpa, in natura
+Frutas|Melancia|^Melancia, polpa, in natura
+Frutas|Abacaxi|^Abacaxi, polpa, in natura
+Frutas|Manga tommy|^Manga, Tommy Atkins, polpa
+Frutas|Manga palmer|^Manga, Palmer, polpa
+Frutas|Uva itália|^Uva, (Itália, )?in natura
+Frutas|Uva rubi / niágara|^Uva, (Rubi|Niágara)
+Frutas|Morango|^Morango, in natura|^Morango,
+Frutas|Kiwi|^Kiwi, in natura
+Frutas|Abacate|^Abacate, polpa, in natura|^Abacate, (cru|in natura)
+Frutas|Goiaba vermelha|^Goiaba, vermelha, (c/ casca, )?in natura|^Goiaba, vermelha
+Frutas|Maracujá (polpa)|^Maracujá, polpa, (in natura|congelada)
+Frutas|Açaí (polpa sem açúcar)|^Açaí, polpa \(média
+Frutas|Açaí com xarope de guaraná|^Açaí, polpa, com xarope de guaraná e glucose
+Frutas|Ameixa|^Ameixa, c/ casca, in natura
+Frutas|Ameixa seca|^Ameixa, seca
+Frutas|Pêssego|^Pêssego, .*in natura|^Pêssego, in natura
+Frutas|Caqui|^Caqui,\s+c/ casca, in natura
+Frutas|Acerola|^Acerola, madura, polpa
+Frutas|Limão|^Limão, (Tahiti, )?(polpa|suco|in natura)|^Limão, Tahiti
+Frutas|Coco ralado|^Coco, (ralado|seco, ralado|desidratado)
+Frutas|Coco fresco (polpa)|^Coco, polpa, in natura
+Frutas|Uva passa|^Uva, passa
+Frutas|Damasco seco|^Damasco, (seco|desidratado)
+Frutas|Tâmara|^Tâmara
+Frutas|Mirtilo (blueberry)|^Mirtilo|^Blueberry
+Frutas|Framboesa|^Framboesa
+Frutas|Amora|^Amora
+Frutas|Pitaia|^Pitaia|^Pitaya
+Frutas|Carambola|^Carambola
+Frutas|Jabuticaba|^Jabuticaba
+Frutas|Figo|^Figo, (cru|in natura)
+Frutas|Cereja em calda|^Cereja, em calda
+Frutas|Graviola|^Graviola
+Frutas|Caju|^Caju, (cru|in natura|polpa)
+Frutas|Romã|^Romã
+Frutas|Salada de frutas|^Salada, de frutas|^Salada de frutas
+
+# Verduras e legumes
+Verduras e legumes|Alface crespa|^Alface, crespa
+Verduras e legumes|Alface americana|^Alface, americana
+Verduras e legumes|Alface lisa|^Alface, lisa
+Verduras e legumes|Rúcula|^Rúcula, (crua|in natura)
+Verduras e legumes|Agrião|^Agrião, (cru|in natura)
+Verduras e legumes|Espinafre cru|^Espinafre, folha, cru
+Verduras e legumes|Espinafre refogado|^Espinafre, refogado \(c/ óleo, cebola e alho\)
+Verduras e legumes|Couve crua|^Couve, crua
+Verduras e legumes|Couve refogada|^Couve, (manteiga, )?refogada|^Couve, cozida, drenada, c/ óleo de soja
+Verduras e legumes|Repolho cru|^Repolho, (branco|verde)?,? ?cru
+Verduras e legumes|Repolho roxo cru|^Repolho, roxo, cru
+Verduras e legumes|Acelga|^Acelga, crua
+Verduras e legumes|Brócolis cozido|^Brócolis, flor, cozido, drenado, s/ óleo, c/ sal
+Verduras e legumes|Brócolis cru|^Brócolis, cru
+Verduras e legumes|Couve-flor cozida|^Couve-flor, cozida
+Verduras e legumes|Cenoura crua|^Cenoura, s/ casca, crua
+Verduras e legumes|Cenoura cozida|^Cenoura, s/ casca, cozida, drenada, s/ óleo, (c|s)/ sal
+Verduras e legumes|Beterraba crua|^Beterraba, s/ casca, crua
+Verduras e legumes|Beterraba cozida|^Beterraba, cozida, drenada
+Verduras e legumes|Abobrinha cozida|^Abobrinha, italiana, c/ casca, cozida, drenada, s/ óleo, c/ sal
+Verduras e legumes|Abobrinha grelhada|^Abobrinha, italiana, c/ casca, grelhada, s/ óleo, c/ sal
+Verduras e legumes|Berinjela cozida|^Berinjela, cozida, drenada
+Verduras e legumes|Berinjela grelhada|^Berinjela, c/ casca, grelhada, s/ óleo, c/ sal
+Verduras e legumes|Chuchu cozido|^Chuchu, s/ casca, cozido, drenado, s/ óleo, c/ sal
+Verduras e legumes|Vagem cozida|^Vagem, cozida
+Verduras e legumes|Quiabo cozido|^Quiabo, c/ casca, cozido, drenado, s/ óleo, c/ sal
+Verduras e legumes|Tomate|^Tomate, cru
+Verduras e legumes|Tomate cereja|^Tomate, cereja
+Verduras e legumes|Pepino|^Pepino, c/ casca, cru
+Verduras e legumes|Pimentão verde|^Pimentão, verde, cru
+Verduras e legumes|Pimentão vermelho|^Pimentão, vermelho, cru
+Verduras e legumes|Pimentão amarelo|^Pimentão, amarelo, cru
+Verduras e legumes|Cebola|^Cebola, (crua|branca, crua)
+Verduras e legumes|Alho|^Alho, (cru|in natura)
+Verduras e legumes|Abóbora cabotiá crua|^Abóbora, s/ casca, s/ sementes, crua
+Verduras e legumes|Abóbora moranga cozida|^Abóbora, moranga, refogada
+Verduras e legumes|Palmito em conserva|^Palmito, (pupunha, )?(em )?conserva|^Palmito, juçara
+Verduras e legumes|Cogumelo cru|^Cogumelo, cru \(média
+Verduras e legumes|Cogumelo shiitake|^Cogumelo, Shiitake, cru
+Verduras e legumes|Aspargo|^Aspargo
+Verduras e legumes|Salsão (aipo)|^Salsão|^Aipo
+Verduras e legumes|Rabanete|^Rabanete
+Verduras e legumes|Nabo|^Nabo
+Verduras e legumes|Jiló|^Jiló
+Verduras e legumes|Maxixe|^Maxixe
+Verduras e legumes|Alho-poró|^Alho-poró|^Alho poró
+Verduras e legumes|Cebolinha e salsa (cheiro-verde)|^Cebolinha|^Salsa, crua
+Verduras e legumes|Broto de feijão|^Feijão, broto, cru
+Verduras e legumes|Azeitona verde|^Azeitona, verde
+Verduras e legumes|Azeitona preta|^Azeitona, preta
+Verduras e legumes|Salada de alface com azeite|^Salada, alface roxa, c/ azeite de oliva, c/ sal
+Verduras e legumes|Vinagrete|^Molho, vinagrete, c/ sal
+Verduras e legumes|Sopa de legumes|^Sopa, (de )?legumes
+Verduras e legumes|Caldo verde|^Caldo verde|^Sopa, caldo verde
+
+# Oleaginosas e sementes
+Oleaginosas e sementes|Castanha-do-pará|^Castanha do Brasil, crua
+Oleaginosas e sementes|Castanha de caju|^Castanha de caju, (torrada, salgada|torrada, c/ sal|crua, s/ sal)
+Oleaginosas e sementes|Amêndoa|^Amêndoa, crua, s/ sal
+Oleaginosas e sementes|Nozes|^Noz, crua
+Oleaginosas e sementes|Macadâmia|^Macadâmia|^Noz, macadâmia
+Oleaginosas e sementes|Pistache|^Pistache
+Oleaginosas e sementes|Avelã|^Avelã
+Oleaginosas e sementes|Chia|^Chia, semente, seca
+Oleaginosas e sementes|Linhaça|^Linhaça, semente|^Linhaça
+Oleaginosas e sementes|Linhaça (farinha)|^Linhaça, farinha
+Oleaginosas e sementes|Gergelim|^Gergelim, semente|^Gergelim
+Oleaginosas e sementes|Semente de abóbora|^Abóbora, semente|^Semente de abóbora
+Oleaginosas e sementes|Semente de girassol|^Girassol, semente|^Semente de girassol
+
+# Óleos e gorduras
+Óleos e gorduras|Azeite de oliva|^Azeite, de oliva, extra virgem|^Azeite, oliva
+Óleos e gorduras|Óleo de soja|^Óleo, soja
+Óleos e gorduras|Óleo de coco|^Óleo, coco|^Gordura, coco
+Óleos e gorduras|Óleo de girassol|^Óleo, girassol
+Óleos e gorduras|Óleo de canola|^Óleo, canola
+Óleos e gorduras|Margarina|^Margarina, c/ sal, Amélia
+Óleos e gorduras|Maionese|^Maionese, molho, tradicional
+Óleos e gorduras|Maionese light|^Maionese, light
+Óleos e gorduras|Banha de porco|^Banha, suína
+
+# Bebidas
+Bebidas|Café coado sem açúcar|^Bebida, café, infusão 10%, s/ açúcar
+Bebidas|Café coado com açúcar|^Bebida, café, infusão 10%, c/ açúcar
+Bebidas|Café expresso|^Bebida, café, expresso|^Café, expresso
+Bebidas|Chá preto ou mate sem açúcar|^Bebida, chá, mate, infusão 5%, s/ açúcar
+Bebidas|Chá verde|^Bebida, chá, verde
+Bebidas|Chá de camomila com açúcar|^Bebida, chá, camomila, infusão, c/ açúcar
+Bebidas|Suco de laranja natural|^Suco, laranja, s/ açúcar
+Bebidas|Suco de laranja integral (caixinha)|^Suco, (integral, laranja|laranja, integral)
+Bebidas|Suco de uva integral|^Suco, integral, uva
+Bebidas|Suco de limão (limonada)|^Suco, limonada, c/ açúcar
+Bebidas|Suco de maracujá|^Suco( natural)?, maracujá, (c/|s/) açúcar
+Bebidas|Suco de abacaxi|^Suco natural, abacaxi, s/ açúcar
+Bebidas|Suco verde|^Suco( natural)?, (verde|couve)
+Bebidas|Água de coco|^Água de coco|^Coco, água
+Bebidas|Refrigerante cola|^Refrigerante, tipo cola, regular
+Bebidas|Refrigerante cola zero|^Refrigerante, tipo cola, c/ adoçante
+Bebidas|Refrigerante guaraná|^Refrigerante, tipo guaraná, regular
+Bebidas|Refrigerante zero (guaraná, laranja…)|^Refrigerante, tipo guaraná, c/ adoçante
+Bebidas|Cerveja|^Bebida alcoólica, cerveja, Pilsen
+Bebidas|Cerveja sem álcool|^Bebida alcoólica, cerveja, s/ álcool|^Bebida, cerveja, s/ álcool
+Bebidas|Vinho tinto|^Bebida alcoólica, vinho \(média
+Bebidas|Vinho branco|^Bebida alcoólica, vinho, branco
+Bebidas|Cachaça|^Bebida alcoólica, aguardente, cachaça
+Bebidas|Caipirinha|^Bebida alcoólica, caipirinha
+Bebidas|Bebida de soja com suco|^Soja, extrato, c/ suco de maçã
+Bebidas|Bebida de amêndoas|^Bebida, substituto do leite.*amêndoa, c/ cacau
+Bebidas|Achocolatado em pó|^Achocolatado, em pó \(média
+Bebidas|Vitamina de banana com leite|^Vitamina, leite.*banana
+Bebidas|Vitamina de frutas|^Vitamina, polpa de açaí, manga e banana
+Bebidas|Caldo de cana|^Caldo de cana|^Cana, caldo
+
+# Doces e sobremesas
+Doces e sobremesas|Chocolate amargo|^Chocolate, amargo, Garoto
+Doces e sobremesas|Chocolate meio amargo|^Chocolate, meio amargo
+Doces e sobremesas|Chocolate ao leite|^Chocolate, ao leite \(média|^Chocolate, ao leite, Lacta
+Doces e sobremesas|Chocolate branco|^Chocolate, branco
+Doces e sobremesas|Chocolate em pó|^Chocolate, pó,$
+Doces e sobremesas|Mel|^Mel, (de )?abelha|^Mel,
+Doces e sobremesas|Açúcar refinado|^Açúcar, refinado
+Doces e sobremesas|Açúcar mascavo|^Açúcar, mascavo
+Doces e sobremesas|Geleia de frutas|^Geleia, (de )?(frutas|morango|uva)|^Geléia
+Doces e sobremesas|Goiabada|^Goiaba, doce, em pasta
+Doces e sobremesas|Sorvete de creme|^Sorvete, industrializado \(média
+Doces e sobremesas|Picolé de fruta|^Picolé, industrializado, c/ suco de fruta
+Doces e sobremesas|Açaí na tigela com granola|^Açaí, polpa, c/ xarope de guaraná, glucose, c/ granola
+Doces e sobremesas|Pudim de leite|^Pudim, (de )?leite(, condensado|, caseiro|,$)|^Pudim de leite
+Doces e sobremesas|Mousse de chocolate|^Mousse, chocolate
+Doces e sobremesas|Mousse de maracujá|^Mousse, maracujá
+Doces e sobremesas|Brigadeiro|^Brigadeiro, c/ chocolate ao leite, caseiro
+Doces e sobremesas|Beijinho|^Beijinho
+Doces e sobremesas|Paçoca|^Paçoca|^Amendoim, paçoca
+Doces e sobremesas|Pé de moleque|^Pé de moleque|^Pé-de-moleque
+Doces e sobremesas|Barra de cereal diet|^Barra de cereal, diet
+Doces e sobremesas|Gelatina diet pronta|^Gelatina, em pó, preparada, diet \(média
+Doces e sobremesas|Gelatina zero pronta|^Gelatina, .*diet.*preparad|^Gelatina, diet
+Doces e sobremesas|Bala|^Bala, (dura|mastigável)
+Doces e sobremesas|Pudim de chia|^Pudim de chia
+Doces e sobremesas|Arroz doce|^Arroz doce, c/ açúcar e canela, \(arroz polido
+Doces e sobremesas|Canjica com leite e açúcar|^Canjica, milho, branca, cozida, c/ leite integral e açúcar
+Doces e sobremesas|Doce de abóbora|^Doce, (de )?abóbora
+Doces e sobremesas|Churros|^Churro
+Doces e sobremesas|Sonho|^Sonho
+Doces e sobremesas|Torta de limão|^Torta, mousse , limão
+Doces e sobremesas|Petit gâteau|^Petit
+Doces e sobremesas|Cocada|^Cocada
+Doces e sobremesas|Rapadura|^Rapadura
+
+# Lanches e salgados
+Lanches e salgados|Pão francês com manteiga|^Sanduíche, pão francês, c/ manteiga|^Pão francês, c/ manteiga
+Lanches e salgados|Pão com requeijão|^Pão francês, c/ requeijão
+Lanches e salgados|Misto quente|^Misto quente|^Sanduíche, misto quente|^Sanduíche, pão.*presunto e queijo
+Lanches e salgados|Sanduíche natural de frango|^Sanduíche, pão forma integral, c/ queijo minas, rúcula, c/ maionese de frango
+Lanches e salgados|Sanduíche de atum|^Sanduíche, pão forma tradicional, atum
+Lanches e salgados|Sanduíche de peito de peru|^Sanduíche, pão francês, c/ peito de peru
+Lanches e salgados|Hambúrguer de lanchonete|^Sanduíche, Hambúrguer, McDonald
+Lanches e salgados|Cachorro-quente|^Cachorro.quente|^Sanduíche, cachorro
+Lanches e salgados|Pizza de muçarela|^Pizza, muçarela|^Pizza, (de )?mussarela
+Lanches e salgados|Pizza de calabresa|^Pizza, calabresa
+Lanches e salgados|Pizza de frango com catupiry|^Pizza, frango
+Lanches e salgados|Pizza margherita|^Pizza, margu?erita
+Lanches e salgados|Coxinha de frango|^Coxinha
+Lanches e salgados|Esfiha assada|^Esfirra, caseira, assada \(média
+Lanches e salgados|Pastel frito|^Pastel, frito, caseiro \(média
+Lanches e salgados|Empada de frango|^Empada|^Empadinha
+Lanches e salgados|Quibe frito|^Quibe, frito|^Quibe
+Lanches e salgados|Kibe assado|^Quibe, assado|^Quibe com carne bovina, c/ quinoa, assado, c/ sal
+Lanches e salgados|Esfiha de queijo|^Esfirra, muçarela
+Lanches e salgados|Enroladinho de salsicha|^Enroladinho
+Lanches e salgados|Batata chips|^Batata, chips|^Salgadinho, batata
+Lanches e salgados|Salgadinho de milho|^Salgadinho, snack, extrusado de milho
+Lanches e salgados|Pão de alho|^Pão de alho|^Pão, de alho
+Lanches e salgados|Crepe salgado|^Crepe
+Lanches e salgados|Burrito de frango|^Burrito de frango
+Lanches e salgados|Acarajé|^Acarajé
+Lanches e salgados|Tapioca com coco e leite condensado|^Tapioca, c/ leite condensado e coco
+
+# Pratos prontos
+Pratos prontos|Arroz com feijão|^Arroz, c/ feijão|^Arroz com feijão|^Baião de dois
+Pratos prontos|Baião de dois|^Baião de dois
+Pratos prontos|Estrogonofe de carne|^Estrogonofe, (carne|boi)|^Strogonoff, carne
+Pratos prontos|Escondidinho de frango|^Escondidinho de frango, c/ sal
+Pratos prontos|Risoto de frango|^Risoto de frango, c/ arroz polido, c/ sal
+Pratos prontos|Galinhada|^Galinhada|^Arroz com frango,? c/ arroz polido, c/ sal
+Pratos prontos|Arroz carreteiro|^Arroz, carreteiro|^Arroz carreteiro
+Pratos prontos|Yakisoba|^Yakisoba
+Pratos prontos|Carne assada com batatas|^Carne, bovina, acém, s/ gordura, cozida, c/ batata
+Pratos prontos|Carne ensopada com legumes|^Carne, boi, de segunda, ensopada c/ legumes
+Pratos prontos|Frango com batata|^Carne, frango, peito, c/ batata, c/ óleo, cebola e alho, c/ sal
+Pratos prontos|Picadinho de soja|^Picadinho de carne de soja, c/ sal
+Pratos prontos|Panqueca de carne|^Panqueca, (c/ )?carne
+Pratos prontos|Torta de frango|^Torta, (de )?frango|^Torta salgada, frango
+Pratos prontos|Quiche|^Quiche
+Pratos prontos|Salpicão|^Salpicão
+Pratos prontos|Tabule|^Tabule, (trigo|c/ trigo)|^Tabule,
+Pratos prontos|Tabule de quinoa|^Tabule, quinoa, c/ sal
+Pratos prontos|Purê de mandioquinha|^Purê, (de )?mandioquinha|^Purê, batata baroa
+Pratos prontos|Sopa de feijão|^Sopa, (de )?feijão
+Pratos prontos|Creme de abóbora|^Sopa, (creme de )?abóbora|^Creme, abóbora
+Pratos prontos|Feijão tropeiro|^Feijão tropeiro|^Tropeiro
+Pratos prontos|Virado à paulista|^Virado
+Pratos prontos|Macarronada com carne moída|^Macarrão, c/ molho bolonhesa, s/ sal
+Pratos prontos|Molho de tomate pronto|^Tomate, molho, industrializado
+Pratos prontos|Molho branco|^Molho, branco|^Molho branco
+Pratos prontos|Molho shoyu|^Molho, shoyu|^Molho, soja
+Pratos prontos|Catchup|^Catchup|^Ketchup|^Molho, catchup
+Pratos prontos|Mostarda|^Mostarda

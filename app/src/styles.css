@@ -474,3 +474,15 @@ button.coracao.ativa { color: var(--alerta); }
 .escolher .linha .primario { margin-top: 0; }
 .extra { border-top: 1px solid var(--linha); margin-top: 8px; padding-top: 4px; }
 .extra h3 { font-size: 0.95rem; margin: 6px 0 2px; }
+
+/* Medidas caseiras de um alimento (lista de dieta e rótulos) */
+.medidas { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 2px; }
+.medidas button { padding: 5px 10px; border-radius: 999px; font-size: 0.8rem; }
+.medidas button small { color: var(--suave); margin-left: 2px; }
+.medidas button.ativa { background: var(--verde-claro); border-color: var(--verde); }
+.medidas .equivale { color: var(--suave); font-size: 0.8rem; }
+.selo-dieta { color: var(--verde); }
+.foto-rotulo { display: flex; gap: 10px; align-items: center; margin: 8px 0; }
+.foto-rotulo img { width: 72px; height: 72px; object-fit: cover; border-radius: 10px; border: 1px solid var(--linha); }
+.campo-lido input { border-color: var(--verde); background: var(--verde-claro); }
+details.texto-ocr pre { white-space: pre-wrap; font-size: 0.75rem; color: var(--suave); max-height: 200px; overflow: auto; }
