@@ -1,0 +1,598 @@
+[
+ {
+  "slug": "abacate-com-mel-e-chocolate",
+  "nome": "Abacate com mel e chocolate",
+  "busca": [
+   "avocado chocolate mousse",
+   "avocado dessert chocolate"
+  ],
+  "arquivo": "File:Avocado chocolate mousse (48839488586).jpg"
+ },
+ {
+  "slug": "aveia-de-geladeira-com-morango",
+  "nome": "Aveia de geladeira com morango",
+  "busca": [
+   "overnight oats",
+   "oats strawberries yogurt",
+   "muesli strawberries"
+  ]
+ },
+ {
+  "slug": "banana-com-aveia-e-mel",
+  "nome": "Banana com aveia e mel",
+  "busca": [
+   "banana oatmeal honey bowl",
+   "oatmeal banana slices"
+  ],
+  "arquivo": "File:Fruit and oatmeal.jpg"
+ },
+ {
+  "slug": "bolo-de-banana-com-aveia",
+  "nome": "Bolo de banana com aveia",
+  "busca": [
+   "banana oat bread",
+   "banana bread loaf"
+  ],
+  "arquivo": "File:Bartók-Festival, Caphé by Hai Nam Zelt, Bananenbrot, 2025 Újbuda.jpg"
+ },
+ {
+  "slug": "brownie-de-chocolate-meio-amargo",
+  "nome": "Brownie de chocolate meio amargo",
+  "busca": [
+   "chocolate brownie squares",
+   "chocolate brownies"
+  ],
+  "arquivo": "File:Chocolatebrownie.JPG"
+ },
+ {
+  "slug": "carne-moida-com-abobora",
+  "nome": "Carne moída com abóbora",
+  "busca": [
+   "ground beef pumpkin stew",
+   "beef stew pumpkin"
+  ],
+  "arquivo": "File:Pumpkin curry and beef stew at Picanteria Nueva Palomino, Arequipa.jpg"
+ },
+ {
+  "slug": "cookie-de-banana-e-aveia",
+  "nome": "Cookie de banana e aveia",
+  "busca": [
+   "banana oatmeal cookies",
+   "oatmeal cookies"
+  ],
+  "arquivo": "File:Banana and chocolate oatmeal cookies 03.jpg"
+ },
+ {
+  "slug": "creme-de-maracuja-com-iogurte",
+  "nome": "Creme de maracujá com iogurte",
+  "busca": [
+   "passion fruit mousse",
+   "mousse de maracujá"
+  ],
+  "arquivo": "File:Mousse de maracujá.jpg"
+ },
+ {
+  "slug": "crepioca-de-frango",
+  "nome": "Crepioca de frango",
+  "busca": [
+   "tapioca dish Brazil",
+   "beiju de tapioca",
+   "tapioca recheada"
+  ]
+ },
+ {
+  "slug": "doce-de-banana-sem-acucar",
+  "nome": "Doce de banana sem açúcar",
+  "busca": [
+   "doce de banana",
+   "banana jam"
+  ],
+  "arquivo": "File:Doce de banana.jpg"
+ },
+ {
+  "slug": "escondidinho-de-frango-com-mandioca",
+  "nome": "Escondidinho de frango com mandioca",
+  "busca": [
+   "escondidinho de frango",
+   "escondidinho"
+  ],
+  "arquivo": "File:Escondidinho de camarão.jpg"
+ },
+ {
+  "slug": "frango-com-arroz-feijao-e-salada",
+  "nome": "Frango com arroz, feijão e salada",
+  "busca": [
+   "prato feito frango arroz feijão",
+   "arroz feijão frango grelhado"
+  ],
+  "arquivo": "File:Prato com arroz e feijão, frango grelhado, batata frita, salada e ovo frito como adicionais.jpg"
+ },
+ {
+  "slug": "frango-grelhado-com-batata-doce-e-brocolis",
+  "nome": "Frango grelhado com batata-doce e brócolis",
+  "busca": [
+   "chicken sweet potato",
+   "chicken breast broccoli",
+   "grilled chicken vegetables plate"
+  ]
+ },
+ {
+  "slug": "iogurte-com-banana-e-linhaca",
+  "nome": "Iogurte com banana e linhaça",
+  "busca": [
+   "yogurt banana bowl flax",
+   "yogurt bowl banana"
+  ],
+  "arquivo": "File:Double choc yogurt.jpg"
+ },
+ {
+  "slug": "iogurte-com-morango-e-aveia",
+  "nome": "Iogurte com morango e aveia",
+  "busca": [
+   "strawberry yogurt oats bowl",
+   "yogurt strawberries granola"
+  ],
+  "arquivo": "File:Seattle in July 2024 - 08.jpg"
+ },
+ {
+  "slug": "lentilha-com-legumes",
+  "nome": "Lentilha com legumes",
+  "busca": [
+   "lentil stew vegetables",
+   "lentil soup bowl"
+  ],
+  "arquivo": "File:Preparación de guiso de lentejas con verduras y caldo de carne en cocina doméstica argentina.jpg"
+ },
+ {
+  "slug": "macarrao-com-frango-e-brocolis",
+  "nome": "Macarrão com frango e brócolis",
+  "busca": [
+   "chicken broccoli pasta",
+   "pasta broccoli chicken"
+  ],
+  "arquivo": "File:2020-08-30 06 01 03 Close view of Healthy Choice Cafe Steamers Grilled Chicken Marinara with Parmesan (Grilled Chicken Breast with Penne Pasta & Broccoli) in the Dulles section of Sterling, Loudoun County, Virginia.jpg"
+ },
+ {
+  "slug": "maca-assada-com-mel-e-aveia",
+  "nome": "Maçã assada com mel e aveia",
+  "busca": [
+   "baked apple oats",
+   "baked apples"
+  ],
+  "arquivo": "File:Apple cake with vanilla ice cream 2.jpg"
+ },
+ {
+  "slug": "merluza-assada-com-batata-e-cenoura",
+  "nome": "Merluza assada com batata e cenoura",
+  "busca": [
+   "baked fish potatoes",
+   "fish fillet baked",
+   "hake fillet"
+  ]
+ },
+ {
+  "slug": "mingau-de-aveia-com-banana",
+  "nome": "Mingau de aveia com banana",
+  "busca": [
+   "oatmeal porridge banana",
+   "porridge banana bowl"
+  ],
+  "arquivo": "File:Banana oatmeal 2.jpg"
+ },
+ {
+  "slug": "mix-de-castanhas",
+  "nome": "Mix de castanhas",
+  "busca": [
+   "mixed nuts bowl",
+   "nuts mix bowl"
+  ],
+  "arquivo": "File:Liat Portal for Foodie Disorder - Mixed nuts and dried fruit.jpg"
+ },
+ {
+  "slug": "morangos-com-chocolate-meio-amargo",
+  "nome": "Morangos com chocolate meio amargo",
+  "busca": [
+   "chocolate covered strawberries",
+   "chocolate dipped strawberries"
+  ],
+  "arquivo": "File:Chocolate covered strawberries (13498474903).jpg"
+ },
+ {
+  "slug": "omelete-de-forno-com-espinafre-e-ricota",
+  "nome": "Omelete de forno com espinafre e ricota",
+  "busca": [
+   "spinach ricotta frittata",
+   "frittata spinach"
+  ],
+  "arquivo": "File:Frittata slice.jpg"
+ },
+ {
+  "slug": "omelete-de-legumes-com-queijo-minas",
+  "nome": "Omelete de legumes com queijo minas",
+  "busca": [
+   "vegetable omelette tomato",
+   "omelette plate"
+  ],
+  "arquivo": "File:ANA NH204 FRA to HND Business Class Breakfast (6843974087).jpg"
+ },
+ {
+  "slug": "ovos-cozidos-com-tomate",
+  "nome": "Ovos cozidos com tomate",
+  "busca": [
+   "boiled eggs tomato plate",
+   "hard boiled eggs halved"
+  ],
+  "arquivo": "File:Boiled Eggs and Tomato slices meal.jpg"
+ },
+ {
+  "slug": "ovos-mexidos-com-couve",
+  "nome": "Ovos mexidos com couve",
+  "busca": [
+   "scrambled eggs kale",
+   "scrambled eggs greens"
+  ],
+  "arquivo": "File:Liat Portal for Foodie Disorder - Homemade Breakfast Plate.jpg"
+ },
+ {
+  "slug": "panqueca-de-banana-e-aveia",
+  "nome": "Panqueca de banana e aveia",
+  "busca": [
+   "banana oat pancakes",
+   "banana pancakes"
+  ],
+  "arquivo": "File:Nutella Banana Pancakes - Laughing Dog 2026-08-25.jpg"
+ },
+ {
+  "slug": "pasta-de-amendoim-caseira",
+  "nome": "Pasta de amendoim caseira",
+  "busca": [
+   "peanut butter jar",
+   "homemade peanut butter"
+  ],
+  "arquivo": "File:Three lb peanut butter jar.jpg"
+ },
+ {
+  "slug": "patinho-grelhado-com-arroz-integral-e-feijao",
+  "nome": "Patinho grelhado com arroz integral e feijão",
+  "busca": [
+   "steak rice beans",
+   "bife grelhado",
+   "churrasco arroz feijão prato"
+  ]
+ },
+ {
+  "slug": "picole-de-manga-com-iogurte",
+  "nome": "Picolé de manga com iogurte",
+  "busca": [
+   "mango popsicle",
+   "mango ice pop"
+  ],
+  "arquivo": "File:Mango ice-cream.jpg"
+ },
+ {
+  "slug": "pao-integral-com-ovo-mexido-e-tomate",
+  "nome": "Pão integral com ovo mexido e tomate",
+  "busca": [
+   "scrambled eggs toast tomato",
+   "scrambled eggs on toast"
+  ],
+  "arquivo": "File:Scrambled eggs, roasted mushrooms and tomatoes, whole wheat toast スクランブルエッグ、焼きマッシュルームとトマト、全粒粉トースト.jpg"
+ },
+ {
+  "slug": "salada-de-atum-com-grao-de-bico",
+  "nome": "Salada de atum com grão-de-bico",
+  "busca": [
+   "tuna salad",
+   "chickpea salad",
+   "salada de atum"
+  ]
+ },
+ {
+  "slug": "salada-de-frutas",
+  "nome": "Salada de frutas",
+  "busca": [
+   "fruit salad bowl",
+   "salada de frutas"
+  ],
+  "arquivo": "File:A bowl of fruits salad with avocado.jpg"
+ },
+ {
+  "slug": "salmao-grelhado-com-legumes",
+  "nome": "Salmão grelhado com legumes",
+  "busca": [
+   "grilled salmon vegetables",
+   "grilled salmon fillet"
+  ],
+  "arquivo": "File:Salmon at Castaways Beach Bar & Grill, Mission Beach, 2025.jpg"
+ },
+ {
+  "slug": "sanduiche-de-peru-com-ricota",
+  "nome": "Sanduíche de peru com ricota",
+  "busca": [
+   "turkey sandwich whole wheat",
+   "turkey sandwich lettuce tomato"
+  ],
+  "arquivo": "File:Liat Portal for Foodie Disorder - Open turkey sandwich with avocado salad and pickles.jpg"
+ },
+ {
+  "slug": "sanduiche-natural-de-frango",
+  "nome": "Sanduíche natural de frango",
+  "busca": [
+   "chicken salad sandwich",
+   "chicken sandwich lettuce tomato"
+  ],
+  "arquivo": "File:Chicken salad sandwich 01.jpg"
+ },
+ {
+  "slug": "sardinha-assada-com-batata",
+  "nome": "Sardinha assada com batata",
+  "busca": [
+   "grilled sardines",
+   "sardinhas assadas",
+   "sardines plate"
+  ]
+ },
+ {
+  "slug": "sopa-de-legumes-com-frango",
+  "nome": "Sopa de legumes com frango",
+  "busca": [
+   "chicken vegetable soup",
+   "chicken soup bowl"
+  ],
+  "arquivo": "File:Chicken Vegetable Soup (8731954951).jpg"
+ },
+ {
+  "slug": "sorvete-de-banana",
+  "nome": "Sorvete de banana",
+  "busca": [
+   "banana nice cream",
+   "banana ice cream"
+  ],
+  "arquivo": "File:Vegan ice cream, banana nice cream.jpg"
+ },
+ {
+  "slug": "strogonoff-de-frango-fit",
+  "nome": "Strogonoff de frango fit",
+  "busca": [
+   "estrogonofe de frango",
+   "chicken stroganoff"
+  ],
+  "arquivo": "File:Chicken stroganoff.jpg"
+ },
+ {
+  "slug": "tapioca-com-queijo-e-ovo",
+  "nome": "Tapioca com queijo e ovo",
+  "busca": [
+   "tapioca queijo",
+   "tapioca Brazilian food",
+   "beiju"
+  ],
+  "arquivo": "File:Tapioca com queijo coalho 9354 orig.jpg"
+ },
+ {
+  "slug": "tofu-grelhado-com-legumes",
+  "nome": "Tofu grelhado com legumes",
+  "busca": [
+   "grilled tofu vegetables",
+   "tofu stir fry broccoli"
+  ],
+  "arquivo": "File:Grilled tofu and eggplant (7403982746).jpg"
+ },
+ {
+  "slug": "vitamina-de-banana-com-aveia",
+  "nome": "Vitamina de banana com aveia",
+  "busca": [
+   "banana smoothie glass",
+   "banana smoothie oats"
+  ],
+  "arquivo": "File:Fresh fruit smoothie being poured into a glass.jpg"
+ },
+ {
+  "slug": "abacate-100-g",
+  "nome": "Abacate, 100 g",
+  "busca": [
+   "avocado halves",
+   "avocado fruit cut"
+  ],
+  "arquivo": "File:Liat Portal for Foodie Disorder - Avocado halves.jpg"
+ },
+ {
+  "slug": "amendoim-torrado-30-g",
+  "nome": "Amendoim torrado, 30 g",
+  "busca": [
+   "roasted peanuts bowl",
+   "roasted peanuts"
+  ],
+  "arquivo": "File:Peanuts with gourd scoop in wood bowl.jpg"
+ },
+ {
+  "slug": "atum-em-conserva-1-lata",
+  "nome": "Atum em conserva, 1 lata",
+  "busca": [
+   "canned tuna",
+   "tuna can open",
+   "Thunfisch Dose",
+   "atún en lata"
+  ],
+  "arquivo": "File:Lata de atún-Albo.jpg"
+ },
+ {
+  "slug": "banana-prata-1-unidade",
+  "nome": "Banana prata, 1 unidade",
+  "busca": [
+   "banana prata",
+   "banana fruit"
+  ],
+  "arquivo": "File:Banana Prata.jpg"
+ },
+ {
+  "slug": "batata-doce-cozida-150-g",
+  "nome": "Batata-doce cozida, 150 g",
+  "busca": [
+   "boiled sweet potato",
+   "cooked sweet potato"
+  ],
+  "arquivo": "File:Sweet and Sour baby potatoes.png"
+ },
+ {
+  "slug": "cafe-sem-acucar-1-xicara",
+  "nome": "Café sem açúcar, 1 xícara",
+  "busca": [
+   "cup of black coffee",
+   "black coffee cup"
+  ],
+  "arquivo": "File:A small cup of coffee.JPG"
+ },
+ {
+  "slug": "castanha-de-caju-30-g",
+  "nome": "Castanha-de-caju, 30 g",
+  "busca": [
+   "cashew nuts bowl",
+   "cashew nuts"
+  ],
+  "arquivo": "File:Bowl of Cashews and Almonds (48140118636).jpg"
+ },
+ {
+  "slug": "castanha-do-brasil-2-unidades",
+  "nome": "Castanha-do-Brasil, 2 unidades",
+  "busca": [
+   "brazil nuts",
+   "brazil nut shelled"
+  ],
+  "arquivo": "File:Bertholletia excelsa seeds closeup.jpg"
+ },
+ {
+  "slug": "chocolate-meio-amargo-30-g",
+  "nome": "Chocolate meio amargo, 30 g",
+  "busca": [
+   "dark chocolate squares",
+   "dark chocolate bar"
+  ],
+  "arquivo": "File:2020-02-23 02 24 15 A Ghirardelli Dark Chocolate Mint Square broken into two pieces in the Parkway Village section of Ewing Township, Mercer County, New Jersey.jpg"
+ },
+ {
+  "slug": "iogurte-natural-desnatado-1-pote",
+  "nome": "Iogurte natural desnatado, 1 pote",
+  "busca": [
+   "plain yogurt bowl",
+   "natural yogurt"
+  ],
+  "arquivo": "File:Joghurt.jpg"
+ },
+ {
+  "slug": "laranja-1-unidade",
+  "nome": "Laranja, 1 unidade",
+  "busca": [
+   "orange fruit sliced",
+   "orange fruit"
+  ],
+  "arquivo": "File:Orange Sliced White Background.jpg"
+ },
+ {
+  "slug": "linhaca-1-colher-de-sopa",
+  "nome": "Linhaça, 1 colher de sopa",
+  "busca": [
+   "flax seeds spoon",
+   "linseed seeds"
+  ],
+  "arquivo": "File:Brown flaxseed on spoon.jpg"
+ },
+ {
+  "slug": "mamao-papaia-metade",
+  "nome": "Mamão papaia, metade",
+  "busca": [
+   "papaya halved",
+   "papaya fruit cut"
+  ],
+  "arquivo": "File:Papaya half.jpg"
+ },
+ {
+  "slug": "maca-1-unidade",
+  "nome": "Maçã, 1 unidade",
+  "busca": [
+   "red apple fruit",
+   "apple fruit"
+  ],
+  "arquivo": "File:Red Apple.jpg"
+ },
+ {
+  "slug": "mel-1-colher-de-sopa",
+  "nome": "Mel, 1 colher de sopa",
+  "busca": [
+   "honey spoon",
+   "honey jar dipper"
+  ],
+  "arquivo": "File:Runny hunny.jpg"
+ },
+ {
+  "slug": "morangos-1-xicara",
+  "nome": "Morangos, 1 xícara",
+  "busca": [
+   "strawberries bowl",
+   "fresh strawberries"
+  ],
+  "arquivo": "File:Bowl of Strawberries.jpg"
+ },
+ {
+  "slug": "ovo-cozido-1-unidade",
+  "nome": "Ovo cozido, 1 unidade",
+  "busca": [
+   "hard boiled egg halved",
+   "boiled egg"
+  ],
+  "arquivo": "File:Frankfurter grüne Soße mit Eiern, Oberauroff.jpg"
+ },
+ {
+  "slug": "peito-de-frango-grelhado-100-g",
+  "nome": "Peito de frango grelhado, 100 g",
+  "busca": [
+   "grilled chicken breast",
+   "chicken breast grilled plate"
+  ],
+  "arquivo": "File:Grilled Chicken Breasts (28905381261).jpg"
+ },
+ {
+  "slug": "pao-integral-1-fatia",
+  "nome": "Pão integral, 1 fatia",
+  "busca": [
+   "whole wheat bread slices",
+   "whole grain bread"
+  ],
+  "arquivo": "File:Vegan no-knead whole wheat bread loaf, sliced, September 2010.jpg"
+ },
+ {
+  "slug": "queijo-minas-frescal-1-fatia",
+  "nome": "Queijo minas frescal, 1 fatia",
+  "busca": [
+   "queijo minas frescal",
+   "queijo minas"
+  ],
+  "arquivo": "File:Queijo Minas Frescal.JPG"
+ },
+ {
+  "slug": "ricota-50-g",
+  "nome": "Ricota, 50 g",
+  "busca": [
+   "ricotta",
+   "ricotta cheese"
+  ]
+ },
+ {
+  "slug": "uva-1-cacho-pequeno",
+  "nome": "Uva, 1 cacho pequeno",
+  "busca": [
+   "grapes fruit",
+   "red grapes bunch",
+   "table grapes"
+  ]
+ },
+ {
+  "slug": "agua-de-coco-1-copo",
+  "nome": "Água de coco, 1 copo",
+  "busca": [
+   "coconut water glass",
+   "coconut water"
+  ],
+  "arquivo": "File:Kokossaft mit gerösteten Kokosstücken 5077.jpg"
+ }
+]

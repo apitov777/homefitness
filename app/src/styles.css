@@ -312,25 +312,60 @@ button.cartao.receita small { color: var(--suave); }
 .numeros span { flex: 1; display: flex; flex-direction: column; font-size: 0.8rem; color: var(--suave); background: var(--fundo); border-radius: 10px; padding: 8px 4px; }
 .numeros strong { font-size: 1.15rem; color: var(--texto); font-variant-numeric: tabular-nums; }
 
-/* Aba Receitas: catálogo, favoritas (coração) e detalhe. */
-.receita-item { display: flex; align-items: stretch; gap: 4px; padding: 0; }
-.receita-item .abrir { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: stretch; gap: 4px; text-align: left; border: none; background: none; border-radius: 14px 0 0 14px; padding: 12px 0 12px 14px; color: var(--texto); }
-.receita-item .abrir small { color: var(--suave); font-size: 0.82rem; }
-.receita-item .abrir .refeicao-topo strong { flex: 1; min-width: 0; }
+/* Aba Receitas: cartões com foto e barras de macros; detalhe com foto grande, anel de calorias e sanfonas. */
+.receita-item { display: flex; align-items: stretch; padding: 0; }
+.receita-item .abrir { flex: 1; min-width: 0; display: flex; gap: 12px; align-items: flex-start; text-align: left; border: none; background: none; border-radius: 14px 0 0 14px; padding: 12px 0 12px 12px; color: var(--texto); }
 .receita-item.favorita { border-left: 3px solid var(--verde); }
-button.coracao { border: none; background: none; color: var(--suave); font-size: 1.5rem; line-height: 1; padding: 0 14px; border-radius: 0 14px 14px 0; flex: 0 0 auto; display: flex; align-items: center; }
+.miniatura { width: 92px; height: 92px; border-radius: 16px; object-fit: cover; flex: 0 0 auto; }
+.sem-foto { background: var(--fundo); color: var(--suave); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+.receita-item .texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.receita-item .texto strong { font-size: 0.98rem; line-height: 1.2; }
+.kcal-linha { font-size: 0.82rem; color: var(--suave); }
+.kcal-linha b { color: var(--texto); font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.barras { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+.barra-macro { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--suave); }
+.barra-macro i { flex: 1; height: 6px; border-radius: 99px; background: var(--fundo); overflow: hidden; display: block; }
+.barra-macro i b { display: block; height: 100%; border-radius: 99px; }
+.barra-macro span { width: 40px; text-align: right; color: var(--texto); font-weight: 600; font-variant-numeric: tabular-nums; }
+button.coracao { border: none; background: none; color: var(--suave); font-size: 1.4rem; line-height: 1; padding: 10px 12px; border-radius: 0 14px 14px 0; flex: 0 0 auto; display: flex; align-items: flex-start; }
 button.coracao.ativa { color: var(--alerta); }
-.receita-topo { display: flex; align-items: flex-start; gap: 8px; }
-.receita-topo h1 { flex: 1; min-width: 0; }
-.receita-topo button.coracao { padding: 6px 8px; }
+.hero { position: relative; margin: calc(-16px - env(safe-area-inset-top)) -16px 14px; height: 250px; border-radius: 0 0 26px 26px; overflow: hidden; background: var(--fundo); }
+.hero-foto { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero .sem-foto { font-size: 4rem; }
+.hero .voltar-flutuante { position: absolute; top: calc(12px + env(safe-area-inset-top)); left: 12px; background: rgba(255,255,255,.92); color: #1f2421; border: none; border-radius: 999px; padding: 7px 12px; font-size: 0.9rem; }
+.hero button.coracao { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 10px; background: rgba(255,255,255,.92); color: #66706a; border-radius: 50%; width: 40px; height: 40px; padding: 0; justify-content: center; align-items: center; }
+.hero button.coracao.ativa { color: var(--alerta); }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
 .selo.neutro { background: var(--fundo); color: var(--suave); border: 1px solid var(--linha); }
+.anel-cartao { display: flex; align-items: center; gap: 16px; }
+.anel { width: 116px; height: 116px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.anel div { width: 86px; height: 86px; border-radius: 50%; background: var(--cartao); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.72rem; color: var(--suave); line-height: 1.1; }
+.anel b { font-size: 1.45rem; color: var(--texto); font-variant-numeric: tabular-nums; }
+.anel small { font-size: 0.62rem; }
+.legenda { font-size: 0.88rem; line-height: 1.9; flex: 1; min-width: 0; }
+.legenda i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 7px; vertical-align: middle; }
+.legenda .dica { display: inline; margin: 0; }
+.acordeao { background: var(--cartao); border-radius: 16px; padding: 0 14px; margin-bottom: 10px; }
+.acordeao summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 13px 0; font-weight: 600; }
+.acordeao summary::-webkit-details-marker { display: none; }
+.acordeao summary small { flex: 1; text-align: right; font-weight: 500; color: var(--suave); font-size: 0.78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acordeao summary::after { content: '›'; color: var(--suave); font-size: 1.3rem; line-height: 1; transform: rotate(90deg); transition: transform .15s; }
+.acordeao[open] summary::after { transform: rotate(-90deg); }
+.acordeao .corpo { padding: 0 0 12px; }
 .ingredientes { list-style: none; padding: 0; margin: 0; }
 .ingredientes li { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-top: 1px solid var(--linha); font-size: 0.92rem; }
-.ingredientes li:first-child { border-top: none; }
 .ingredientes li span:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--suave); }
 .ingredientes li span:last-child small { display: block; font-size: 0.78rem; }
-.preparo { white-space: pre-line; line-height: 1.5; margin: 0; }
+.passos { padding-left: 22px; margin: 0; line-height: 1.5; font-size: 0.92rem; }
+.passos li { margin-bottom: 6px; }
+.passos li::marker { color: var(--verde); font-weight: 700; }
+.credito { font-size: 0.72rem; color: var(--suave); margin: 0 0 10px; }
+.credito a { color: var(--suave); }
+.foto-editor { margin-bottom: 10px; }
+.foto-editor img { width: 100%; max-height: 220px; object-fit: cover; border-radius: 16px; display: block; }
+.foto-editor .sem-foto { height: 120px; border-radius: 16px; }
+.botao-arquivo { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border: 1px solid var(--linha); border-radius: 12px; background: var(--cartao); font-weight: 500; cursor: pointer; }
+.botao-arquivo input { display: none; }
 .aviso-caixa { color: var(--alerta); background: var(--alerta-claro); padding: 10px 12px; border-radius: 10px; }
 .saldo .linha button { flex: 1; }
 .dia-semana { padding: 12px 14px; }

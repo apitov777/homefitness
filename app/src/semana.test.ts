@@ -22,7 +22,7 @@ const comp = new Map<string, Composicao>([
 function receita(id: string, nome: string, tipos: Receita['tipos'], rendimento: number, itens: [typeof arroz, number][]): Receita {
   return {
     id, nome, alimento_id: id + '-al', rendimento_g: rendimento, modo_preparo: null, tipos, ativa: true,
-    familia_id: 'fam', descricao: null, porcao_g: null, tags: [],
+    familia_id: 'fam', descricao: null, porcao_g: null, tags: [], foto: null,
     item_receita: itens.map(([a, g], i) => ({ id: `${id}-${i}`, quantidade_g: g, alimento: a })),
   }
 }

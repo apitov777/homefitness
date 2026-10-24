@@ -25,6 +25,9 @@ select 'avulso aponta direto para a TACO (esperado 23)' t, count(*)
   from receita r join alimento a on a.id = r.alimento_id
   where r.familia_id is null and 'avulso' = any(r.tags) and a.familia_id is null and a.fonte <> 'receita' and r.porcao_g = r.rendimento_g;
 select 'toda receita tem porção e tipo (esperado 66)' t, count(*) from receita where familia_id is null and porcao_g > 0 and cardinality(tipos) > 0;
+select 'toda receita do catálogo tem foto do app (esperado 66)' t, count(*) from receita where familia_id is null and foto like 'fotos/%.jpg';
+select 'bucket de fotos privado' t, public = false as privado from storage.buckets where id = 'fotos';
+select 'políticas de fotos por família (esperado 4)' t, count(*) from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname like 'familia%fotos';
 select 'nenhuma porção passa de 700 kcal (esperado 0)' t, count(*)
   from receita r join alimento_nutriente an on an.alimento_id = r.alimento_id join nutriente n on n.id = an.nutriente_id
   where r.familia_id is null and n.codigo = 'energia' and an.valor_por_100g * r.porcao_g / 100 > 700;
@@ -93,6 +96,10 @@ select public.salvar_receita(null, 'Frango com arroz e salada (sem feijão)', '{
   190, 'Rende 2 marmitas') as copia \gset
 select 'cópia é da família, com porção e descrição' t, familia_id = :'fam' as da_familia, porcao_g, descricao, cardinality(tipos) as tipos from receita where id = :'copia';
 select 'cópia tem 4 ingredientes (esperado 4)' t, count(*) from item_receita where receita_id = :'copia';
+update receita set foto = :'fam' || '/' || :'copia' || '.jpg' where id = :'copia';
+select 'família grava a própria foto' t, foto = :'fam' || '/' || :'copia' || '.jpg' as gravou from receita where id = :'copia';
+update receita set foto = 'x' where id = :'frango';
+select 'foto do catálogo não muda' t, foto from receita where id = :'frango';
 select 'cópia tem energia própria' t, round(valor_por_100g, 1) > 0 as tem from alimento_nutriente where alimento_id = (select alimento_id from receita where id = :'copia') and nutriente_id = :'energia';
 select 'catálogo segue com 5 ingredientes (esperado 5)' t, count(*) from item_receita where receita_id = :'frango';
 select 'receitas que C1 vê (esperado 67)' t, count(*) from receita;
