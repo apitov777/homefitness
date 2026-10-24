@@ -366,7 +366,8 @@
    "tapioca queijo",
    "tapioca Brazilian food",
    "beiju"
-  ]
+  ],
+  "arquivo": "File:Tapioca com queijo coalho 9354 orig.jpg"
  },
  {
   "slug": "tofu-grelhado-com-legumes",
@@ -408,9 +409,10 @@
   "slug": "atum-em-conserva-1-lata",
   "nome": "Atum em conserva, 1 lata",
   "busca": [
-   "tuna tin opened",
-   "canned tuna flakes",
-   "tuna fish can"
+   "canned tuna",
+   "tuna can open",
+   "Thunfisch Dose",
+   "atún en lata"
   ]
  },
  {
