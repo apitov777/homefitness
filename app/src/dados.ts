@@ -241,16 +241,24 @@ export function buscarAlimentos(lista: AlimentoResumo[], termo: string, limite =
 const cacheComposicao = new Map<string, Composicao>()
 
 export async function carregarComposicao(ids: string[]): Promise<Map<string, Composicao>> {
-  const faltam = ids.filter((id) => !cacheComposicao.has(id))
+  const faltam = [...new Set(ids.filter((id) => !cacheComposicao.has(id)))]
   if (faltam.length) {
-    const { data, error } = await supabase
-      .from('alimento_nutriente')
-      .select('alimento_id, valor_por_100g, nutriente:nutriente_id(codigo)')
-      .in('alimento_id', faltam)
-    if (error) throw error
     for (const id of faltam) cacheComposicao.set(id, {})
-    for (const linha of data as unknown as { alimento_id: string; valor_por_100g: number; nutriente: { codigo: string } }[]) {
-      cacheComposicao.get(linha.alimento_id)![linha.nutriente.codigo] = Number(linha.valor_por_100g)
+    // Cada alimento tem ~25 nutrientes e o PostgREST devolve no máximo 1000 linhas por chamada:
+    // 66 receitas já passam disso. Paginamos em ordem fixa até vir uma página incompleta.
+    for (let de = 0; ; de += 1000) {
+      const { data, error } = await supabase
+        .from('alimento_nutriente')
+        .select('alimento_id, valor_por_100g, nutriente:nutriente_id(codigo)')
+        .in('alimento_id', faltam)
+        .order('alimento_id')
+        .order('nutriente_id')
+        .range(de, de + 999)
+      if (error) throw error
+      for (const linha of data as unknown as { alimento_id: string; valor_por_100g: number; nutriente: { codigo: string } }[]) {
+        cacheComposicao.get(linha.alimento_id)![linha.nutriente.codigo] = Number(linha.valor_por_100g)
+      }
+      if (data.length < 1000) break
     }
   }
   return new Map(ids.map((id) => [id, cacheComposicao.get(id)!]))
