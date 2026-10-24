@@ -11,4 +11,5 @@ psql -d hf -f supabase/tests/rls.sql     # todas as linhas NOTICE devem começar
 psql -d hf -f supabase/tests/plano.sql   # NOTICE "ok" e as contagens batendo com o "esperado"
 psql -d hf -f supabase/tests/familia.sql # papéis, convites, entrar, sair e remover: NOTICE "ok" e "esperado"
 psql -d hf -f supabase/tests/semana.sql  # receitas, cardápio do dia, treinos e meta do dia: NOTICE "ok" e "esperado"
+psql -d hf -f supabase/tests/catalogo.sql # catálogo de receitas (só leitura), favoritas por pessoa e cópia adaptada: NOTICE "ok" e "esperado"
 ```

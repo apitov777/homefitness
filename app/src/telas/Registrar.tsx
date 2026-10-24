@@ -7,9 +7,12 @@ import {
 } from '../dados'
 
 interface Item {
-  alimento: AlimentoResumo
+  alimento: { id: string; nome: string }
   gramas: Record<string, string> // por pessoa_id; texto para aceitar vírgula enquanto digita
 }
+
+/** Item com que a tela abre (ex.: "Registrar agora" numa receita), nas gramas da porção para cada pessoa. */
+export interface ItemInicial { alimento: { id: string; nome: string }; gramas: number }
 
 function tipoPelaHora(h: number): TipoRefeicao {
   if (h < 10) return 'cafe'
@@ -25,14 +28,16 @@ function numero(s: string | undefined): number {
   return Number.isFinite(n) && n > 0 ? n : 0
 }
 
-export default function Registrar({ ctx, onSalvo }: { ctx: Contexto; onSalvo: () => void }) {
+export default function Registrar({ ctx, inicial, onSalvo }: { ctx: Contexto; inicial?: ItemInicial | null; onSalvo: () => void }) {
   const agora = new Date()
   const [data, setData] = useState(hojeISO())
   const [hora, setHora] = useState(agora.toTimeString().slice(0, 5))
   const [tipo, setTipo] = useState<TipoRefeicao>(tipoPelaHora(agora.getHours()))
   const [descricao, setDescricao] = useState('')
   const [quem, setQuem] = useState<string[]>(ctx.pessoas.map((p) => p.id))
-  const [itens, setItens] = useState<Item[]>([])
+  const [itens, setItens] = useState<Item[]>(
+    inicial ? [{ alimento: inicial.alimento, gramas: Object.fromEntries(ctx.pessoas.map((p) => [p.id, String(inicial.gramas)])) }] : [],
+  )
   const [termo, setTermo] = useState('')
   const [alimentos, setAlimentos] = useState<AlimentoResumo[]>([])
   const [comp, setComp] = useState<Map<string, Composicao>>(new Map())
@@ -41,6 +46,7 @@ export default function Registrar({ ctx, onSalvo }: { ctx: Contexto; onSalvo: ()
 
   useEffect(() => {
     carregarAlimentos().then(setAlimentos).catch((e) => setErro(erroTexto(e)))
+    if (inicial) carregarComposicao([inicial.alimento.id]).then(setComp).catch((e) => setErro(erroTexto(e)))
   }, [])
 
   const resultados = useMemo(() => buscarAlimentos(alimentos, termo), [alimentos, termo])

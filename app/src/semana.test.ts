@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest'
 import type { Composicao, PlanoRefeicao } from './dados'
 import {
-  diasEntre, formatarPeso, gramasParaFechar, inicioSemana, kcalTreino, mesDe, montarCompras, montarSemana, refeicoesDoDia,
-  situacaoDia, type DiaPlano, type MetaDia, type Receita,
+  diasEntre, ehFavorita, formatarPeso, gramasParaFechar, inicioSemana, kcalTreino, mesDe, montarCompras, montarSemana,
+  receitasDoPlano, refeicoesDoDia, situacaoDia, type DiaPlano, type MetaDia, type Receita,
 } from './semana'
 
 // Só as contas; nada aqui fala com o banco.
@@ -22,6 +22,7 @@ const comp = new Map<string, Composicao>([
 function receita(id: string, nome: string, tipos: Receita['tipos'], rendimento: number, itens: [typeof arroz, number][]): Receita {
   return {
     id, nome, alimento_id: id + '-al', rendimento_g: rendimento, modo_preparo: null, tipos, ativa: true,
+    familia_id: 'fam', descricao: null, porcao_g: null, tags: [],
     item_receita: itens.map(([a, g], i) => ({ id: `${id}-${i}`, quantidade_g: g, alimento: a })),
   }
 }
@@ -75,6 +76,25 @@ describe('treino e meta', () => {
     expect(gramasParaFechar(700, 155.6)).toBe(450)
     expect(gramasParaFechar(-200, 155.6)).toBe(100)
     expect(gramasParaFechar(5000, 155.6)).toBe(1000)
+  })
+  it('com porção, fica entre metade e o dobro dela', () => {
+    expect(gramasParaFechar(140, 475, 30)).toBe(30) // 30 g de chocolate meio amargo
+    expect(gramasParaFechar(5000, 475, 30)).toBe(60)
+    expect(gramasParaFechar(-50, 475, 30)).toBe(15)
+    expect(gramasParaFechar(300, 0, 30)).toBe(30)
+  })
+})
+
+describe('catálogo e favoritas', () => {
+  const catalogo = { ...receita('c1', 'Mousse de banana', ['lanche_tarde'], 300, [[ovo, 100]]), familia_id: null }
+  const outra = { ...receita('c2', 'Omelete', ['cafe'], 200, [[ovo, 200]]), familia_id: null }
+  const favs = [{ pessoa_id: 'd', receita_id: 'c1' }]
+  it('a família vê as suas e as favoritas de cada pessoa', () => {
+    expect(ehFavorita(favs, 'd', 'c1')).toBe(true)
+    expect(ehFavorita(favs, 'm', 'c1')).toBe(false)
+    expect(receitasDoPlano([r1, catalogo, outra], favs, ['d']).map((r) => r.id)).toEqual(['r1', 'c1'])
+    expect(receitasDoPlano([r1, catalogo, outra], favs, ['m']).map((r) => r.id)).toEqual(['r1'])
+    expect(receitasDoPlano([r1, catalogo, outra], favs, ['d', 'm']).map((r) => r.id)).toEqual(['r1', 'c1'])
   })
 })
 
@@ -134,6 +154,16 @@ describe('montarCompras', () => {
       ['Leguminosas e derivados', [{ id: 'feijao', nome: feijao.nome, gramas: 150 }]],
       ['Ovos e derivados', [{ id: 'ovo', nome: ovo.nome, gramas: 100 }]],
     ])
+  })
+  it('item avulso (sem ingredientes) vai direto para a lista', () => {
+    const chocolate = { id: 'choc', nome: 'Chocolate, meio amargo', categoria: 'Produtos açucarados' }
+    const avulso: Receita = { ...receita('a1', 'Chocolate meio amargo (30 g)', ['lanche_tarde'], 30, []), familia_id: null, porcao_g: 30, alimento_id: 'choc' }
+    const c = montarCompras([
+      { data: '2026-10-26', pessoaId: 'd', itens: [{ id: '1', quantidade_g: 30, ordem: 0, alimento: chocolate }] },
+      { data: '2026-10-27', pessoaId: 'd', itens: [{ id: '2', quantidade_g: 30, ordem: 0, alimento: chocolate }] },
+    ], [r1, avulso], () => null)
+    expect(c.panelas).toEqual([])
+    expect(c.categorias).toEqual([['Produtos açucarados', [{ id: 'choc', nome: chocolate.nome, gramas: 60 }]]])
   })
   it('formata o peso', () => {
     expect(formatarPeso(853)).toBe('850 g')

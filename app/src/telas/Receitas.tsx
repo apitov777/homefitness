@@ -1,213 +1,325 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { Contexto } from '../App'
+import { carregarComposicao, carregarMetasVigentes, erroTexto, fmt, nomeTipo, semAcento, type Composicao, type Meta, type Pessoa } from '../dados'
+import { carregarNutrientes, carregarRecomendacoes, casasPara, recomendada, type Nutriente, type Recomendacao } from '../nutrientes'
 import {
-  buscarAlimentos, carregarAlimentos, carregarComposicao, erroTexto, fmt, lerNumero, nomeTipo, somarItens, TIPOS_REFEICAO,
-  type AlimentoResumo, type Composicao, type TipoRefeicao,
-} from '../dados'
-import { arquivarReceita, carregarReceitas, formatarPeso, salvarReceita, type Receita } from '../semana'
+  carregarFavoritas, carregarReceitas, ehFavorita, favoritar, formatarPeso, porcaoDe, type Favorita, type Receita,
+} from '../semana'
+import EditorReceita from './EditorReceita'
+import type { ItemInicial } from './Registrar'
 
-interface Ingrediente { alimento: { id: string; nome: string }; gramas: string }
+type Filtro = 'todas' | 'favoritas' | 'cafe' | 'principal' | 'lanche' | 'doce' | 'avulso' | 'familia'
 
-function Editor({ original, onFim }: { original: Receita | null; onFim: (salvou: boolean) => void }) {
-  const [nome, setNome] = useState(original?.nome ?? '')
-  const [tipos, setTipos] = useState<TipoRefeicao[]>(original?.tipos ?? ['almoco'])
-  const [itens, setItens] = useState<Ingrediente[]>(
-    original?.item_receita.map((i) => ({ alimento: i.alimento, gramas: String(i.quantidade_g) })) ?? [],
-  )
-  const [rendimento, setRendimento] = useState(original ? String(original.rendimento_g) : '')
-  const [preparo, setPreparo] = useState(original?.modo_preparo ?? '')
-  const [termo, setTermo] = useState('')
-  const [alimentos, setAlimentos] = useState<AlimentoResumo[]>([])
-  const [comp, setComp] = useState<Map<string, Composicao>>(new Map())
-  const [erro, setErro] = useState<string | null>(null)
-  const [salvando, setSalvando] = useState(false)
+const FILTROS: { id: Filtro; nome: string }[] = [
+  { id: 'todas', nome: 'Todas' },
+  { id: 'favoritas', nome: '♥ Favoritas' },
+  { id: 'familia', nome: 'Da família' },
+  { id: 'cafe', nome: 'Café da manhã' },
+  { id: 'principal', nome: 'Almoço e jantar' },
+  { id: 'lanche', nome: 'Lanches' },
+  { id: 'doce', nome: 'Doces' },
+  { id: 'avulso', nome: 'Avulsos' },
+]
 
-  useEffect(() => {
-    carregarAlimentos().then(setAlimentos).catch((e) => setErro(erroTexto(e)))
-  }, [])
-  useEffect(() => {
-    carregarComposicao(itens.map((i) => i.alimento.id)).then(setComp).catch((e) => setErro(erroTexto(e)))
-  }, [itens.length])
+const LANCHES = ['lanche_manha', 'lanche_tarde', 'ceia', 'pre_treino', 'pos_treino']
 
-  const resultados = useMemo(
-    () => buscarAlimentos(alimentos.filter((a) => a.id !== original?.alimento_id), termo),
-    [alimentos, termo, original],
-  )
-  const lista = itens.map((i) => ({ alimento: i.alimento, quantidade_g: lerNumero(i.gramas) }))
-  const soma = lista.reduce((s, i) => s + i.quantidade_g, 0)
-  const pronto = lerNumero(rendimento)
-  const tot = somarItens(lista, comp)
-  const por100 = (k: string) => (pronto ? ((tot[k] ?? 0) / pronto) * 100 : 0)
-
-  async function salvar() {
-    setErro(null)
-    if (!nome.trim()) return setErro('Dê um nome para a receita.')
-    if (!tipos.length) return setErro('Escolha em que refeição ela entra.')
-    if (!lista.some((i) => i.quantidade_g > 0)) return setErro('Adicione os ingredientes com as gramas.')
-    if (!pronto) return setErro('Informe o peso da receita pronta.')
-    setSalvando(true)
-    try {
-      await salvarReceita({
-        id: original?.id ?? null,
-        alimentoAntigo: original?.alimento_id ?? null,
-        nome,
-        tipos,
-        rendimento_g: pronto,
-        modo_preparo: preparo,
-        itens: lista.map((i) => ({ alimento_id: i.alimento.id, quantidade_g: i.quantidade_g })),
-      })
-      onFim(true)
-    } catch (e) {
-      setErro(erroTexto(e))
-      setSalvando(false)
-    }
+function passaFiltro(r: Receita, f: Filtro, favs: Favorita[], pessoaId: string | undefined): boolean {
+  switch (f) {
+    case 'favoritas': return !!pessoaId && ehFavorita(favs, pessoaId, r.id)
+    case 'familia': return !!r.familia_id
+    case 'cafe': return r.tipos.includes('cafe')
+    case 'principal': return r.tipos.includes('almoco') || r.tipos.includes('jantar')
+    case 'lanche': return r.tipos.some((t) => LANCHES.includes(t)) && !r.tags.includes('avulso')
+    case 'doce': return r.tags.includes('doce')
+    case 'avulso': return r.tags.includes('avulso')
+    default: return true
   }
+}
 
-  async function arquivar() {
-    if (!original || !confirm(`Arquivar ${original.nome}? Ela sai das listas; o que já foi comido continua no histórico.`)) return
-    try {
-      await arquivarReceita(original.id)
-      onFim(true)
-    } catch (e) {
-      setErro(erroTexto(e))
-    }
-  }
+/** Nutrientes que valem mostrar: fora os que a TACO não traz (viriam zerados). */
+const GRUPOS: { grupo: Nutriente['grupo']; nome: string }[] = [
+  { grupo: 'macro', nome: 'Macronutrientes' },
+  { grupo: 'mineral', nome: 'Minerais' },
+  { grupo: 'vitamina', nome: 'Vitaminas' },
+]
 
+function Coracao({ ativa, nome, onClick }: { ativa: boolean; nome: string; onClick: () => void }) {
   return (
-    <section className="cartao editor">
-      <h2>{original ? 'Editar receita' : 'Nova receita'}</h2>
-      <label>Nome<input value={nome} placeholder="ex.: frango com arroz e feijão" onChange={(e) => setNome(e.target.value)} /></label>
-      <fieldset className="quem">
-        <legend>Entra em</legend>
-        <div className="chips quebra">
-          {TIPOS_REFEICAO.filter((t) => t.valor !== 'outro').map((t) => (
-            <button
-              key={t.valor}
-              type="button"
-              className={tipos.includes(t.valor) ? 'ativa' : ''}
-              onClick={() => setTipos((xs) => (xs.includes(t.valor) ? xs.filter((x) => x !== t.valor) : [...xs, t.valor]))}
-            >
-              {t.nome}
-            </button>
-          ))}
-        </div>
-      </fieldset>
-
-      <h2>Ingredientes</h2>
-      {itens.map((it, idx) => (
-        <div key={idx} className="item-plano">
-          <span className="nome">{it.alimento.nome}</span>
-          <span className="com-unidade">
-            <input
-              inputMode="decimal"
-              aria-label={`Gramas de ${it.alimento.nome}`}
-              value={it.gramas}
-              onChange={(e) => setItens((xs) => xs.map((x, i) => (i === idx ? { ...x, gramas: e.target.value } : x)))}
-            />
-            g
-          </span>
-          <small>{fmt(((comp.get(it.alimento.id)?.energia ?? 0) * lerNumero(it.gramas)) / 100)} kcal</small>
-          <button className="apagar" onClick={() => setItens((xs) => xs.filter((_, i) => i !== idx))} aria-label="Remover">×</button>
-        </div>
-      ))}
-      <input className="busca" type="search" placeholder="Adicionar ingrediente: arroz, frango…" value={termo} onChange={(e) => setTermo(e.target.value)} />
-      {termo && (
-        <ul className="resultados">
-          {resultados.map((a) => (
-            <li key={a.id}>
-              <button onClick={() => { setTermo(''); setItens((xs) => [...xs, { alimento: a, gramas: '100' }]) }}>
-                {a.nome}
-                <small>{a.familia_id ? `${a.fonte} · da família` : a.categoria}</small>
-              </button>
-            </li>
-          ))}
-          {!resultados.length && <li className="dica">Nada encontrado. Cadastre pelo rótulo em Perfil.</li>}
-        </ul>
-      )}
-
-      <label>
-        Peso da receita pronta
-        <span className="com-unidade">
-          <input inputMode="decimal" value={rendimento} placeholder={soma ? String(soma) : ''} onChange={(e) => setRendimento(e.target.value)} />
-          g
-        </span>
-      </label>
-      <p className="dica">
-        Pese a panela pronta e desconte o peso da panela. O cozimento muda o peso (a carne perde água, o arroz cru ganha).
-        Se os ingredientes já estão no peso cozido, a soma serve.
-        {soma > 0 && !pronto && (
-          <> <button className="link inline" onClick={() => setRendimento(String(soma))}>Usar a soma ({formatarPeso(soma)})</button></>
-        )}
-      </p>
-      <label>Modo de preparo (opcional)<textarea rows={3} value={preparo} onChange={(e) => setPreparo(e.target.value)} /></label>
-
-      {pronto > 0 && soma > 0 && (
-        <div className="formula">
-          <strong>{fmt(por100('energia'))} kcal por 100 g</strong> · proteína {fmt(por100('proteina'), 1)} g · carboidrato{' '}
-          {fmt(por100('carboidrato'), 1)} g · gordura {fmt(por100('gordura'), 1)} g
-          <br />
-          Soma dos ingredientes ({fmt(tot.energia)} kcal) ÷ peso pronto ({formatarPeso(pronto)}) × 100.
-        </div>
-      )}
-      {erro && <p className="erro">{erro}</p>}
-      <div className="linha">
-        <button onClick={() => onFim(false)}>Cancelar</button>
-        <button className="primario" disabled={salvando} onClick={salvar}>{salvando ? 'Salvando…' : 'Salvar receita'}</button>
-      </div>
-      {original && <button className="link perigo" onClick={arquivar}>Arquivar receita</button>}
-    </section>
+    <button
+      className={'coracao' + (ativa ? ' ativa' : '')}
+      aria-label={ativa ? `Tirar ${nome} das favoritas` : `Favoritar ${nome}`}
+      aria-pressed={ativa}
+      onClick={(e) => { e.stopPropagation(); onClick() }}
+    >
+      {ativa ? '♥' : '♡'}
+    </button>
   )
 }
 
-export default function Receitas() {
+/** Alvo do dia: a meta da pessoa para energia e macros; RDA/AI (por sexo e idade) para o resto. */
+function alvoDoDia(codigo: string, pessoa: Pessoa | undefined, meta: Meta | undefined, recs: Recomendacao[]): number | null {
+  const daMeta: Record<string, number | null | undefined> = {
+    energia: meta?.kcal, proteina: meta?.proteina_g, carboidrato: meta?.carboidrato_g, gordura: meta?.gordura_g, fibra: meta?.fibra_g,
+  }
+  if (codigo in daMeta) {
+    if (daMeta[codigo]) return Number(daMeta[codigo])
+    if (codigo !== 'fibra') return null
+  }
+  return pessoa ? recomendada(recs, pessoa, codigo) : null
+}
+
+function Detalhe({ r, pessoa, meta, comp, favorita, nutrientes, recs, onFavoritar, onRegistrar, onEditar, onAdaptar, onVoltar }: {
+  r: Receita
+  pessoa: Pessoa | undefined
+  meta: Meta | undefined
+  comp: Composicao
+  favorita: boolean
+  nutrientes: Nutriente[]
+  recs: Recomendacao[]
+  onFavoritar: () => void
+  onRegistrar: (item: ItemInicial) => void
+  onEditar: () => void
+  onAdaptar: () => void
+  onVoltar: () => void
+}) {
+  const porcao = porcaoDe(r)
+  const naPorcao = (codigo: string) => ((comp[codigo] ?? 0) * porcao) / 100
+  const porcoes = r.rendimento_g / porcao
+  const avulso = !r.item_receita.length
+  const [tudo, setTudo] = useState(false)
+  const linhas = nutrientes.filter((n) => n.grupo !== 'outro' && comp[n.codigo] != null && (tudo || naPorcao(n.codigo) > 0))
+
+  return (
+    <>
+      <button className="link voltar" onClick={onVoltar}>‹ Receitas</button>
+      <div className="receita-topo">
+        <h1>{r.nome}</h1>
+        <Coracao ativa={favorita} nome={r.nome} onClick={onFavoritar} />
+      </div>
+      {r.descricao && <p>{r.descricao}</p>}
+      <p className="etiquetas">
+        {r.tipos.map((t) => <span key={t} className="selo">{nomeTipo(t)}</span>)}
+        {r.tags.map((t) => <span key={t} className="selo neutro">{t}</span>)}
+        {r.familia_id ? <span className="selo neutro">da família</span> : <span className="selo neutro">catálogo</span>}
+      </p>
+
+      <section className="cartao">
+        <h2>Por porção de {formatarPeso(porcao)}</h2>
+        <div className="numeros">
+          <span><small>Energia</small><strong>{fmt(naPorcao('energia'))}</strong>kcal</span>
+          <span><small>Proteína</small><strong>{fmt(naPorcao('proteina'))}</strong>g</span>
+          <span><small>Carboidrato</small><strong>{fmt(naPorcao('carboidrato'))}</strong>g</span>
+          <span><small>Gordura</small><strong>{fmt(naPorcao('gordura'))}</strong>g</span>
+        </div>
+        <p className="dica">
+          {fmt(comp.energia)} kcal por 100 g
+          {!avulso && <> · a receita inteira rende {formatarPeso(r.rendimento_g)}{porcoes > 1.05 ? ` (≈ ${fmt(porcoes, 1)} porções)` : ''}</>}
+        </p>
+      </section>
+
+      <section className="cartao">
+        <h2>{avulso ? 'Alimento' : 'Ingredientes'}</h2>
+        {avulso ? (
+          <p>Direto da tabela TACO: {r.nome.split(',')[0]} · {formatarPeso(porcao)}.</p>
+        ) : (
+          <ul className="ingredientes">
+            {r.item_receita.map((i) => (
+              <li key={i.id}>
+                <span>{i.alimento.nome}</span>
+                <span>{formatarPeso(i.quantidade_g)}{porcoes > 1.05 ? <small> · {formatarPeso(i.quantidade_g / porcoes)} por porção</small> : null}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        {r.modo_preparo && (
+          <>
+            <h2>Modo de preparo</h2>
+            <p className="preparo">{r.modo_preparo}</p>
+          </>
+        )}
+      </section>
+
+      <section className="cartao">
+        <h2>Nutrientes por porção</h2>
+        {GRUPOS.map((g) => {
+          const ls = linhas.filter((n) => n.grupo === g.grupo)
+          if (!ls.length) return null
+          return (
+            <table key={g.grupo} className="tabela">
+              <thead><tr><th>{g.nome}</th><th>Porção</th><th>% do dia{pessoa ? ` de ${pessoa.nome}` : ''}</th></tr></thead>
+              <tbody>
+                {ls.map((n) => {
+                  const v = naPorcao(n.codigo)
+                  const alvo = alvoDoDia(n.codigo, pessoa, meta, recs)
+                  return (
+                    <tr key={n.codigo}>
+                      <td>{n.nome}</td>
+                      <td>{fmt(v, casasPara(v))} {n.unidade}</td>
+                      <td>{alvo ? `${fmt((v / alvo) * 100)}%` : '–'}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          )
+        })}
+        <button className="link" onClick={() => setTudo(!tudo)}>{tudo ? 'Esconder os zerados' : 'Mostrar todos os nutrientes'}</button>
+        <p className="dica">
+          Valores calculados a partir dos ingredientes na TACO; vitaminas que a TACO não mede aparecem zeradas.
+          {pessoa && <> O % do dia usa a meta de {pessoa.nome} para energia e macros e a recomendação diária (RDA) para o resto.</>}
+        </p>
+      </section>
+
+      <button className="primario" onClick={onFavoritar}>{favorita ? '♥ Nas favoritas (tirar)' : '♡ Favoritar para o plano'}</button>
+      <div className="linha">
+        <button onClick={() => onRegistrar({ alimento: { id: r.alimento_id, nome: r.nome }, gramas: porcao })}>
+          Registrar agora
+        </button>
+        {r.familia_id ? <button onClick={onEditar}>Editar</button> : !avulso && <button onClick={onAdaptar}>Adaptar à minha</button>}
+      </div>
+    </>
+  )
+}
+
+export default function Receitas({ ctx, onRegistrar }: { ctx: Contexto; onRegistrar: (inicial?: ItemInicial) => void }) {
+  const [sel, setSel] = useState(ctx.eu?.id ?? ctx.pessoas[0]?.id)
   const [receitas, setReceitas] = useState<Receita[] | null>(null)
+  const [favs, setFavs] = useState<Favorita[]>([])
   const [comp, setComp] = useState<Map<string, Composicao>>(new Map())
-  const [editando, setEditando] = useState<Receita | 'nova' | null>(null)
+  const [nutrientes, setNutrientes] = useState<Nutriente[]>([])
+  const [recs, setRecs] = useState<Recomendacao[]>([])
+  const [metas, setMetas] = useState<Record<string, Meta>>({})
+  const [filtro, setFiltro] = useState<Filtro>('todas')
+  const [termo, setTermo] = useState('')
+  const [aberta, setAberta] = useState<string | null>(null)
+  const [editando, setEditando] = useState<{ original: Receita | null; base?: Receita } | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [tick, setTick] = useState(0)
+  const pessoa = ctx.pessoas.find((p) => p.id === sel)
+  const ids = useMemo(() => ctx.pessoas.map((p) => p.id), [ctx.pessoas])
 
   useEffect(() => {
     ;(async () => {
       try {
-        const rs = (await carregarReceitas()).filter((r) => r.ativa)
-        setComp(await carregarComposicao(rs.map((r) => r.alimento_id)))
-        setReceitas(rs)
+        const [rs, fs, ns, rc, ms] = await Promise.all([
+          carregarReceitas(), carregarFavoritas(ids), carregarNutrientes(), carregarRecomendacoes(), carregarMetasVigentes(ids),
+        ])
+        const ativas = rs.filter((r) => r.ativa)
+        setComp(await carregarComposicao([...new Set(ativas.map((r) => r.alimento_id))]))
+        setReceitas(ativas)
+        setFavs(fs)
+        setNutrientes(ns)
+        setRecs(rc)
+        setMetas(ms)
+        setErro(null)
       } catch (e) {
         setErro(erroTexto(e))
       }
     })()
-  }, [tick])
+  }, [ids, tick])
+
+  async function alternarFavorita(r: Receita) {
+    if (!sel) return
+    const sim = !ehFavorita(favs, sel, r.id)
+    setFavs((fs) => (sim ? [...fs, { pessoa_id: sel, receita_id: r.id }] : fs.filter((f) => !(f.pessoa_id === sel && f.receita_id === r.id))))
+    try {
+      await favoritar(sel, r.id, sim)
+    } catch (e) {
+      setErro(erroTexto(e))
+      setTick((t) => t + 1)
+    }
+  }
+
+  const lista = useMemo(() => {
+    const t = semAcento(termo.trim())
+    return (receitas ?? [])
+      .filter((r) => passaFiltro(r, filtro, favs, sel))
+      .filter((r) => !t || semAcento(r.nome).includes(t) || semAcento(r.descricao ?? '').includes(t) || r.item_receita.some((i) => semAcento(i.alimento.nome).includes(t)))
+  }, [receitas, filtro, favs, sel, termo])
 
   if (editando)
-    return <Editor original={editando === 'nova' ? null : editando} onFim={(salvou) => { setEditando(null); if (salvou) setTick((t) => t + 1) }} />
+    return (
+      <div className="tela">
+        <EditorReceita
+          original={editando.original}
+          base={editando.base}
+          onFim={(salvou) => { setEditando(null); if (salvou) { setAberta(null); setTick((t) => t + 1) } }}
+        />
+      </div>
+    )
 
+  const r = receitas?.find((x) => x.id === aberta)
+  if (r)
+    return (
+      <div className="tela">
+        <Detalhe
+          r={r}
+          pessoa={pessoa}
+          meta={pessoa ? metas[pessoa.id] : undefined}
+          comp={comp.get(r.alimento_id) ?? {}}
+          favorita={!!sel && ehFavorita(favs, sel, r.id)}
+          nutrientes={nutrientes}
+          recs={recs}
+          onFavoritar={() => alternarFavorita(r)}
+          onRegistrar={(item) => onRegistrar(item)}
+          onEditar={() => setEditando({ original: r })}
+          onAdaptar={() => setEditando({ original: null, base: r })}
+          onVoltar={() => setAberta(null)}
+        />
+      </div>
+    )
+
+  const nFav = sel ? favs.filter((f) => f.pessoa_id === sel).length : 0
   return (
-    <>
+    <div className="tela">
+      <div className="instalar-topo">
+        <h1>Receitas</h1>
+        <button className="link" onClick={() => onRegistrar()}>Registrar à mão</button>
+      </div>
+      {ctx.pessoas.length > 1 && (
+        <div className="chips">
+          {ctx.pessoas.map((x) => (
+            <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
+          ))}
+        </div>
+      )}
       <p className="dica">
-        O que você sabe cozinhar, com os ingredientes em gramas e o peso da panela pronta. O app calcula 100 g de cada receita
-        e usa na Semana para fechar a meta de cada um com a mesma panela.
+        Toque no ♡ das que {pessoa?.nome ?? 'você'} gosta: as favoritas são as que entram na Semana do plano.
+        {nFav > 0 ? ` ${nFav} ${nFav === 1 ? 'favorita' : 'favoritas'}.` : ''}
       </p>
+      <input className="busca" type="search" placeholder="Buscar receita ou ingrediente" value={termo} onChange={(e) => setTermo(e.target.value)} />
+      <div className="chips">
+        {FILTROS.map((f) => (
+          <button key={f.id} className={filtro === f.id ? 'ativa' : ''} onClick={() => setFiltro(f.id)}>{f.nome}</button>
+        ))}
+      </div>
       {erro && <p className="erro">{erro}</p>}
       {receitas === null && !erro && <p className="dica">Carregando…</p>}
-      {receitas?.map((r) => {
-        const c = comp.get(r.alimento_id) ?? {}
+      {lista.map((x) => {
+        const c = comp.get(x.alimento_id) ?? {}
+        const porcao = porcaoDe(x)
+        const fav = !!sel && ehFavorita(favs, sel, x.id)
         return (
-          <button key={r.id} className="cartao receita" onClick={() => setEditando(r)}>
-            <span className="refeicao-topo">
-              <strong>{r.nome}</strong>
-              <span className="kcal">{fmt(c.energia)} kcal/100 g</span>
-            </span>
-            <small>
-              {r.tipos.map(nomeTipo).join(', ')} · rende {formatarPeso(r.rendimento_g)} · {r.item_receita.length}{' '}
-              {r.item_receita.length === 1 ? 'ingrediente' : 'ingredientes'}
-            </small>
-            <small>Em 100 g: proteína {fmt(c.proteina, 1)} g · carboidrato {fmt(c.carboidrato, 1)} g · gordura {fmt(c.gordura, 1)} g</small>
-          </button>
+          <div key={x.id} className={'cartao receita-item' + (fav ? ' favorita' : '')}>
+            <button className="abrir" onClick={() => setAberta(x.id)}>
+              <span className="refeicao-topo">
+                <strong>{x.nome}</strong>
+                <span className="kcal">{fmt(((c.energia ?? 0) * porcao) / 100)} kcal</span>
+              </span>
+              <small>
+                {formatarPeso(porcao)} · proteína {fmt(((c.proteina ?? 0) * porcao) / 100)} g · carboidrato {fmt(((c.carboidrato ?? 0) * porcao) / 100)} g ·
+                gordura {fmt(((c.gordura ?? 0) * porcao) / 100)} g
+              </small>
+              <small>{x.familia_id ? 'da família · ' : ''}{x.tags.filter((t) => t !== 'avulso').join(' · ')}</small>
+            </button>
+            <Coracao ativa={fav} nome={x.nome} onClick={() => alternarFavorita(x)} />
+          </div>
         )
       })}
-      {receitas?.length === 0 && (
-        <p className="dica">Nenhuma receita ainda. Comece pelos almoços que você faz toda semana.</p>
+      {receitas && !lista.length && (
+        <p className="dica">{filtro === 'favoritas' ? 'Nenhuma favorita ainda. Toque no ♡ das receitas que gosta.' : 'Nada encontrado.'}</p>
       )}
-      <button className="primario" onClick={() => setEditando('nova')}>＋ Nova receita</button>
-    </>
+      <button className="primario" onClick={() => setEditando({ original: null })}>＋ Minha receita</button>
+    </div>
   )
 }
