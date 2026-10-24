@@ -6,6 +6,7 @@ import Login from './telas/Login'
 import Onboarding from './telas/Onboarding'
 import Cadastro from './telas/Cadastro'
 import Hoje from './telas/Hoje'
+import Plano from './telas/Plano'
 import Registrar from './telas/Registrar'
 import Exames from './telas/Exames'
 import Perfil from './telas/Perfil'
@@ -19,10 +20,11 @@ export interface Contexto {
   abrirCadastro: (pessoaId: string) => void
 }
 
-type Aba = 'hoje' | 'registrar' | 'exames' | 'perfil'
+type Aba = 'hoje' | 'plano' | 'registrar' | 'exames' | 'perfil'
 
 const ABAS: { id: Aba; nome: string; icone: string }[] = [
   { id: 'hoje', nome: 'Hoje', icone: '◔' },
+  { id: 'plano', nome: 'Plano', icone: '☷' },
   { id: 'registrar', nome: 'Registrar', icone: '＋' },
   { id: 'exames', nome: 'Exames', icone: '⚗' },
   { id: 'perfil', nome: 'Perfil', icone: '☺' },
@@ -113,6 +115,7 @@ export default function App() {
         {aba === 'registrar' && (
           <Registrar ctx={ctx} onSalvo={() => { setVersaoHoje((v) => v + 1); setAba('hoje') }} />
         )}
+        {aba === 'plano' && <Plano ctx={ctx} />}
         {aba === 'exames' && <Exames ctx={ctx} />}
         {aba === 'perfil' && <Perfil ctx={ctx} />}
       </main>

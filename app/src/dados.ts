@@ -29,6 +29,7 @@ export interface Pessoa {
   restricoes: string[] | null
   preferencias: string | null
   compartilha_exames: boolean
+  aviso_resumo: string | null
 }
 
 /** Sem estes dados não dá para calcular a meta; o app abre o cadastro inicial. */
@@ -50,6 +51,80 @@ export interface Meta {
   fibra_g: number | null
   agua_ml: number | null
   metodo: string | null
+}
+
+export function nomeTipo(t: TipoRefeicao): string {
+  return TIPOS_REFEICAO.find((x) => x.valor === t)?.nome ?? t
+}
+
+/** 0 = domingo, como Date.getDay() e extract(dow) no banco. */
+export const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
+
+export function descreverDias(dias: number[]): string {
+  const d = [...dias].sort()
+  if (d.length === 7) return 'todo dia'
+  if (d.join() === '1,2,3,4,5') return 'seg a sex'
+  if (d.join() === '0,6') return 'fim de semana'
+  return d.map((x) => DIAS_SEMANA[x].toLowerCase()).join(', ')
+}
+
+export interface PlanoItem {
+  id: string
+  quantidade_g: number
+  ordem: number
+  alimento: { id: string; nome: string }
+}
+
+export interface PlanoRefeicao {
+  id: string
+  pessoa_id: string
+  tipo: TipoRefeicao
+  nome: string | null
+  hora: string
+  dias: number[]
+  avisar: boolean
+  ativo: boolean
+  plano_item: PlanoItem[]
+}
+
+export interface Checagem {
+  id: string
+  plano_refeicao_id: string
+  data: string
+  status: 'feita' | 'pulada'
+  refeicao_id: string | null
+}
+
+export async function carregarPlanos(pessoaIds: string[]): Promise<PlanoRefeicao[]> {
+  if (!pessoaIds.length) return []
+  const { data, error } = await supabase
+    .from('plano_refeicao')
+    .select('id, pessoa_id, tipo, nome, hora, dias, avisar, ativo, plano_item(id, quantidade_g, ordem, alimento:alimento_id(id, nome))')
+    .in('pessoa_id', pessoaIds)
+    .eq('ativo', true)
+    .order('hora')
+  if (error) throw error
+  const lista = data as unknown as PlanoRefeicao[]
+  for (const p of lista) p.plano_item.sort((a, b) => a.ordem - b.ordem)
+  return lista
+}
+
+/** Soma os nutrientes de itens em gramas, pela composição por 100 g. */
+export function somarItens(itens: { quantidade_g: number; alimento: { id: string } }[], comp: Map<string, Composicao>): Composicao {
+  const t: Composicao = {}
+  for (const it of itens) {
+    for (const [k, v] of Object.entries(comp.get(it.alimento.id) ?? {})) t[k] = (t[k] ?? 0) + (v * it.quantidade_g) / 100
+  }
+  return t
+}
+
+/** Situação do dia contra a meta de energia: batida entre 90% e 110%. */
+export function situacaoMeta(kcal: number, meta: number | null | undefined): { batida: boolean; texto: string } | null {
+  if (!meta) return null
+  const pct = kcal / meta
+  if (pct >= 0.9 && pct <= 1.1) return { batida: true, texto: `Meta batida: ${fmt(kcal)} de ${fmt(meta)} kcal (${fmt(pct * 100)}%)` }
+  if (pct < 0.9) return { batida: false, texto: `Faltam ${fmt(meta * 0.9 - kcal)} kcal para chegar a 90% da meta (${fmt(meta)} kcal)` }
+  return { batida: false, texto: `Passou ${fmt(kcal - meta * 1.1)} kcal dos 110% da meta (${fmt(meta)} kcal)` }
 }
 
 export interface AlimentoResumo {

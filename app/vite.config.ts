@@ -28,6 +28,7 @@ export default defineConfig({
       workbox: {
         // O app abre offline; os dados vêm sempre do Supabase.
         navigateFallback: 'index.html',
+        importScripts: ['push-sw.js'],
         globPatterns: ['**/*.{js,css,html,png,svg}'],
       },
     }),
