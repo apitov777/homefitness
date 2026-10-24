@@ -13,4 +13,5 @@ psql -d hf -f supabase/tests/familia.sql # papéis, convites, entrar, sair e rem
 psql -d hf -f supabase/tests/semana.sql  # receitas, cardápio do dia, treinos e meta do dia: NOTICE "ok" e "esperado"
 psql -d hf -f supabase/tests/catalogo.sql # catálogo de receitas (só leitura), favoritas por pessoa e cópia adaptada: NOTICE "ok" e "esperado"
 psql -d hf -f supabase/tests/dietas.sql  # dietas por dia da semana, opções A/B/C e marcar com a opção comida: NOTICE "ok" e "esperado"
+psql -d hf -f supabase/tests/hoje.sql    # "comeu outra coisa" (trocada), "comeu algo a mais" e o resumo da noite: NOTICE "ok" e "esperado"
 ```
