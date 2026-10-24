@@ -115,7 +115,7 @@ export interface Checagem {
   opcao_id?: string | null
   plano_refeicao_id: string
   data: string
-  status: 'feita' | 'pulada'
+  status: 'feita' | 'pulada' | 'trocada'
   refeicao_id: string | null
 }
 

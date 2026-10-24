@@ -449,3 +449,28 @@ button.coracao.ativa { color: var(--alerta); }
 .chips.opcoes button { font-size: 0.85rem; padding: 6px 10px; }
 .checklist .itens { margin: 4px 0 6px; font-size: 0.88rem; color: var(--suave); }
 .dieta-hoje { margin: 0 0 6px; }
+
+/* Hoje: meta do dia de cada um da família e registro rápido */
+.familia-hoje h2 { margin-bottom: 8px; }
+.pessoas-hoje { display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); gap: 8px; }
+.pessoa-hoje { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 6px 8px; border: 1px solid var(--linha); border-radius: 14px; background: var(--fundo); color: var(--texto); }
+.pessoa-hoje.ativa { border-color: var(--verde); box-shadow: inset 0 0 0 1px var(--verde); background: var(--cartao); }
+.pessoa-hoje strong { font-size: 0.95rem; margin-top: 2px; }
+.pessoa-hoje small { font-size: 0.78rem; color: var(--suave); }
+.pessoa-hoje small.falta, .pessoa-hoje small.passou { color: var(--alerta); font-weight: 600; }
+.pessoa-hoje small.na-meta { color: var(--verde); font-weight: 600; }
+.anel-dia { width: 84px; height: 84px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+.anel-dia > span { width: 64px; height: 64px; border-radius: 50%; background: var(--cartao); display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; }
+.anel-dia b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.anel-dia small { font-size: 0.58rem; color: var(--suave); }
+.familia-hoje > .dica { margin: 8px 0 0; }
+.checklist li.trocada .refeicao-topo strong { color: var(--azul); }
+.checklist .itens .link { padding: 0; font-size: 0.85rem; }
+.escolher { margin-top: 8px; border: 1px solid var(--linha); border-radius: 12px; padding: 10px; background: var(--fundo); }
+.escolher .fav-semana li button { background: var(--cartao); }
+.escolher .fav-semana { margin-bottom: 8px; }
+.escolher .item-plano { background: none; }
+.escolher .total { display: flex; justify-content: space-between; font-size: 0.9rem; margin: 6px 0 2px; }
+.escolher .linha .primario { margin-top: 0; }
+.extra { border-top: 1px solid var(--linha); margin-top: 8px; padding-top: 4px; }
+.extra h3 { font-size: 0.95rem; margin: 6px 0 2px; }

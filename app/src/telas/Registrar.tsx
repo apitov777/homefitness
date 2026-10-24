@@ -5,6 +5,7 @@ import {
   buscarAlimentos, carregarAlimentos, carregarComposicao, erroTexto, fmt, hojeISO, TIPOS_REFEICAO,
   type AlimentoResumo, type Composicao, type TipoRefeicao,
 } from '../dados'
+import { tipoPelaHora } from '../hoje'
 import { porcaoDe, type Receita } from '../semana'
 import FavoritasSemana from './FavoritasSemana'
 
@@ -15,15 +16,6 @@ interface Item {
 
 /** Item com que a tela abre (ex.: "Registrar agora" numa receita), nas gramas da porção para cada pessoa. */
 export interface ItemInicial { alimento: { id: string; nome: string }; gramas: number }
-
-function tipoPelaHora(h: number): TipoRefeicao {
-  if (h < 10) return 'cafe'
-  if (h < 12) return 'lanche_manha'
-  if (h < 15) return 'almoco'
-  if (h < 18) return 'lanche_tarde'
-  if (h < 22) return 'jantar'
-  return 'ceia'
-}
 
 function numero(s: string | undefined): number {
   const n = parseFloat((s ?? '').replace(',', '.'))
