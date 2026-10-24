@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './supabase'
-import { carregarPessoas, erroTexto, type Pessoa } from './dados'
+import { cadastroIncompleto, carregarPessoas, erroTexto, type Pessoa } from './dados'
 import Login from './telas/Login'
 import Onboarding from './telas/Onboarding'
+import Cadastro from './telas/Cadastro'
 import Hoje from './telas/Hoje'
 import Registrar from './telas/Registrar'
 import Exames from './telas/Exames'
@@ -15,6 +16,7 @@ export interface Contexto {
   pessoas: Pessoa[]
   eu: Pessoa | undefined
   recarregarPessoas: () => Promise<void>
+  abrirCadastro: (pessoaId: string) => void
 }
 
 type Aba = 'hoje' | 'registrar' | 'exames' | 'perfil'
@@ -33,6 +35,8 @@ export default function App() {
   const [aba, setAba] = useState<Aba>('hoje')
   const [erro, setErro] = useState<string | null>(null)
   const [versaoHoje, setVersaoHoje] = useState(0)
+  // Pessoa em cadastro guiado; abre sozinho no primeiro acesso enquanto faltarem dados.
+  const [cadastro, setCadastro] = useState<string | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
@@ -52,8 +56,11 @@ export default function App() {
         .limit(1)
       if (error) throw error
       const id = data[0]?.familia_id ?? null
+      const lista = id ? await carregarPessoas(id) : []
       setFamiliaId(id)
-      setPessoas(id ? await carregarPessoas(id) : [])
+      setPessoas(lista)
+      const eu = lista.find((p) => p.user_id === session.user.id)
+      if (eu && cadastroIncompleto(eu)) setCadastro(eu.id)
     } catch (e) {
       setErro(erroTexto(e))
     }
@@ -82,7 +89,22 @@ export default function App() {
     pessoas,
     eu: pessoas.find((p) => p.user_id === session.user.id),
     recarregarPessoas: async () => setPessoas(await carregarPessoas(familiaId)),
+    abrirCadastro: setCadastro,
   }
+
+  const emCadastro = pessoas.find((p) => p.id === cadastro)
+  if (emCadastro)
+    return (
+      <Cadastro
+        key={emCadastro.id}
+        ctx={ctx}
+        p={emCadastro}
+        onFim={() => {
+          setCadastro(null)
+          setVersaoHoje((v) => v + 1)
+        }}
+      />
+    )
 
   return (
     <div className="app">

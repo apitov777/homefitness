@@ -6,7 +6,7 @@ import {
   type Atividade, type Objetivo, type Sexo,
 } from '../calc'
 import {
-  carregarAlimentos, carregarMetasVigentes, erroTexto, esquecerComposicao, fmt, hojeISO, somarDias,
+  carregarAlimentos, carregarMetasVigentes, erroTexto, esquecerComposicao, fmt, hojeISO, salvarMeta,
   type Meta, type Pessoa,
 } from '../dados'
 
@@ -87,23 +87,11 @@ function DadosPessoa({ ctx, p }: { ctx: Contexto; p: Pessoa }) {
   async function usarMeta() {
     if (!calc) return
     setErro(null)
-    const hoje = hojeISO()
-    const valores = {
-      tmb_kcal: calc.tmbKcal, tdee_kcal: calc.tdeeKcal, kcal: calc.kcal, proteina_g: calc.proteinaG,
-      carboidrato_g: calc.carboidratoG, gordura_g: calc.gorduraG, fibra_g: calc.fibraG, agua_ml: calc.aguaMl,
-      metodo: calc.metodo,
+    try {
+      await salvarMeta(p.id, calc, meta)
+    } catch (e) {
+      return setErro(erroTexto(e))
     }
-    let error
-    if (meta && meta.inicio === hoje) {
-      ;({ error } = await supabase.from('meta').update(valores).eq('id', meta.id))
-    } else {
-      if (meta) {
-        ;({ error } = await supabase.from('meta').update({ fim: somarDias(hoje, -1) }).eq('id', meta.id))
-        if (error) return setErro(erroTexto(error))
-      }
-      ;({ error } = await supabase.from('meta').insert({ pessoa_id: p.id, inicio: hoje, ...valores }))
-    }
-    if (error) return setErro(erroTexto(error))
     setMeta((await carregarMetasVigentes([p.id]))[p.id] ?? null)
     setMsg('Meta atualizada.')
   }
@@ -351,6 +339,11 @@ export default function Perfil({ ctx }: { ctx: Contexto }) {
           <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
         ))}
       </div>
+      {p && (
+        <button className="primario" onClick={() => ctx.abrirCadastro(p.id)}>
+          {p.user_id === ctx.session.user.id ? 'Refazer meu cadastro guiado' : `Cadastro guiado de ${p.nome}`}
+        </button>
+      )}
       {p && <DadosPessoa key={p.id} ctx={ctx} p={p} />}
       <Familia ctx={ctx} />
       <AlimentoRotulo ctx={ctx} />

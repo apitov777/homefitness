@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { Atividade, Objetivo, Sexo } from './calc'
+import type { Atividade, Objetivo, ResultadoCalculo, Sexo } from './calc'
 
 export type TipoRefeicao =
   | 'cafe' | 'lanche_manha' | 'almoco' | 'lanche_tarde' | 'jantar' | 'ceia' | 'pre_treino' | 'pos_treino' | 'outro'
@@ -26,7 +26,14 @@ export interface Pessoa {
   altura_cm: number | null
   nivel_atividade: Atividade | null
   objetivo: Objetivo | null
+  restricoes: string[] | null
+  preferencias: string | null
   compartilha_exames: boolean
+}
+
+/** Sem estes dados não dá para calcular a meta; o app abre o cadastro inicial. */
+export function cadastroIncompleto(p: Pessoa): boolean {
+  return !p.sexo || !p.data_nascimento || !p.altura_cm || !p.nivel_atividade || !p.objetivo
 }
 
 export interface Meta {
@@ -88,6 +95,27 @@ export async function carregarMetasVigentes(pessoaIds: string[]): Promise<Record
   const { data, error } = await supabase.from('meta').select('*').in('pessoa_id', pessoaIds).is('fim', null)
   if (error) throw error
   return Object.fromEntries((data as Meta[]).map((m) => [m.pessoa_id, m]))
+}
+
+/** Grava a meta calculada: substitui a de hoje ou encerra a anterior ontem e abre uma nova. */
+export async function salvarMeta(pessoaId: string, calc: ResultadoCalculo, atual: Meta | null): Promise<void> {
+  const hoje = hojeISO()
+  const valores = {
+    tmb_kcal: calc.tmbKcal, tdee_kcal: calc.tdeeKcal, kcal: calc.kcal, proteina_g: calc.proteinaG,
+    carboidrato_g: calc.carboidratoG, gordura_g: calc.gorduraG, fibra_g: calc.fibraG, agua_ml: calc.aguaMl,
+    metodo: calc.metodo,
+  }
+  if (atual && atual.inicio === hoje) {
+    const { error } = await supabase.from('meta').update(valores).eq('id', atual.id)
+    if (error) throw error
+    return
+  }
+  if (atual) {
+    const { error } = await supabase.from('meta').update({ fim: somarDias(hoje, -1) }).eq('id', atual.id)
+    if (error) throw error
+  }
+  const { error } = await supabase.from('meta').insert({ pessoa_id: pessoaId, inicio: hoje, ...valores })
+  if (error) throw error
 }
 
 let cacheAlimentos: AlimentoResumo[] | null = null
