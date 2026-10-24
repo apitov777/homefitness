@@ -7,6 +7,7 @@ import {
   type Checagem, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
 import { idadeEm } from '../calc'
+import { carregarDias, carregarMetasDia, carregarTreinos, type MetaDia, type Treino } from '../semana'
 import CartaoInstalar from './Instalar'
 
 interface ItemDia {
@@ -180,6 +181,8 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
   const [carregando, setCarregando] = useState(true)
   const [abertoMicros, setAbertoMicros] = useState<string | null>(null)
   const [planos, setPlanos] = useState<PlanoRefeicao[]>([])
+  const [metasDia, setMetasDia] = useState<MetaDia[]>([])
+  const [treinos, setTreinos] = useState<Treino[]>([])
   const [checagens, setChecagens] = useState<Checagem[]>([])
   const [tick, setTick] = useState(0)
 
@@ -204,14 +207,24 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
           supabase.from('plano_checagem').select('id, plano_refeicao_id, data, status, refeicao_id').eq('data', data),
         ])
         if (e2) throw e2
+        const [diasDoPlano, md, ts] = await Promise.all([
+          carregarDias(ps.map((p) => p.id), data, data), carregarMetasDia(ids, data, data), carregarTreinos(ids),
+        ])
+        // Onde a Semana trocou a refeição neste dia, valem os itens do dia.
+        const efetivos = ps.map((p) => {
+          const d = diasDoPlano.find((x) => x.plano_refeicao_id === p.id)
+          return d ? { ...p, plano_item: d.plano_dia_item } : p
+        })
         const alimentoIds = [...new Set([
           ...lista.flatMap((r) => r.item_refeicao.map((i) => i.alimento.id)),
-          ...ps.flatMap((p) => p.plano_item.map((i) => i.alimento.id)),
+          ...efetivos.flatMap((p) => p.plano_item.map((i) => i.alimento.id)),
         ])]
         const [c, m] = await Promise.all([carregarComposicao(alimentoIds), carregarMetasVigentes(ids)])
         if (!vivo) return
         setRefeicoes(lista)
-        setPlanos(ps)
+        setPlanos(efetivos)
+        setMetasDia(md)
+        setTreinos(ts)
         setChecagens(chs as Checagem[])
         setComp(c)
         setMetas(m)
@@ -272,13 +285,26 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
       {ctx.pessoas.map((p) => {
         const minhas = refeicoes.filter((r) => r.pessoa_id === p.id)
         const tot = somar(minhas.flatMap((r) => r.item_refeicao), comp)
-        const m = metas[p.id]
+        // Meta do dia (acompanha o treino quando a pessoa escolheu); a vigente completa fibra e o resto.
+        const md = metasDia.find((x) => x.pessoa_id === p.id)
+        const vigente = metas[p.id]
+        const m = md?.kcal ? {
+          ...vigente, kcal: md.kcal, proteina_g: md.proteina_g, carboidrato_g: md.carboidrato_g, gordura_g: md.gordura_g,
+        } : vigente
+        const treinosDia = treinos.filter((t) => t.pessoa_id === p.id && t.dias.includes(diaSemana))
         const planoDia = planos.filter((x) => x.pessoa_id === p.id && x.dias.includes(diaSemana))
         const feitas = planoDia.filter((x) => checagens.some((c) => c.plano_refeicao_id === x.id && c.status === 'feita')).length
         const situacao = situacaoMeta(tot.energia ?? 0, m?.kcal)
         return (
           <section key={p.id} className="cartao">
             <h2>{p.nome}</h2>
+            {treinosDia.length > 0 && (
+              <p className="treino-hoje">
+                🏋 {treinosDia.map((t) => `${t.atividade} ${t.minutos} min`).join(' + ')}
+                {md?.treino_kcal ? ` · ≈ ${fmt(md.treino_kcal)} kcal` : ''}
+                {md?.pelo_treino && md.gasto_kcal ? ` · gasto do dia ≈ ${fmt(md.gasto_kcal)} kcal, meta acompanha o treino` : ''}
+              </p>
+            )}
             {(situacao || planoDia.length > 0) && (
               <div className={'situacao' + (situacao?.batida ? ' batida' : '')}>
                 {situacao && <strong>{situacao.batida ? '✅ ' : ''}{situacao.texto}</strong>}

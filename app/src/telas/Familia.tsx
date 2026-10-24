@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { renderSVG } from 'uqr'
 import type { Contexto } from '../App'
 import { supabase } from '../supabase'
@@ -11,6 +11,7 @@ import {
 } from '../familia'
 import { compartilhar, escolherContato, podeEscolherContato } from '../plataforma'
 import CartaoInstalar from './Instalar'
+import Folha from './Folha'
 
 type Painel =
   | { tipo: 'membro'; pessoaId: string }
@@ -25,20 +26,6 @@ export function Avatar({ id, nome, grande = false }: { id: string; nome: string;
     <span className={grande ? 'avatar grande' : 'avatar'} style={{ background: corAvatar(id) }} aria-hidden>
       {iniciais(nome)}
     </span>
-  )
-}
-
-function Folha({ titulo, onFechar, children }: { titulo: string; onFechar: () => void; children: ReactNode }) {
-  return (
-    <div className="folha-fundo" onClick={onFechar}>
-      <div className="folha" role="dialog" aria-modal="true" aria-label={titulo} onClick={(e) => e.stopPropagation()}>
-        <div className="folha-topo">
-          <h2>{titulo}</h2>
-          <button className="link" onClick={onFechar}>OK</button>
-        </div>
-        {children}
-      </div>
-    </div>
   )
 }
 

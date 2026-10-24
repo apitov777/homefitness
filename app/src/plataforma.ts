@@ -73,15 +73,15 @@ export async function escolherContato(): Promise<{ nome: string; email: string }
 }
 
 /** Abre a folha de compartilhar do celular (iMessage, WhatsApp…). Sem ela, copia o texto. */
-export async function compartilhar(titulo: string, texto: string, url: string): Promise<'enviado' | 'copiado' | 'cancelado'> {
+export async function compartilhar(titulo: string, texto: string, url?: string): Promise<'enviado' | 'copiado' | 'cancelado'> {
   if (navigator.share) {
     try {
-      await navigator.share({ title: titulo, text: texto, url })
+      await navigator.share(url ? { title: titulo, text: texto, url } : { title: titulo, text: texto })
       return 'enviado'
     } catch (e) {
       if (e instanceof DOMException && e.name === 'AbortError') return 'cancelado'
     }
   }
-  await navigator.clipboard.writeText(`${texto}\n${url}`)
+  await navigator.clipboard.writeText(url ? `${texto}\n${url}` : texto)
   return 'copiado'
 }

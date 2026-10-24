@@ -29,13 +29,21 @@ skills/
 cd app
 npm install
 npm run dev      # usa .env.production (URL e chave publishable do projeto)
-npm test         # cálculo de metas conferido contra o script Python
+npm test         # cálculo de metas (conferido contra o script Python) e contas da semana
 npm run build    # gera app/dist para publicar
 ```
 
-Telas: **Hoje** (calorias e macros de cada um contra a própria meta, a lista das refeições do plano para marcar Fiz / Ajustar gramas / Não fiz e se a meta do dia foi batida, micronutrientes do dia), **Plano** (refeições do dia com horário, dias da semana e gramas de cada alimento, total contra a meta, avisos no celular), **Registrar** (uma refeição para os dois, com gramas por pessoa), **Exames** (resultados, faixa do laudo e o que na alimentação mexe em cada marcador) e **Perfil** (dados, meta calculada com a fórmula visível, privacidade dos exames, alimentos de rótulo e a entrada da **Família**).
+Telas: **Hoje** (calorias e macros de cada um contra a própria meta, a lista das refeições do plano para marcar Fiz / Ajustar gramas / Não fiz e se a meta do dia foi batida, micronutrientes do dia), **Plano** (Semana, Refeições, Receitas e Treinos; avisos no celular), **Registrar** (uma refeição para os dois, com gramas por pessoa), **Exames** (resultados, faixa do laudo e o que na alimentação mexe em cada marcador) e **Perfil** (dados, meta calculada com a fórmula visível, privacidade dos exames, alimentos de rótulo e a entrada da **Família**).
 
 Login com e-mail e senha; a sessão fica salva, então depois da primeira vez o app abre direto.
+
+**Plano**, para programar a semana ou o mês:
+- Refeições: o plano de sempre, com horário, dias da semana e gramas de cada alimento.
+- Receitas: o que a família sabe cozinhar, com os ingredientes em gramas e o peso da panela pronta. O banco calcula 100 g da receita e ela vira um alimento da família (aparece também em Registrar).
+- Treinos: atividade, minutos e dias. Gasto por sessão = calorias ativas do relógio, ou (MET − 1) × peso × horas (MET do Compendium of Physical Activities). A meta do dia pode ser fixa ou acompanhar o treino: (TMB × fator da rotina + treino) × meta/gasto do cadastro, nunca abaixo da TMB, com a diferença no carboidrato.
+- Semana e Mês: cada dia com as refeições, o treino, o planejado contra a meta do dia (fecha em ±5%) e o gasto. "Montar com receitas" reveza as receitas escolhidas nos dias e refeições marcados, a mesma panela para quem estiver junto e as gramas de cada um fechando a própria meta do dia. Tocar numa refeição troca só aquele dia (receita, gramas, outros alimentos, "Mesma panela" para outra pessoa) ou volta ao plano de sempre. O saldo do período mostra planejado, meta, gasto e o déficit em kcal (≈ kg pela estimativa de 7.700 kcal/kg).
+- Compras: quanto cozinhar de cada receita no período (em kg e em número de receitas) e a lista de compras por categoria, com as receitas abertas nos ingredientes; "Enviar" manda pela folha de compartilhar.
+- Hoje usa o cardápio do dia, a meta do dia e mostra o treino do dia.
 
 **Família** (Perfil › Família), no estilo do Compartilhamento Familiar do iCloud:
 - Membros com papel: organizador (um por família), responsável, adulto e criança; quem não tem login é dependente.
@@ -52,8 +60,9 @@ Login com e-mail e senha; a sessão fica salva, então depois da primeira vez o 
 - Uma refeição feita junto vira um `refeicao_grupo` com uma `refeicao` por pessoa, cada uma com as próprias gramas (`registrar_refeicao`).
 - Plano de refeições: `plano_refeicao` + `plano_item` (gramas por alimento) por pessoa. Marcar no dia (`marcar_plano`) registra a refeição com os itens do plano ou com as gramas ajustadas e grava `plano_checagem`; apagar a refeição desfaz a marcação. Meta batida = energia entre 90% e 110% da meta.
 - Avisos: a função `functions/avisos` manda Web Push (chaves VAPID geradas no primeiro uso e guardadas em `push_config`). O `pg_cron` chama a função a cada minuto (`20261024000002_avisos_cron.sql`) e `avisos_devidos()` devolve o que vence: cada refeição do plano com sino ligado e ainda não marcada, e o resumo do dia no horário de `pessoa.aviso_resumo` (padrão 21:30). No iPhone o aviso só chega com o app instalado na Tela de Início.
+- Semana (`20261024000004_semana.sql`): `receita.tipos` (em que refeições entra) e `salvar_receita` (recalcula `alimento_nutriente` da receita; se ela já foi comida, cria uma versão nova e o histórico fica com a antiga). `plano_dia` + `plano_dia_item` trocam os itens de uma refeição do plano num dia (`definir_dias`); `marcar_plano` e os avisos usam o cardápio do dia. `treino_plano` e `metas_do_periodo(pessoas, de, até)` dão a meta, o gasto e o treino de cada dia (até 62 dias por chamada).
 - Família (`20261024000003_familia.sql`): papéis em `familia_membro.papel`, um login em uma família só, convites com `codigo`, `papel`, `expira_em` (7 dias). Entrar, sair, remover, mudar papel e passar o organizador só pelas funções `aceitar_convite`, `sair_da_familia`, `remover_membro`, `mudar_papel` e `transferir_organizador`. `ver_convite` responde até para quem ainda não tem conta.
-- `tests/` roda as migrations num Postgres local e confere a RLS com três usuários (`rls.sql`), o plano com os avisos (`plano.sql`) e a família (`familia.sql`).
+- `tests/` roda as migrations num Postgres local e confere a RLS com três usuários (`rls.sql`), o plano com os avisos (`plano.sql`), a família (`familia.sql`) e a semana com receitas, treinos e meta do dia (`semana.sql`).
 - `scripts/importar_taco.py` regenera a migration da TACO a partir da planilha. Na TACO original o leite de vaca integral e o desnatado UHT estão sem energia e macros (amostras em reavaliação); cadastre pelo rótulo.
 
 ## Uso da skill
