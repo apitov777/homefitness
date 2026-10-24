@@ -78,6 +78,14 @@ export interface PlanoItem {
   alimento: { id: string; nome: string }
 }
 
+/** Opção B, C… de uma refeição do plano (a A é plano_item). */
+export interface PlanoOpcao {
+  id: string
+  ordem: number
+  nome: string | null
+  plano_opcao_item: PlanoItem[]
+}
+
 export interface PlanoRefeicao {
   id: string
   pessoa_id: string
@@ -87,29 +95,96 @@ export interface PlanoRefeicao {
   dias: number[]
   avisar: boolean
   ativo: boolean
+  dieta_id: string | null
+  kcal_alvo: number | null
   plano_item: PlanoItem[]
+  plano_opcao: PlanoOpcao[]
+}
+
+/** Um dia inteiro de refeições com opções, que vale nos dias da semana marcados (um dia tem uma dieta só). */
+export interface Dieta {
+  id: string
+  pessoa_id: string
+  nome: string
+  kcal_alvo: number | null
+  dias: number[]
 }
 
 export interface Checagem {
   id: string
+  opcao_id?: string | null
   plano_refeicao_id: string
   data: string
   status: 'feita' | 'pulada'
   refeicao_id: string | null
 }
 
+const SELECT_PLANO = 'id, pessoa_id, tipo, nome, hora, dias, avisar, ativo, dieta_id, kcal_alvo, '
+  + 'plano_item(id, quantidade_g, ordem, alimento:alimento_id(id, nome)), '
+  + 'plano_opcao(id, ordem, nome, plano_opcao_item(id, quantidade_g, ordem, alimento:alimento_id(id, nome)))'
+
+function arrumarPlanos(data: unknown): PlanoRefeicao[] {
+  const lista = data as PlanoRefeicao[]
+  for (const p of lista) {
+    p.plano_item.sort((a, b) => a.ordem - b.ordem)
+    p.kcal_alvo = p.kcal_alvo == null ? null : Number(p.kcal_alvo)
+    p.plano_opcao = (p.plano_opcao ?? []).sort((a, b) => a.ordem - b.ordem)
+    for (const o of p.plano_opcao) o.plano_opcao_item.sort((a, b) => a.ordem - b.ordem)
+  }
+  return lista
+}
+
+/** As refeições do plano que valem (ativas): as de sempre e as das dietas com dia marcado. */
 export async function carregarPlanos(pessoaIds: string[]): Promise<PlanoRefeicao[]> {
   if (!pessoaIds.length) return []
-  const { data, error } = await supabase
-    .from('plano_refeicao')
-    .select('id, pessoa_id, tipo, nome, hora, dias, avisar, ativo, plano_item(id, quantidade_g, ordem, alimento:alimento_id(id, nome))')
-    .in('pessoa_id', pessoaIds)
-    .eq('ativo', true)
-    .order('hora')
+  const { data, error } = await supabase.from('plano_refeicao').select(SELECT_PLANO).in('pessoa_id', pessoaIds).eq('ativo', true).order('hora')
   if (error) throw error
-  const lista = data as unknown as PlanoRefeicao[]
-  for (const p of lista) p.plano_item.sort((a, b) => a.ordem - b.ordem)
-  return lista
+  return arrumarPlanos(data)
+}
+
+/** Todas as refeições de uma dieta, inclusive as inativas (dieta sem dia marcado). */
+export async function carregarRefeicoesDaDieta(dietaId: string): Promise<PlanoRefeicao[]> {
+  const { data, error } = await supabase.from('plano_refeicao').select(SELECT_PLANO).eq('dieta_id', dietaId).order('hora')
+  if (error) throw error
+  return arrumarPlanos(data)
+}
+
+export async function carregarDietas(pessoaIds: string[]): Promise<Dieta[]> {
+  if (!pessoaIds.length) return []
+  const { data, error } = await supabase.from('dieta').select('id, pessoa_id, nome, kcal_alvo, dias').in('pessoa_id', pessoaIds).order('nome')
+  if (error) throw error
+  return (data as Dieta[]).map((d) => ({ ...d, kcal_alvo: d.kcal_alvo == null ? null : Number(d.kcal_alvo) }))
+}
+
+export async function salvarDieta(d: { id: string | null; pessoa_id: string; nome: string; kcal_alvo: number | null; dias: number[] }): Promise<string> {
+  const { data, error } = await supabase.rpc('salvar_dieta', { p_id: d.id, p_pessoa: d.pessoa_id, p_nome: d.nome, p_kcal_alvo: d.kcal_alvo, p_dias: d.dias })
+  if (error) throw error
+  return data as string
+}
+
+export async function apagarDieta(id: string): Promise<void> {
+  const { error } = await supabase.rpc('apagar_dieta', { p_id: id })
+  if (error) throw error
+}
+
+export interface ItemGramas { alimento_id: string; quantidade_g: number }
+
+/** Grava uma refeição do plano com a opção A (itens) e as opções B, C… */
+export async function salvarPlanoRefeicao(r: {
+  id: string | null; pessoa_id: string; tipo: TipoRefeicao; nome: string; hora: string; dias: number[]; avisar: boolean
+  itens: ItemGramas[]; dieta_id?: string | null; kcal_alvo?: number | null; opcoes?: { nome: string | null; itens: ItemGramas[] }[]
+}): Promise<string> {
+  const { data, error } = await supabase.rpc('salvar_plano_refeicao', {
+    p_id: r.id, p_pessoa: r.pessoa_id, p_tipo: r.tipo, p_nome: r.nome, p_hora: r.hora, p_dias: [...r.dias].sort(), p_avisar: r.avisar,
+    p_itens: r.itens, p_dieta: r.dieta_id ?? null, p_kcal_alvo: r.kcal_alvo ?? null, p_opcoes: r.opcoes ?? [],
+  })
+  if (error) throw error
+  return data as string
+}
+
+export async function apagarPlanoRefeicao(id: string): Promise<void> {
+  const { error } = await supabase.from('plano_refeicao').delete().eq('id', id)
+  if (error) throw error
 }
 
 /** Soma os nutrientes de itens em gramas, pela composição por 100 g. */

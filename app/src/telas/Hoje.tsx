@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Contexto } from '../App'
 import { supabase } from '../supabase'
 import {
-  carregarComposicao, carregarMetasVigentes, carregarPlanos, erroTexto, fmt, hojeISO, nomeTipo, situacaoMeta, somarDias,
+  carregarComposicao, carregarDietas, carregarMetasVigentes, carregarPlanos, erroTexto, fmt, hojeISO, nomeTipo, situacaoMeta, somarDias,
   somarItens, TIPOS_REFEICAO,
-  type Checagem, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
+  type Checagem, type Composicao, type Dieta, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
+import { dietaDoDia, opcoesDe } from '../dietas'
 import { idadeEm } from '../calc'
-import { carregarDias, carregarMetasDia, carregarTreinos, type MetaDia, type Treino } from '../semana'
+import { carregarDias, carregarMetasDia, carregarTreinos, diaDaSemana, type MetaDia, type Treino } from '../semana'
 import CartaoInstalar from './Instalar'
 
 interface ItemDia {
@@ -67,28 +68,36 @@ function Barra({ rotulo, valor, meta, unidade }: { rotulo: string; valor: number
   )
 }
 
-function ChecklistPlano({ planos, checagens, comp, data, onMudou }: {
+function ChecklistPlano({ planos, checagens, comp, data, dieta, onMudou }: {
   planos: PlanoRefeicao[]
   checagens: Checagem[]
   comp: Map<string, Composicao>
   data: string
+  /** A dieta que vale neste dia para a pessoa, se houver. */
+  dieta: Dieta | null
   onMudou: () => void
 }) {
   const [ajustando, setAjustando] = useState<string | null>(null)
   const [gramas, setGramas] = useState<Record<string, string>>({})
+  // Opção escolhida por refeição (id da opção; nula = A).
+  const [opcaoSel, setOpcaoSel] = useState<Record<string, string | null>>({})
   const [ocupado, setOcupado] = useState<string | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const agora = new Date().toTimeString().slice(0, 5)
   const ehHoje = data === hojeISO()
 
-  async function marcar(p: PlanoRefeicao, status: 'feita' | 'pulada', itens?: { alimento_id: string; quantidade_g: number }[]) {
+  async function marcar(p: PlanoRefeicao, status: 'feita' | 'pulada', itens?: { alimento_id: string; quantidade_g: number }[], opcao: string | null = null) {
     setOcupado(p.id)
     setErro(null)
-    const { error } = await supabase.rpc('marcar_plano', { p_plano: p.id, p_data: data, p_status: status, p_itens: itens ?? null })
+    const { error } = await supabase.rpc('marcar_plano', { p_plano: p.id, p_data: data, p_status: status, p_itens: itens ?? null, p_opcao: opcao })
     setOcupado(null)
     if (error) return setErro(erroTexto(error))
     setAjustando(null)
     onMudou()
+  }
+  const opcaoDe = (p: PlanoRefeicao) => {
+    const ops = opcoesDe(p)
+    return ops.find((o) => o.id === (opcaoSel[p.id] ?? null)) ?? ops[0]
   }
 
   async function desfazer(p: PlanoRefeicao) {
@@ -101,33 +110,56 @@ function ChecklistPlano({ planos, checagens, comp, data, onMudou }: {
 
   function abrirAjuste(p: PlanoRefeicao) {
     setAjustando(p.id)
-    setGramas(Object.fromEntries(p.plano_item.map((i) => [i.id, String(i.quantidade_g)])))
+    setGramas(Object.fromEntries(opcaoDe(p).itens.map((i) => [i.id, String(i.quantidade_g)])))
   }
 
   return (
     <div className="checklist">
       <h3>Plano do dia</h3>
+      {dieta && (
+        <p className="dica dieta-hoje">
+          Dieta: <strong>{dieta.nome}</strong>{dieta.kcal_alvo != null && <> · alvo {fmt(dieta.kcal_alvo)} kcal</>} · toque na opção que comeu e em Fiz.
+        </p>
+      )}
       <ul>
         {planos.map((p) => {
           const c = checagens.find((x) => x.plano_refeicao_id === p.id)
-          const kcal = somarItens(p.plano_item, comp).energia ?? 0
+          const ops = opcoesDe(p)
+          const op = opcaoDe(p)
+          const kcal = somarItens(op.itens, comp).energia ?? 0
           const atrasada = !c && ehHoje && p.hora.slice(0, 5) < agora
+          const comida = c?.status === 'feita' ? ops.find((o) => o.id === (c.opcao_id ?? null)) : undefined
           return (
             <li key={p.id} className={c ? c.status : atrasada ? 'atrasada' : ''}>
               <div className="refeicao-topo">
                 <span className="hora">{p.hora.slice(0, 5)}</span>
                 <strong>{p.nome ?? nomeTipo(p.tipo)}</strong>
                 {atrasada && <span className="selo alto">atrasada</span>}
-                <span className="kcal">{fmt(kcal)} kcal</span>
+                <span className="kcal">{fmt(kcal)} kcal{p.kcal_alvo != null ? ` · alvo ${fmt(p.kcal_alvo)}` : ''}</span>
               </div>
+              {!c && ops.length > 1 && (
+                <>
+                  <div className="chips opcoes" role="group" aria-label={`Opções de ${p.nome ?? nomeTipo(p.tipo)}`}>
+                    {ops.map((o) => (
+                      <button key={o.letra} type="button" className={o === op ? 'ativa' : ''} aria-pressed={o === op}
+                        onClick={() => setOpcaoSel((xs) => ({ ...xs, [p.id]: o.id }))}>
+                        {o.letra} · {fmt(somarItens(o.itens, comp).energia ?? 0)} kcal
+                      </button>
+                    ))}
+                  </div>
+                  <ul className="itens">
+                    {op.itens.map((i) => <li key={i.id}>{i.alimento.nome} · {fmt(i.quantidade_g)} g</li>)}
+                  </ul>
+                </>
+              )}
               {c ? (
                 <div className="acoes">
-                  <span>{c.status === 'feita' ? '✓ Feita' : '✗ Não fez'}</span>
+                  <span>{c.status === 'feita' ? `✓ Feita${comida && ops.length > 1 ? ` (opção ${comida.letra})` : ''}` : '✗ Não fez'}</span>
                   <button className="link" disabled={ocupado === p.id} onClick={() => desfazer(p)}>desfazer</button>
                 </div>
               ) : ajustando === p.id ? (
                 <div className="ajuste">
-                  {p.plano_item.map((i) => (
+                  {op.itens.map((i) => (
                     <label key={i.id} className="item-plano">
                       <span className="nome">{i.alimento.nome}</span>
                       <span className="com-unidade">
@@ -146,10 +178,10 @@ function ChecklistPlano({ planos, checagens, comp, data, onMudou }: {
                     <button
                       className="primario"
                       disabled={ocupado === p.id}
-                      onClick={() => marcar(p, 'feita', p.plano_item.map((i) => ({
+                      onClick={() => marcar(p, 'feita', op.itens.map((i) => ({
                         alimento_id: i.alimento.id,
                         quantidade_g: parseFloat((gramas[i.id] ?? '0').replace(',', '.')) || 0,
-                      })))}
+                      })), op.id)}
                     >
                       Confirmar
                     </button>
@@ -157,7 +189,7 @@ function ChecklistPlano({ planos, checagens, comp, data, onMudou }: {
                 </div>
               ) : (
                 <div className="botoes-marcar">
-                  <button className="fiz" disabled={ocupado === p.id} onClick={() => marcar(p, 'feita')}>Fiz</button>
+                  <button className="fiz" disabled={ocupado === p.id} onClick={() => marcar(p, 'feita', undefined, op.id)}>{ops.length > 1 ? `Fiz a ${op.letra}` : 'Fiz'}</button>
                   <button disabled={ocupado === p.id} onClick={() => abrirAjuste(p)}>Ajustar gramas</button>
                   <button disabled={ocupado === p.id} onClick={() => marcar(p, 'pulada')}>Não fiz</button>
                 </div>
@@ -184,6 +216,7 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
   const [metasDia, setMetasDia] = useState<MetaDia[]>([])
   const [treinos, setTreinos] = useState<Treino[]>([])
   const [checagens, setChecagens] = useState<Checagem[]>([])
+  const [dietas, setDietas] = useState<Dieta[]>([])
   const [tick, setTick] = useState(0)
 
   const ids = useMemo(() => ctx.pessoas.map((p) => p.id), [ctx.pessoas])
@@ -202,9 +235,10 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
           .order('hora', { nullsFirst: true })
         if (error) throw error
         const lista = refs as unknown as RefeicaoDia[]
-        const [ps, { data: chs, error: e2 }] = await Promise.all([
+        const [ps, { data: chs, error: e2 }, ds] = await Promise.all([
           carregarPlanos(ids),
-          supabase.from('plano_checagem').select('id, plano_refeicao_id, data, status, refeicao_id').eq('data', data),
+          supabase.from('plano_checagem').select('id, plano_refeicao_id, data, status, refeicao_id, opcao_id').eq('data', data),
+          carregarDietas(ids),
         ])
         if (e2) throw e2
         const [diasDoPlano, md, ts] = await Promise.all([
@@ -213,11 +247,12 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
         // Onde a Semana trocou a refeição neste dia, valem os itens do dia.
         const efetivos = ps.map((p) => {
           const d = diasDoPlano.find((x) => x.plano_refeicao_id === p.id)
-          return d ? { ...p, plano_item: d.plano_dia_item } : p
+          return d ? { ...p, plano_item: d.plano_dia_item, plano_opcao: [] } : p
         })
         const alimentoIds = [...new Set([
           ...lista.flatMap((r) => r.item_refeicao.map((i) => i.alimento.id)),
           ...efetivos.flatMap((p) => p.plano_item.map((i) => i.alimento.id)),
+          ...efetivos.flatMap((p) => p.plano_opcao.flatMap((o) => o.plano_opcao_item.map((i) => i.alimento.id))),
         ])]
         const [c, m] = await Promise.all([carregarComposicao(alimentoIds), carregarMetasVigentes(ids)])
         if (!vivo) return
@@ -226,6 +261,7 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
         setMetasDia(md)
         setTreinos(ts)
         setChecagens(chs as Checagem[])
+        setDietas(ds)
         setComp(c)
         setMetas(m)
         setErro(null)
@@ -352,6 +388,7 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
                 checagens={checagens}
                 comp={comp}
                 data={data}
+                dieta={dietaDoDia(dietas, p.id, diaDaSemana(data)) ?? null}
                 onMudou={() => setTick((t) => t + 1)}
               />
             )}
