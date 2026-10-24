@@ -1,0 +1,38 @@
+name: Baixar fotos do catálogo
+
+on:
+  workflow_dispatch:
+    inputs:
+      refazer:
+        description: "Slugs para refazer, separados por vírgula (ou 'todos')"
+        default: ""
+  push:
+    branches-ignore: [main]
+    paths: ['scripts/fotos/receitas.json', 'scripts/fotos/baixar.mjs', '.github/workflows/fotos.yml']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fotos-${{ github.ref }}
+
+jobs:
+  fotos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --no-package-lock sharp@0.33.5
+        working-directory: scripts/fotos
+      - run: node baixar.mjs --refazer=${{ github.event.inputs.refazer }}
+        working-directory: scripts/fotos
+      - name: Guardar as fotos no branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/public/fotos scripts/fotos/candidatos.json scripts/fotos/contato-*.jpg
+          git diff --cached --quiet && echo "nada mudou" && exit 0
+          git commit -m "Fotos do catálogo baixadas do Wikimedia Commons"
+          git push

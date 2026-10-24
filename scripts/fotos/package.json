@@ -1,0 +1,1 @@
+{ "name": "homefitness-fotos", "private": true, "type": "module", "dependencies": { "sharp": "0.33.5" } }
