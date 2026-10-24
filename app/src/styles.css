@@ -202,3 +202,36 @@ fieldset.opcoes button.ativa { border-color: var(--verde); background: var(--ver
 .destaque .numero { display: block; font-size: 2.2rem; font-weight: 700; color: var(--verde); margin: 4px 0 10px; }
 .macros { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; font-size: 0.9rem; color: var(--suave); }
 .macros strong { color: var(--texto); }
+
+.dias { display: flex; gap: 4px; width: 100%; }
+.dias button { flex: 1; padding: 8px 0; font-size: 0.85rem; border-radius: 8px; }
+.dias button.ativa { background: var(--verde); border-color: var(--verde); color: #fff; }
+.total-plano { margin: 10px 0 4px; }
+.refeicao-plano.fora { opacity: 0.55; }
+.refeicao-plano .itens { margin: 6px 0; }
+.acoes { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+button.link.perigo { color: var(--alerta); }
+.item-plano { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--linha); padding: 8px 0; margin: 0; flex-direction: row; color: var(--texto); font-size: 0.95rem; }
+.item-plano .nome { flex: 1; min-width: 0; }
+.item-plano .com-unidade { flex: 0 0 96px; }
+.item-plano small { color: var(--suave); flex: 0 0 64px; text-align: right; font-variant-numeric: tabular-nums; }
+.item-plano .apagar { margin-left: 0; }
+
+.situacao { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 10px; background: var(--alerta-claro); color: var(--alerta); margin-bottom: 8px; font-size: 0.92rem; }
+.situacao span { color: var(--texto); font-size: 0.85rem; }
+.situacao.batida { background: var(--verde-claro); color: var(--verde); }
+
+.checklist { border-top: 1px solid var(--linha); margin-top: 10px; padding-top: 8px; }
+.checklist h3 { font-size: 0.95rem; margin: 4px 0 6px; }
+.checklist ul { list-style: none; padding: 0; margin: 0; }
+.checklist li { padding: 10px 0; border-bottom: 1px solid var(--linha); }
+.checklist li:last-child { border-bottom: none; }
+.checklist li.feita .refeicao-topo strong { color: var(--verde); }
+.checklist li.pulada { opacity: 0.6; }
+.checklist li.pulada .refeicao-topo strong { text-decoration: line-through; }
+.checklist .acoes { margin-top: 4px; font-size: 0.9rem; color: var(--suave); }
+.botoes-marcar { display: flex; gap: 6px; margin-top: 8px; }
+.botoes-marcar button { flex: 1; padding: 9px 4px; font-size: 0.88rem; }
+.botoes-marcar button.fiz { background: var(--verde); border-color: var(--verde); color: #fff; font-weight: 600; }
+.ajuste { margin-top: 6px; }
+.ajuste .primario { margin-top: 0; }

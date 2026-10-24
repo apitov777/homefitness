@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import type { Contexto } from '../App'
 import { supabase } from '../supabase'
 import {
-  carregarComposicao, carregarMetasVigentes, erroTexto, fmt, hojeISO, somarDias, TIPOS_REFEICAO,
-  type Composicao, type Meta, type Pessoa, type TipoRefeicao,
+  carregarComposicao, carregarMetasVigentes, carregarPlanos, erroTexto, fmt, hojeISO, nomeTipo, situacaoMeta, somarDias,
+  somarItens, TIPOS_REFEICAO,
+  type Checagem, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
 import { idadeEm } from '../calc'
 
@@ -64,6 +65,110 @@ function Barra({ rotulo, valor, meta, unidade }: { rotulo: string; valor: number
   )
 }
 
+function ChecklistPlano({ planos, checagens, comp, data, onMudou }: {
+  planos: PlanoRefeicao[]
+  checagens: Checagem[]
+  comp: Map<string, Composicao>
+  data: string
+  onMudou: () => void
+}) {
+  const [ajustando, setAjustando] = useState<string | null>(null)
+  const [gramas, setGramas] = useState<Record<string, string>>({})
+  const [ocupado, setOcupado] = useState<string | null>(null)
+  const [erro, setErro] = useState<string | null>(null)
+  const agora = new Date().toTimeString().slice(0, 5)
+  const ehHoje = data === hojeISO()
+
+  async function marcar(p: PlanoRefeicao, status: 'feita' | 'pulada', itens?: { alimento_id: string; quantidade_g: number }[]) {
+    setOcupado(p.id)
+    setErro(null)
+    const { error } = await supabase.rpc('marcar_plano', { p_plano: p.id, p_data: data, p_status: status, p_itens: itens ?? null })
+    setOcupado(null)
+    if (error) return setErro(erroTexto(error))
+    setAjustando(null)
+    onMudou()
+  }
+
+  async function desfazer(p: PlanoRefeicao) {
+    setOcupado(p.id)
+    const { error } = await supabase.rpc('desmarcar_plano', { p_plano: p.id, p_data: data })
+    setOcupado(null)
+    if (error) setErro(erroTexto(error))
+    else onMudou()
+  }
+
+  function abrirAjuste(p: PlanoRefeicao) {
+    setAjustando(p.id)
+    setGramas(Object.fromEntries(p.plano_item.map((i) => [i.id, String(i.quantidade_g)])))
+  }
+
+  return (
+    <div className="checklist">
+      <h3>Plano do dia</h3>
+      <ul>
+        {planos.map((p) => {
+          const c = checagens.find((x) => x.plano_refeicao_id === p.id)
+          const kcal = somarItens(p.plano_item, comp).energia ?? 0
+          const atrasada = !c && ehHoje && p.hora.slice(0, 5) < agora
+          return (
+            <li key={p.id} className={c ? c.status : atrasada ? 'atrasada' : ''}>
+              <div className="refeicao-topo">
+                <span className="hora">{p.hora.slice(0, 5)}</span>
+                <strong>{p.nome ?? nomeTipo(p.tipo)}</strong>
+                {atrasada && <span className="selo alto">atrasada</span>}
+                <span className="kcal">{fmt(kcal)} kcal</span>
+              </div>
+              {c ? (
+                <div className="acoes">
+                  <span>{c.status === 'feita' ? '✓ Feita' : '✗ Não fez'}</span>
+                  <button className="link" disabled={ocupado === p.id} onClick={() => desfazer(p)}>desfazer</button>
+                </div>
+              ) : ajustando === p.id ? (
+                <div className="ajuste">
+                  {p.plano_item.map((i) => (
+                    <label key={i.id} className="item-plano">
+                      <span className="nome">{i.alimento.nome}</span>
+                      <span className="com-unidade">
+                        <input
+                          inputMode="decimal"
+                          value={gramas[i.id] ?? ''}
+                          onChange={(e) => setGramas({ ...gramas, [i.id]: e.target.value })}
+                        />
+                        g
+                      </span>
+                    </label>
+                  ))}
+                  <p className="dica">Coloque 0 no que não comeu. Comeu outra coisa? Registre à parte em Registrar.</p>
+                  <div className="linha">
+                    <button onClick={() => setAjustando(null)}>Cancelar</button>
+                    <button
+                      className="primario"
+                      disabled={ocupado === p.id}
+                      onClick={() => marcar(p, 'feita', p.plano_item.map((i) => ({
+                        alimento_id: i.alimento.id,
+                        quantidade_g: parseFloat((gramas[i.id] ?? '0').replace(',', '.')) || 0,
+                      })))}
+                    >
+                      Confirmar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="botoes-marcar">
+                  <button className="fiz" disabled={ocupado === p.id} onClick={() => marcar(p, 'feita')}>Fiz</button>
+                  <button disabled={ocupado === p.id} onClick={() => abrirAjuste(p)}>Ajustar gramas</button>
+                  <button disabled={ocupado === p.id} onClick={() => marcar(p, 'pulada')}>Não fiz</button>
+                </div>
+              )}
+            </li>
+          )
+        })}
+      </ul>
+      {erro && <p className="erro">{erro}</p>}
+    </div>
+  )
+}
+
 export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; versao: number; onRegistrar: () => void }) {
   const [data, setData] = useState(hojeISO())
   const [refeicoes, setRefeicoes] = useState<RefeicaoDia[]>([])
@@ -73,6 +178,8 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [abertoMicros, setAbertoMicros] = useState<string | null>(null)
+  const [planos, setPlanos] = useState<PlanoRefeicao[]>([])
+  const [checagens, setChecagens] = useState<Checagem[]>([])
   const [tick, setTick] = useState(0)
 
   const ids = useMemo(() => ctx.pessoas.map((p) => p.id), [ctx.pessoas])
@@ -91,10 +198,20 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
           .order('hora', { nullsFirst: true })
         if (error) throw error
         const lista = refs as unknown as RefeicaoDia[]
-        const alimentoIds = [...new Set(lista.flatMap((r) => r.item_refeicao.map((i) => i.alimento.id)))]
+        const [ps, { data: chs, error: e2 }] = await Promise.all([
+          carregarPlanos(ids),
+          supabase.from('plano_checagem').select('id, plano_refeicao_id, data, status, refeicao_id').eq('data', data),
+        ])
+        if (e2) throw e2
+        const alimentoIds = [...new Set([
+          ...lista.flatMap((r) => r.item_refeicao.map((i) => i.alimento.id)),
+          ...ps.flatMap((p) => p.plano_item.map((i) => i.alimento.id)),
+        ])]
         const [c, m] = await Promise.all([carregarComposicao(alimentoIds), carregarMetasVigentes(ids)])
         if (!vivo) return
         setRefeicoes(lista)
+        setPlanos(ps)
+        setChecagens(chs as Checagem[])
         setComp(c)
         setMetas(m)
         setErro(null)
@@ -136,6 +253,8 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
   }
 
   const ehHoje = data === hojeISO()
+  const diaSemana = new Date(data + 'T12:00:00').getDay()
+  const doPlano = new Set(checagens.map((c) => c.refeicao_id).filter(Boolean))
 
   return (
     <div className="tela">
@@ -152,9 +271,18 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
         const minhas = refeicoes.filter((r) => r.pessoa_id === p.id)
         const tot = somar(minhas.flatMap((r) => r.item_refeicao), comp)
         const m = metas[p.id]
+        const planoDia = planos.filter((x) => x.pessoa_id === p.id && x.dias.includes(diaSemana))
+        const feitas = planoDia.filter((x) => checagens.some((c) => c.plano_refeicao_id === x.id && c.status === 'feita')).length
+        const situacao = situacaoMeta(tot.energia ?? 0, m?.kcal)
         return (
           <section key={p.id} className="cartao">
             <h2>{p.nome}</h2>
+            {(situacao || planoDia.length > 0) && (
+              <div className={'situacao' + (situacao?.batida ? ' batida' : '')}>
+                {situacao && <strong>{situacao.batida ? '✅ ' : ''}{situacao.texto}</strong>}
+                {planoDia.length > 0 && <span>{feitas} de {planoDia.length} refeições do plano feitas</span>}
+              </div>
+            )}
             <Barra rotulo="Energia" valor={tot.energia ?? 0} meta={m?.kcal} unidade="kcal" />
             <Barra rotulo="Proteína" valor={tot.proteina ?? 0} meta={m?.proteina_g} unidade="g" />
             <Barra rotulo="Carboidrato" valor={tot.carboidrato ?? 0} meta={m?.carboidrato_g} unidade="g" />
@@ -190,6 +318,16 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
               <p className="dica">Preencha sexo e data de nascimento em Perfil para ver o recomendado.</p>
             )}
 
+            {planoDia.length > 0 && (
+              <ChecklistPlano
+                planos={planoDia}
+                checagens={checagens}
+                comp={comp}
+                data={data}
+                onMudou={() => setTick((t) => t + 1)}
+              />
+            )}
+
             {minhas.length === 0 ? (
               <p className="dica">Nada registrado neste dia.</p>
             ) : (
@@ -203,6 +341,7 @@ export default function Hoje({ ctx, versao, onRegistrar }: { ctx: Contexto; vers
                         <strong>{TIPOS_REFEICAO.find((t) => t.valor === r.tipo)?.nome}</strong>
                         {r.hora && <span className="hora">{r.hora.slice(0, 5)}</span>}
                         {junto && <span className="selo">juntos</span>}
+                        {doPlano.has(r.id) && <span className="selo">plano</span>}
                         <span className="kcal">{fmt(k)} kcal</span>
                         <button className="apagar" onClick={() => apagar(r, p)} aria-label="Apagar">×</button>
                       </div>

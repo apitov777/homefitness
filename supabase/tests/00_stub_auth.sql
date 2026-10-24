@@ -10,3 +10,8 @@ grant usage on schema auth to authenticated, anon;
 grant usage on schema public to authenticated, anon;
 alter default privileges in schema public grant all on tables to authenticated, anon;
 alter default privileges in schema public grant all on sequences to authenticated, anon;
+create schema if not exists extensions;
+create extension if not exists pgcrypto schema extensions;
+grant usage on schema public, auth to service_role;
+alter default privileges in schema public grant all on tables to service_role;
+alter default privileges in schema public grant all on functions to service_role;

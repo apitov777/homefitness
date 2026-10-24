@@ -45,4 +45,4 @@ update pessoa set altura_cm = 180 where nome='Marido';
 select 'A edita altura de B (ok)' t, altura_cm from pessoa where nome='Marido';
 select pg_temp.como('00000000-0000-0000-0000-00000000000b','marido@x.com');
 update pessoa set data_nascimento='1990-01-01' where user_id=auth.uid();
-select nome, efeito, media_dia, dias_registrados, rda, pct_rda from public.ingestao_antes_exame((select id from resultado_exame limit 1));
+select nome, efeito, media_dia, dias_registrados, rda, pct_rda from public.ingestao_antes_exame_detalhe((select id from resultado_exame limit 1));
