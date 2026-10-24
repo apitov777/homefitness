@@ -427,3 +427,25 @@ button.coracao.ativa { color: var(--alerta); }
 .tira-foto { width: 112px; height: 84px; border-radius: 14px; object-fit: cover; }
 .tira-item .sem-foto { width: 112px; height: 84px; border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; }
 .tira-item span:last-child { font-size: 0.8rem; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Dietas: um dia inteiro com opções A/B/C por refeição. */
+.refeicao-dieta .linha { align-items: center; }
+.refeicao-dieta .linha > select { flex: 1 1 50%; min-width: 0; }
+.refeicao-dieta .linha > input[type=time] { flex: 0 1 150px; min-width: 0; }
+.refeicao-dieta .alvo { flex-direction: row; align-items: center; gap: 8px; }
+.refeicao-dieta .alvo .com-unidade { flex: 0 0 110px; }
+.opcao-editor { border: 1px solid var(--linha); border-radius: 12px; padding: 8px 10px; margin: 10px 0; background: var(--fundo); }
+.opcao-editor > .linha { gap: 8px; flex-wrap: wrap; }
+.opcao-editor > .linha strong { flex: 0 0 auto; }
+.opcao-editor > .linha small { color: var(--suave); }
+.opcao-editor > .linha .apagar { margin-left: auto; }
+.opcao-editor .item-plano { background: none; }
+.item-plano .por100 { color: var(--suave); font-size: 0.78rem; }
+.dieta .dias { margin: 8px 0; }
+.dieta .itens li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.dieta .itens .hora { color: var(--suave); font-variant-numeric: tabular-nums; }
+.opcoes-resumo { display: inline-flex; gap: 4px; margin-left: auto; }
+.chips.opcoes { margin: 6px 0 2px; }
+.chips.opcoes button { font-size: 0.85rem; padding: 6px 10px; }
+.checklist .itens { margin: 4px 0 6px; font-size: 0.88rem; color: var(--suave); }
+.dieta-hoje { margin: 0 0 6px; }

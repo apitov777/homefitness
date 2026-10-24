@@ -31,7 +31,7 @@ const r2 = receita('r2', 'Escondidinho', ['almoco'], 800, [[frango, 400]])
 
 function plano(id: string, pessoa: string, tipo: PlanoRefeicao['tipo'], dias: number[], itens: [typeof arroz, number][]): PlanoRefeicao {
   return {
-    id, pessoa_id: pessoa, tipo, nome: null, hora: '12:00:00', dias, avisar: true, ativo: true,
+    id, pessoa_id: pessoa, tipo, nome: null, hora: '12:00:00', dias, avisar: true, ativo: true, dieta_id: null, kcal_alvo: null, plano_opcao: [],
     plano_item: itens.map(([a, g], i) => ({ id: `${id}-${i}`, quantidade_g: g, ordem: i, alimento: a })),
   }
 }

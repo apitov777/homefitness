@@ -3,11 +3,12 @@ import type { Contexto } from '../App'
 import { supabase } from '../supabase'
 import { avisoDeTeste, desligarAvisos, estadoAvisos, ligarAvisos, type EstadoAvisos } from '../avisos'
 import {
-  buscarAlimentos, carregarAlimentos, carregarComposicao, carregarMetasVigentes, carregarPlanos, DIAS_SEMANA,
-  descreverDias, erroTexto, fmt, lerNumero, nomeTipo, somarItens, TIPOS_REFEICAO,
-  type AlimentoResumo, type Composicao, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
+  buscarAlimentos, carregarAlimentos, carregarComposicao, carregarDietas, carregarMetasVigentes, carregarPlanos, DIAS_SEMANA,
+  descreverDias, erroTexto, fmt, lerNumero, nomeTipo, salvarPlanoRefeicao, somarItens, TIPOS_REFEICAO,
+  type AlimentoResumo, type Composicao, type Dieta, type Meta, type Pessoa, type PlanoRefeicao, type TipoRefeicao,
 } from '../dados'
 import { porcaoDe } from '../semana'
+import Dietas from './Dietas'
 import FavoritasSemana from './FavoritasSemana'
 import Semana from './Semana'
 import Treinos from './Treinos'
@@ -128,24 +129,28 @@ function EditorRefeicao({ pessoa, original, onFim }: { pessoa: Pessoa; original:
     if (!dias.length) return setErro('Escolha pelo menos um dia da semana.')
     if (!hora) return setErro('Informe o horário.')
     setSalvando(true)
-    const { error } = await supabase.rpc('salvar_plano_refeicao', {
-      p_id: original?.id ?? null,
-      p_pessoa: pessoa.id,
-      p_tipo: tipo,
-      p_nome: nome,
-      p_hora: hora,
-      p_dias: [...dias].sort(),
-      p_avisar: avisar,
-      p_itens: itens.map((i) => ({ alimento_id: i.alimento.id, quantidade_g: num(i.gramas) })),
-    })
-    setSalvando(false)
-    if (error) setErro(erroTexto(error))
-    else onFim(true)
+    try {
+      // Refeição de uma dieta: aqui só a opção A muda; a dieta, o alvo e as outras opções seguem como estão.
+      await salvarPlanoRefeicao({
+        id: original?.id ?? null, pessoa_id: pessoa.id, tipo, nome, hora, dias, avisar,
+        itens: itens.map((i) => ({ alimento_id: i.alimento.id, quantidade_g: num(i.gramas) })),
+        dieta_id: original?.dieta_id ?? null, kcal_alvo: original?.kcal_alvo ?? null,
+        opcoes: (original?.plano_opcao ?? []).map((o) => ({ nome: o.nome, itens: o.plano_opcao_item.map((i) => ({ alimento_id: i.alimento.id, quantidade_g: i.quantidade_g })) })),
+      })
+      onFim(true)
+    } catch (e) {
+      setErro(erroTexto(e))
+    } finally {
+      setSalvando(false)
+    }
   }
 
   return (
     <section className="cartao editor">
       <h2>{original ? 'Editar refeição' : 'Nova refeição'} de {pessoa.nome}</h2>
+      {original?.dieta_id && (
+        <p className="dica">Esta refeição faz parte de uma dieta: aqui você muda a opção A. Os dias, o alvo e as opções B e C ficam em Dietas.</p>
+      )}
       <div className="linha">
         <label>
           Refeição
@@ -236,6 +241,7 @@ function Refeicoes({ ctx, sel }: { ctx: Contexto; sel: string | undefined }) {
   const [planos, setPlanos] = useState<PlanoRefeicao[]>([])
   const [comp, setComp] = useState<Map<string, Composicao>>(new Map())
   const [metas, setMetas] = useState<Record<string, Meta>>({})
+  const [dietas, setDietas] = useState<Dieta[]>([])
   const [editando, setEditando] = useState<PlanoRefeicao | 'nova' | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
@@ -248,13 +254,15 @@ function Refeicoes({ ctx, sel }: { ctx: Contexto; sel: string | undefined }) {
     ;(async () => {
       try {
         const ps = await carregarPlanos([sel])
-        const [c, m] = await Promise.all([
+        const [c, m, ds] = await Promise.all([
           carregarComposicao([...new Set(ps.flatMap((p) => p.plano_item.map((i) => i.alimento.id)))]),
           carregarMetasVigentes([sel]),
+          carregarDietas([sel]),
         ])
         setPlanos(ps)
         setComp(c)
         setMetas(m)
+        setDietas(ds)
       } catch (e) {
         setErro(erroTexto(e))
       }
@@ -329,7 +337,11 @@ function Refeicoes({ ctx, sel }: { ctx: Contexto; sel: string | undefined }) {
               {p.avisar && <span aria-label="com aviso" title="com aviso">🔔</span>}
               <span className="kcal">{fmt(t.energia)} kcal</span>
             </div>
-            <small className="dica">{p.nome ? `${nomeTipo(p.tipo)} · ` : ''}{descreverDias(p.dias)}{fora ? ' · não neste dia' : ''}</small>
+            <small className="dica">
+              {p.nome ? `${nomeTipo(p.tipo)} · ` : ''}{descreverDias(p.dias)}{fora ? ' · não neste dia' : ''}
+              {p.dieta_id && <> · <span className="selo">dieta: {dietas.find((d) => d.id === p.dieta_id)?.nome ?? '…'}</span></>}
+              {p.plano_opcao.length > 0 && <> <span className="selo neutro">{p.plano_opcao.length + 1} opções</span></>}
+            </small>
             <ul className="itens">
               {p.plano_item.map((i) => (
                 <li key={i.id}>{i.alimento.nome} · {fmt(i.quantidade_g)} g</li>
@@ -355,16 +367,17 @@ function Refeicoes({ ctx, sel }: { ctx: Contexto; sel: string | undefined }) {
   )
 }
 
-type Parte = 'semana' | 'refeicoes' | 'treinos'
+type Parte = 'dietas' | 'semana' | 'refeicoes' | 'treinos'
 
 const PARTES: { id: Parte; nome: string }[] = [
+  { id: 'dietas', nome: 'Dietas' },
   { id: 'semana', nome: 'Semana' },
   { id: 'refeicoes', nome: 'Refeições' },
   { id: 'treinos', nome: 'Treinos' },
 ]
 
 export default function Plano({ ctx }: { ctx: Contexto }) {
-  const [parte, setParte] = useState<Parte>('semana')
+  const [parte, setParte] = useState<Parte>('dietas')
   const [sel, setSel] = useState(ctx.eu?.id ?? ctx.pessoas[0]?.id)
 
   return (
@@ -382,6 +395,7 @@ export default function Plano({ ctx }: { ctx: Contexto }) {
           <button key={x.id} className={x.id === sel ? 'ativa' : ''} onClick={() => setSel(x.id)}>{x.nome}</button>
         ))}
       </div>
+      {parte === 'dietas' && sel && <Dietas ctx={ctx} sel={sel} />}
       {parte === 'semana' && sel && <Semana ctx={ctx} sel={sel} onIrPara={setParte} />}
       {parte === 'refeicoes' && <Refeicoes ctx={ctx} sel={sel} />}
       {parte === 'treinos' && sel && <Treinos ctx={ctx} sel={sel} />}
