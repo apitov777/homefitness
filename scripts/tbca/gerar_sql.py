@@ -6,8 +6,7 @@ Gera a migration com a lista de alimentos de dieta a partir da TBCA baixada
 Uso:
   python scripts/tbca/gerar_sql.py > supabase/migrations/20261025000001_alimentos_dieta.sql
 
-Para cada linha da lista, escolhe na TBCA a descrição mais curta que casa com a
-regex (evitando as de marca). Os valores por 100 g e as medidas caseiras vêm
+Cada linha da lista aponta um código da TBCA. Os valores por 100 g e as medidas caseiras vêm
 da TBCA sem mudança; medidas em mL viram gramas pela própria TBCA (valor na
 medida / valor em 100 g). Na saída de erro sai a conferência: linhas sem
 alimento e alimentos cuja energia não fecha com P×4 + C×4 + G×9 (Atwater).
@@ -90,15 +89,12 @@ def medidas_do(alimento):
         vistas.add(nome)
         saida.append({"nome": nome, "g": round(g) if g >= 10 else round(g, 1)})
     saida.sort(key=lambda x: (PREFERIDAS.index(x["nome"]) if x["nome"] in PREFERIDAS else len(PREFERIDAS), x["g"]))
-    return saida[:6]
-
-
-def tem_marca(d):
-    m = re.search(r",\s*([A-Z][\w\-çãéíóú´']+( [A-Z][\w´']+)*),?\s*$", d.rstrip())
-    if not m:
-        return False
-    w = m.group(1).split()
-    return not (len(w) == 2 and w[1][0].islower())  # binômio científico (Gallus gallus) não é marca
+    # "Unidade média" e "Porção média" de 50 g no ovo: fica só a primeira
+    sem_repetir = []
+    for m in saida:
+        if all(m["g"] != x["g"] for x in sem_repetir):
+            sem_repetir.append(m)
+    return sem_repetir[:6]
 
 
 def main():
@@ -108,13 +104,13 @@ def main():
         if linha.strip() and not linha.startswith("#"):
             lista.append(linha.split("|", 2))
 
+    por_codigo = {a["codigo"]: a for a in tbca}
     escolhidos, faltam, usados = [], [], {}
-    for grupo, nome, rx in lista:
-        casam = [a for a in tbca if re.search(rx, a["descricao"], re.I) and a["nutrientes"].get("Energia|kcal") is not None]
-        if not casam:
-            faltam.append(nome)
+    for grupo, nome, codigo in lista:
+        a = por_codigo.get(codigo.strip())
+        if a is None or a["nutrientes"].get("Energia|kcal") is None:
+            faltam.append(f"{nome} ({codigo})")
             continue
-        a = min(casam, key=lambda a: (tem_marca(a["descricao"]), len(a["descricao"])))
         if a["codigo"] in usados:
             print(f"repetido: {nome} = {usados[a['codigo']]} ({a['descricao']})", file=sys.stderr)
             continue

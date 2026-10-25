@@ -8,9 +8,6 @@ on:
       limite:
         description: "Quantos alimentos baixar nesta rodada (0 = todos)"
         default: "0"
-  push:
-    branches: [feat/alimentos-dieta]
-    paths: ['scripts/tbca/coletar.py', '.github/workflows/tbca.yml']
 
 permissions:
   contents: write
