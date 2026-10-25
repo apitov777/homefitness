@@ -1,0 +1,480 @@
+# Lista de alimentos de dieta: grupo|nome no app|código na TBCA (www.tbca.net.br).
+# Para trocar o alimento de uma linha, troque o código e rode scripts/tbca/gerar_sql.py de novo.
+# Cereais e pães
+Cereais e pães|Arroz branco cozido|BRC0209A
+Cereais e pães|Arroz branco cozido sem óleo|BRC0018A
+Cereais e pães|Arroz integral cozido|BRC0211A
+Cereais e pães|Arroz integral cozido sem óleo|BRC0016A
+Cereais e pães|Arroz cru|BRC0001A
+Cereais e pães|Macarrão cozido|BRC0834A
+Cereais e pães|Macarrão integral cozido|BRC0835A
+Cereais e pães|Macarrão cru|BRC0118A
+Cereais e pães|Macarrão com molho de tomate|BRC0613A
+Cereais e pães|Macarrão à bolonhesa|BRC0238A
+Cereais e pães|Nhoque de batata|BRC0464B
+Cereais e pães|Lasanha à bolonhesa|BRC0395A
+Cereais e pães|Aveia em flocos|BRC0021A
+Cereais e pães|Farelo de aveia|BRC0023A
+Cereais e pães|Farinha de aveia|BRC0022A
+Cereais e pães|Granola caseira|BRC0898A
+Cereais e pães|Pão de forma branco|BRC0003A
+Cereais e pães|Pão de forma integral|BRC0155A
+Cereais e pães|Pão integral|BRC0149A
+Cereais e pães|Pão sírio|BRC0575A
+Cereais e pães|Pão de hambúrguer|BRC0158A
+Cereais e pães|Pão de leite|BRC0147A
+Cereais e pães|Bisnaguinha|BRC0148A
+Cereais e pães|Pão de centeio|BRC0157A
+Cereais e pães|Pão de queijo assado|BRC0123B
+Cereais e pães|Torrada|BRC0172A
+Cereais e pães|Torrada integral|BRC0170A
+Cereais e pães|Biscoito cream cracker|BRC0201A
+Cereais e pães|Biscoito de água e sal|BRC0057A
+Cereais e pães|Biscoito de polvilho|BRC0096B
+Cereais e pães|Biscoito maisena|BRC0200A
+Cereais e pães|Biscoito recheado de chocolate|BRC0046A
+Cereais e pães|Biscoito de arroz|BRC0836A
+Cereais e pães|Tapioca (só a massa)|BRC0906B
+Cereais e pães|Goma de tapioca (crua)|BRC0090B
+Cereais e pães|Tapioca com queijo|BRC0841B
+Cereais e pães|Cuscuz marroquino cozido|BRC0698A
+Cereais e pães|Quinoa cozida|BRC0399A
+Cereais e pães|Quinoa crua|BRC0398A
+Cereais e pães|Polenta cozida|BRC0143A
+Cereais e pães|Fubá|BRC0125A
+Cereais e pães|Milho verde assado|BRC0181A
+Cereais e pães|Milho verde cozido no vapor|BRC0138A
+Cereais e pães|Pipoca com óleo|BRC0129A
+Cereais e pães|Pipoca de micro-ondas|BRC0055N
+Cereais e pães|Farinha de mandioca|BRC0087B
+Cereais e pães|Farofa pronta|BRC0089B
+Cereais e pães|Farinha de trigo|BRC0139A
+Cereais e pães|Farinha de trigo integral|BRC0132A
+Cereais e pães|Cereal matinal de milho|BRC0100A
+Cereais e pães|Sucrilhos (cereal açucarado)|BRC0103A
+Cereais e pães|Tortilha de trigo (wrap)|BRC0948A
+Cereais e pães|Panqueca de banana e aveia|BRC1135A
+Cereais e pães|Pamonha|BRC0142A
+Cereais e pães|Bolo simples|BRC0197A
+Cereais e pães|Bolo de chocolate|BRC0078A
+Cereais e pães|Bolo de cenoura|BRC0461A
+Cereais e pães|Bolo de fubá|BRC0080A
+Cereais e pães|Cuscuz de milho com manteiga|BRC1147A
+
+# Tubérculos e raízes
+Tubérculos|Batata inglesa cozida|BRC0117B
+Tubérculos|Batata inglesa assada|BRC1093B
+Tubérculos|Batata frita|BRC0048B
+Tubérculos|Purê de batata|BRC0323B
+Tubérculos|Batata doce cozida|BRC0299B
+Tubérculos|Batata doce assada|BRC0303B
+Tubérculos|Batata doce crua|BRC0012B
+Tubérculos|Batata inglesa crua|BRC0013B
+Tubérculos|Mandioca cozida|BRC0908B
+Tubérculos|Mandioca frita|BRC0091B
+Tubérculos|Inhame cozido|BRC0342B
+Tubérculos|Cará cozido|BRC0910B
+Tubérculos|Mandioquinha cozida|BRC0296B
+Tubérculos|Abóbora cozida|BRC0227B
+
+# Leguminosas
+Leguminosas|Feijão carioca cozido|BRC0091T
+Leguminosas|Feijão carioca cozido sem óleo|BRC0001T
+Leguminosas|Feijão preto cozido|BRC0108T
+Leguminosas|Feijão preto cozido sem óleo|BRC0008T
+Leguminosas|Feijão branco cozido|BRC0028T
+Leguminosas|Feijão fradinho cozido|BRC0119T
+Leguminosas|Feijoada|BRC0198T
+Leguminosas|Tutu de feijão|BRC0139T
+Leguminosas|Lentilha cozida|BRC0078T
+Leguminosas|Lentilha cozida sem óleo|BRC0018T
+Leguminosas|Grão-de-bico cozido|BRC0017T
+Leguminosas|Grão-de-bico em conserva|BRC0031T
+Leguminosas|Ervilha cozida|BRC0072T
+Leguminosas|Ervilha em conserva|BRC0022T
+Leguminosas|Soja cozida|BRC0213T
+Leguminosas|Proteína de soja (PTS) crua|BRC0055T
+Leguminosas|Proteína de soja (PTS) hidratada refogada|BRC0170T
+Leguminosas|Tofu|BRC0056T
+Leguminosas|Edamame|BRC1000B
+Leguminosas|Amendoim torrado|BRC0021T
+Leguminosas|Pasta de amendoim|BRC0290T
+
+# Carnes bovinas e suínas
+Carnes|Carne moída refogada|BRC0244F
+Carnes|Carne moída crua|BRC0071F
+Carnes|Patinho grelhado|BRC0045F
+Carnes|Patinho cru|BRC0075F
+Carnes|Alcatra grelhada|BRC0606F
+Carnes|Alcatra crua|BRC0055F
+Carnes|Contra-filé grelhado|BRC0023F
+Carnes|Contra-filé cru|BRC0059F
+Carnes|Filé mignon grelhado|BRC0381F
+Carnes|Maminha grelhada|BRC0041F
+Carnes|Picanha grelhada|BRC0966F
+Carnes|Picanha sem gordura grelhada|BRC0964F
+Carnes|Fraldinha grelhada|BRC0801F
+Carnes|Coxão mole cozido|BRC0641F
+Carnes|Coxão duro cozido|BRC0968F
+Carnes|Músculo cozido|BRC0670F
+Carnes|Acém cozido|BRC0650F
+Carnes|Cupim assado|BRC0305F
+Carnes|Costela bovina assada|BRC0352F
+Carnes|Bife acebolado|BRC1068F
+Carnes|Bife à milanesa|BRC0610F
+Carnes|Fígado bovino grelhado|BRC0751F
+Carnes|Carne seca cozida|BRC0084F
+Carnes|Lombo de porco assado|BRC0163F
+Carnes|Bisteca de porco grelhada|BRC0160F
+Carnes|Pernil assado|BRC0167F
+Carnes|Costela de porco assada|BRC0689F
+Carnes|Bacon frito|BRC0170F
+Carnes|Linguiça de porco grelhada|BRC0189F
+Carnes|Linguiça de frango grelhada|BRC0188F
+Carnes|Linguiça calabresa|BRC0896F
+Carnes|Salsicha|BRC0859F
+Carnes|Hambúrguer bovino grelhado|BRC0726F
+Carnes|Almôndega frita|BRC0004F
+
+# Aves
+Aves|Peito de frango grelhado|BRC0230F
+Aves|Peito de frango grelhado sem sal|BRC0114F
+Aves|Peito de frango cozido|BRC0195F
+Aves|Peito de frango assado|BRC0113F
+Aves|Peito de frango cru|BRC0133F
+Aves|Filé de frango empanado|BRC0475F
+Aves|Coxa de frango assada|BRC0842F
+Aves|Coxa de frango cozida sem pele|BRC0843F
+Aves|Sobrecoxa assada sem pele|BRC0956F
+Aves|Sobrecoxa assada com pele|BRC0115F
+Aves|Asa de frango assada|BRC0741F
+Aves|Coração de frango grelhado|BRC0107F
+Aves|Fígado de frango frito|BRC0117F
+Aves|Frango xadrez|BRC0554F
+Aves|Estrogonofe de frango|BRC0911F
+Aves|Peito de peru defumado|BRC0196F
+Aves|Peru assado|BRC0197F
+
+# Peixes e frutos do mar
+Peixes e frutos do mar|Tilápia grelhada|BRC0487E
+Peixes e frutos do mar|Tilápia crua|BRC0031E
+Peixes e frutos do mar|Salmão grelhado|BRC0067E
+Peixes e frutos do mar|Salmão cru|BRC0065E
+Peixes e frutos do mar|Atum em lata light|BRC0053N
+Peixes e frutos do mar|Atum em lata (em óleo)|BRC0040E
+Peixes e frutos do mar|Sardinha em lata (em óleo)|BRC0073E
+Peixes e frutos do mar|Sardinha com molho de tomate|BRC0071E
+Peixes e frutos do mar|Sardinha assada|BRC0068E
+Peixes e frutos do mar|Merluza assada|BRC0062E
+Peixes e frutos do mar|Pescada cozida|BRC0165E
+Peixes e frutos do mar|Peixe frito empanado|BRC0056E
+Peixes e frutos do mar|Bacalhau cozido|BRC0365E
+Peixes e frutos do mar|Bacalhoada|BRC0224E
+Peixes e frutos do mar|Camarão refogado|BRC0344E
+Peixes e frutos do mar|Camarão frito|BRC0003E
+Peixes e frutos do mar|Sushi|BRC0867A
+Peixes e frutos do mar|Lula frita|BRC0227E
+Peixes e frutos do mar|Polvo|BRC0360E
+Peixes e frutos do mar|Mexilhão|BRC0014E
+Peixes e frutos do mar|Moqueca de peixe|BRC0120E
+
+# Ovos
+Ovos|Ovo cozido|BRC0023J
+Ovos|Ovo frito|BRC0028J
+Ovos|Ovo mexido|BRC0027J
+Ovos|Ovo cru|BRC0012J
+Ovos|Clara de ovo cozida|BRC0004J
+Ovos|Clara de ovo crua|BRC0005J
+Ovos|Gema de ovo cozida|BRC0007J
+Ovos|Ovo de codorna cozido|BRC0060J
+Ovos|Omelete com queijo|BRC0058J
+Ovos|Omelete de frios|BRC0036J
+
+# Leite e derivados
+Leite e derivados|Leite integral|BRC0043G
+Leite e derivados|Leite desnatado|BRC0036G
+Leite e derivados|Leite semidesnatado|BRC0046G
+Leite e derivados|Leite sem lactose|BRC0094N
+Leite e derivados|Leite em pó integral|BRC0039G
+Leite e derivados|Leite em pó desnatado|BRC0038G
+Leite e derivados|Leite fermentado|BRC0031G
+Leite e derivados|Iogurte natural integral|BRC0020G
+Leite e derivados|Iogurte natural desnatado|BRC0022G
+Leite e derivados|Iogurte grego|BRC0133G
+Leite e derivados|Iogurte grego com frutas|BRC0134G
+Leite e derivados|Iogurte de morango|BRC0017G
+Leite e derivados|Iogurte com granola|BRC0116G
+Leite e derivados|Bebida láctea|BRC0003G
+Leite e derivados|Kefir|BRC0128G
+Leite e derivados|Queijo muçarela|BRC0059G
+Leite e derivados|Queijo muçarela light|BRC0074N
+Leite e derivados|Queijo minas frescal|BRC0052G
+Leite e derivados|Queijo minas frescal light|BRC0036N
+Leite e derivados|Queijo minas padrão|BRC0056G
+Leite e derivados|Queijo prato|BRC0064G
+Leite e derivados|Queijo parmesão ralado|BRC0061G
+Leite e derivados|Ricota|BRC0051G
+Leite e derivados|Ricota light|BRC0075N
+Leite e derivados|Queijo coalho|BRC0048G
+Leite e derivados|Queijo provolone|BRC0057G
+Leite e derivados|Queijo gorgonzola|BRC0132G
+Leite e derivados|Queijo cheddar|BRC0090G
+Leite e derivados|Requeijão cremoso|BRC0068G
+Leite e derivados|Requeijão light|BRC0040N
+Leite e derivados|Cream cheese|BRC0006G
+Leite e derivados|Creme de leite|BRC0010G
+Leite e derivados|Leite condensado|BRC0030G
+Leite e derivados|Manteiga com sal|BRC0007D
+Leite e derivados|Manteiga sem sal|BRC0006D
+Leite e derivados|Doce de leite|BRC0014K
+
+# Frutas
+Frutas|Banana prata|BRC0011C
+Frutas|Banana nanica|BRC0007C
+Frutas|Banana maçã|BRC0009C
+Frutas|Banana da terra cozida|BRC0107C
+Frutas|Maçã com casca|BRC0023C
+Frutas|Pera|BRC0030C
+Frutas|Laranja pera|BRC0020C
+Frutas|Laranja lima|BRC0019C
+Frutas|Mexerica (tangerina)|BRC0032C
+Frutas|Mamão papaia|BRC0044C
+Frutas|Mamão formosa|BRC0024C
+Frutas|Melão|BRC0028C
+Frutas|Melancia|BRC0027C
+Frutas|Abacaxi|BRC0002C
+Frutas|Manga tommy|BRC0048C
+Frutas|Manga palmer|BRC0047C
+Frutas|Uva itália|BRC0033C
+Frutas|Uva rubi / niágara|BRC0035C
+Frutas|Morango|BRC0029C
+Frutas|Kiwi|BRC0061C
+Frutas|Abacate|BRC0001C
+Frutas|Goiaba vermelha|BRC0016C
+Frutas|Maracujá (polpa)|BRC0082C
+Frutas|Açaí (polpa sem açúcar)|BRC0003C
+Frutas|Açaí com xarope de guaraná|BRC0095C
+Frutas|Ameixa|BRC0005C
+Frutas|Ameixa seca|BRC0181C
+Frutas|Pêssego|BRC0031C
+Frutas|Caqui|BRC0012C
+Frutas|Acerola|BRC0004C
+Frutas|Uva passa|BRC0168C
+Frutas|Damasco seco|BRC0178C
+Frutas|Tâmara|BRC0180C
+Frutas|Mirtilo (blueberry)|BRC0205C
+Frutas|Framboesa|BRC0204C
+Frutas|Amora|BRC0170C
+Frutas|Pitaia|BRC0225C
+Frutas|Carambola|BRC0055C
+Frutas|Jabuticaba|BRC0079C
+Frutas|Figo|BRC0056C
+Frutas|Cereja em calda|BRC0179C
+Frutas|Graviola|BRC0078C
+Frutas|Caju|BRC0051C
+Frutas|Romã|BRC0086C
+Frutas|Salada de frutas|BRC0091C
+Frutas|Coco fresco (polpa)|BRC0040U
+
+# Verduras e legumes
+Verduras e legumes|Alface crespa|BRC0060B
+Verduras e legumes|Alface americana|BRC0063B
+Verduras e legumes|Alface lisa|BRC0061B
+Verduras e legumes|Rúcula|BRC0081B
+Verduras e legumes|Agrião|BRC0008B
+Verduras e legumes|Espinafre cru|BRC0072B
+Verduras e legumes|Espinafre refogado|BRC0107B
+Verduras e legumes|Couve crua|BRC0023B
+Verduras e legumes|Couve refogada|BRC0176B
+Verduras e legumes|Repolho cru|BRC0033B
+Verduras e legumes|Repolho roxo cru|BRC0080B
+Verduras e legumes|Acelga|BRC0007B
+Verduras e legumes|Brócolis cozido|BRC0150B
+Verduras e legumes|Brócolis cru|BRC0016B
+Verduras e legumes|Couve-flor cozida|BRC0116B
+Verduras e legumes|Cenoura crua|BRC0020B
+Verduras e legumes|Cenoura cozida|BRC0047B
+Verduras e legumes|Beterraba crua|BRC0015B
+Verduras e legumes|Beterraba cozida|BRC0912B
+Verduras e legumes|Abobrinha cozida|BRC0152B
+Verduras e legumes|Abobrinha grelhada|BRC0264B
+Verduras e legumes|Berinjela cozida|BRC0043B
+Verduras e legumes|Berinjela grelhada|BRC0287B
+Verduras e legumes|Chuchu cozido|BRC0154B
+Verduras e legumes|Vagem cozida|BRC0114T
+Verduras e legumes|Quiabo cozido|BRC0155B
+Verduras e legumes|Tomate|BRC0035B
+Verduras e legumes|Pepino|BRC0030B
+Verduras e legumes|Pimentão verde|BRC0037B
+Verduras e legumes|Pimentão vermelho|BRC0038B
+Verduras e legumes|Pimentão amarelo|BRC0039B
+Verduras e legumes|Cebola|BRC0018B
+Verduras e legumes|Alho|BRC0010B
+Verduras e legumes|Abóbora cabotiá crua|BRC0001B
+Verduras e legumes|Abóbora moranga cozida|BRC0151B
+Verduras e legumes|Palmito em conserva|BRC0996B
+Verduras e legumes|Cogumelo cru|BRC1137B
+Verduras e legumes|Cogumelo shiitake|BRC0699B
+Verduras e legumes|Aspargo|BRC1164B
+Verduras e legumes|Salsão (aipo)|BRC0065B
+Verduras e legumes|Rabanete|BRC0079B
+Verduras e legumes|Nabo|BRC0077B
+Verduras e legumes|Jiló|BRC0026B
+Verduras e legumes|Maxixe|BRC0029B
+Verduras e legumes|Alho-poró|BRC0068B
+Verduras e legumes|Cebolinha e salsa (cheiro-verde)|BRC0034B
+Verduras e legumes|Broto de feijão|BRC0074B
+Verduras e legumes|Azeitona verde|BRC0121B
+Verduras e legumes|Azeitona preta|BRC0120B
+Verduras e legumes|Salada de alface com azeite|BRC1021B
+Verduras e legumes|Vinagrete|BRC0172B
+Verduras e legumes|Sopa de legumes|BRC0271B
+Verduras e legumes|Caldo verde|BRC0681B
+
+# Oleaginosas e sementes
+Oleaginosas e sementes|Castanha-do-pará|BRC0003U
+Oleaginosas e sementes|Castanha de caju|BRC0012U
+Oleaginosas e sementes|Amêndoa|BRC0011U
+Oleaginosas e sementes|Nozes|BRC0009U
+Oleaginosas e sementes|Macadâmia|BRC0014U
+Oleaginosas e sementes|Pistache|BRC0015U
+Oleaginosas e sementes|Avelã|BRC0013U
+Oleaginosas e sementes|Chia|BRC0402A
+Oleaginosas e sementes|Linhaça|BRC0006U
+Oleaginosas e sementes|Linhaça (farinha)|BRC0038U
+Oleaginosas e sementes|Gergelim|BRC0016U
+Oleaginosas e sementes|Semente de abóbora|BRC0024U
+Oleaginosas e sementes|Semente de girassol|BRC0025U
+
+# Óleos e gorduras
+Óleos e gorduras|Azeite de oliva|BRC0002D
+Óleos e gorduras|Óleo de soja|BRC0030D
+Óleos e gorduras|Óleo de coco|BRC0038D
+Óleos e gorduras|Óleo de girassol|BRC0027D
+Óleos e gorduras|Óleo de canola|BRC0024D
+Óleos e gorduras|Margarina|BRC0009D
+Óleos e gorduras|Maionese|BRC0031D
+Óleos e gorduras|Maionese light|BRC0138N
+Óleos e gorduras|Banha de porco|BRC0035D
+
+# Bebidas
+Bebidas|Café coado sem açúcar|BRC0007H
+Bebidas|Café coado com açúcar|BRC0042H
+Bebidas|Chá preto ou mate sem açúcar|BRC0011H
+Bebidas|Suco de laranja natural|BRC0038C
+Bebidas|Suco de uva integral|BRC0226C
+Bebidas|Suco de limão (limonada)|BRC0162C
+Bebidas|Suco de maracujá|BRC0143C
+Bebidas|Suco de abacaxi|BRC0109C
+Bebidas|Água de coco|BRC0174C
+Bebidas|Refrigerante cola|BRC0030H
+Bebidas|Refrigerante cola zero|BRC0049N
+Bebidas|Refrigerante guaraná|BRC0031H
+Bebidas|Refrigerante zero (guaraná, laranja…)|BRC0050N
+Bebidas|Cerveja|BRC0009H
+Bebidas|Vinho tinto|BRC0034H
+Bebidas|Vinho branco|BRC0035H
+Bebidas|Cachaça|BRC0006H
+Bebidas|Caipirinha|BRC0133H
+Bebidas|Bebida de soja com suco|BRC0044T
+Bebidas|Bebida de amêndoas|BRC0033U
+Bebidas|Achocolatado em pó|BRC0001K
+Bebidas|Vitamina de banana com leite|BRC0073G
+Bebidas|Vitamina de frutas|BRC0270C
+Bebidas|Caldo de cana|BRC0008H
+Bebidas|Chá de camomila com açúcar|BRC0058H
+
+# Doces e sobremesas
+Doces e sobremesas|Chocolate amargo|BRC0041K
+Doces e sobremesas|Chocolate meio amargo|BRC0054K
+Doces e sobremesas|Chocolate ao leite|BRC0046K
+Doces e sobremesas|Chocolate branco|BRC0053K
+Doces e sobremesas|Chocolate em pó|BRC0011K
+Doces e sobremesas|Mel|BRC0028K
+Doces e sobremesas|Açúcar refinado|BRC0007K
+Doces e sobremesas|Açúcar mascavo|BRC0006K
+Doces e sobremesas|Geleia de frutas|BRC0022K
+Doces e sobremesas|Goiabada|BRC0096C
+Doces e sobremesas|Sorvete de creme|BRC0141K
+Doces e sobremesas|Picolé de fruta|BRC0138K
+Doces e sobremesas|Açaí na tigela com granola|BRC0177C
+Doces e sobremesas|Mousse de chocolate|BRC0063K
+Doces e sobremesas|Mousse de maracujá|BRC0065K
+Doces e sobremesas|Brigadeiro|BRC0190K
+Doces e sobremesas|Beijinho|BRC0191K
+Doces e sobremesas|Paçoca|BRC0081K
+Doces e sobremesas|Pé de moleque|BRC0082K
+Doces e sobremesas|Barra de cereal diet|BRC0064N
+Doces e sobremesas|Gelatina diet pronta|BRC0014N
+Doces e sobremesas|Bala|BRC0178K
+Doces e sobremesas|Pudim de chia|BRC1171A
+Doces e sobremesas|Arroz doce|BRC0806A
+Doces e sobremesas|Canjica com leite e açúcar|BRC0184A
+Doces e sobremesas|Doce de abóbora|BRC0013K
+Doces e sobremesas|Churros|BRC0921A
+Doces e sobremesas|Sonho|BRC0838A
+Doces e sobremesas|Torta de limão|BRC0035K
+Doces e sobremesas|Petit gâteau|BRC0120K
+Doces e sobremesas|Cocada|BRC0012K
+Doces e sobremesas|Rapadura|BRC0030K
+Doces e sobremesas|Pudim de leite|BRC0227K
+
+# Lanches e salgados
+Lanches e salgados|Pão francês com manteiga|BRC0418A
+Lanches e salgados|Pão com requeijão|BRC0469A
+Lanches e salgados|Misto quente|BRC0413A
+Lanches e salgados|Sanduíche natural de frango|BRC0391A
+Lanches e salgados|Sanduíche de atum|BRC0492A
+Lanches e salgados|Sanduíche de peito de peru|BRC0471A
+Lanches e salgados|Hambúrguer de lanchonete|BRC0008M
+Lanches e salgados|Cachorro-quente|BRC0243A
+Lanches e salgados|Pizza de muçarela|BRC0225A
+Lanches e salgados|Pizza de calabresa|BRC1081A
+Lanches e salgados|Pizza de frango com catupiry|BRC0678A
+Lanches e salgados|Pizza margherita|BRC0685A
+Lanches e salgados|Coxinha de frango|BRC0100F
+Lanches e salgados|Esfiha assada|BRC0439A
+Lanches e salgados|Pastel frito|BRC0165A
+Lanches e salgados|Empada de frango|BRC0102F
+Lanches e salgados|Quibe frito|BRC0877F
+Lanches e salgados|Kibe assado|BRC0984F
+Lanches e salgados|Esfiha de queijo|BRC1146A
+Lanches e salgados|Enroladinho de salsicha|BRC0478F
+Lanches e salgados|Batata chips|BRC0049B
+Lanches e salgados|Salgadinho de milho|BRC0212A
+Lanches e salgados|Pão de alho|BRC0830A
+Lanches e salgados|Crepe salgado|BRC0438A
+Lanches e salgados|Burrito de frango|BRC0950A
+Lanches e salgados|Acarajé|BRC0203T
+Lanches e salgados|Tapioca com coco e leite condensado|BRC0839B
+
+# Pratos prontos
+Pratos prontos|Baião de dois|BRC0188A
+Pratos prontos|Estrogonofe de carne|BRC0938F
+Pratos prontos|Escondidinho de frango|BRC0762B
+Pratos prontos|Risoto de frango|BRC1151A
+Pratos prontos|Galinhada|BRC0541A
+Pratos prontos|Arroz carreteiro|BRC0887A
+Pratos prontos|Yakisoba|BRC0893A
+Pratos prontos|Carne assada com batatas|BRC0310F
+Pratos prontos|Carne ensopada com legumes|BRC0736F
+Pratos prontos|Frango com batata|BRC0511F
+Pratos prontos|Picadinho de soja|BRC0270T
+Pratos prontos|Panqueca de carne|BRC0324A
+Pratos prontos|Torta de frango|BRC0992A
+Pratos prontos|Quiche|BRC1108A
+Pratos prontos|Salpicão|BRC0958B
+Pratos prontos|Tabule|BRC0135B
+Pratos prontos|Tabule de quinoa|BRC0879A
+Pratos prontos|Purê de mandioquinha|BRC0869B
+Pratos prontos|Sopa de feijão|BRC0127T
+Pratos prontos|Creme de abóbora|BRC0267B
+Pratos prontos|Feijão tropeiro|BRC0199T
+Pratos prontos|Virado à paulista|BRC0153T
+Pratos prontos|Macarronada com carne moída|BRC0192A
+Pratos prontos|Molho de tomate pronto|BRC0100B
+Pratos prontos|Molho branco|BRC0008G
+Pratos prontos|Molho shoyu|BRC0189T
+Pratos prontos|Catchup|BRC0030L
+Pratos prontos|Mostarda|BRC0029L
+Pratos prontos|Arroz com feijão|BRC0004S

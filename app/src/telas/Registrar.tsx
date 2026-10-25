@@ -7,6 +7,7 @@ import {
 } from '../dados'
 import { tipoPelaHora } from '../hoje'
 import { porcaoDe, type Receita } from '../semana'
+import Medidas from './Medidas'
 import FavoritasSemana from './FavoritasSemana'
 
 interface Item {
@@ -57,7 +58,8 @@ export default function Registrar({ ctx, inicial, onSalvo }: { ctx: Contexto; in
       setErro(erroTexto(e))
     }
   }
-  const adicionar = (a: AlimentoResumo) => incluir(a, 100)
+  const adicionar = (a: AlimentoResumo) => incluir(a, a.medidas_caseiras?.[0]?.g ?? 100)
+  const medidasDe = (id: string) => alimentos.find((a) => a.id === id)?.medidas_caseiras
   // Receita da semana: entra na porção dela para cada pessoa (ajusta-se depois, se quiser).
   const adicionarReceita = (r: Receita) => incluir({ id: r.alimento_id, nome: r.nome }, porcaoDe(r))
 
@@ -155,7 +157,7 @@ export default function Registrar({ ctx, inicial, onSalvo }: { ctx: Contexto; in
               <li key={a.id}>
                 <button onClick={() => adicionar(a)}>
                   {a.nome}
-                  <small>{a.familia_id ? `${a.fonte} · da família` : a.categoria}</small>
+                  <small>{a.familia_id ? `${a.fonte} · da família` : a.categoria}{a.medidas_caseiras?.[0] ? ` · ${a.medidas_caseiras[0].nome.toLowerCase()} = ${fmt(a.medidas_caseiras[0].g)} g` : ''}</small>
                 </button>
               </li>
             ))}
@@ -173,6 +175,11 @@ export default function Registrar({ ctx, inicial, onSalvo }: { ctx: Contexto; in
                 <button className="apagar" onClick={() => setItens((xs) => xs.filter((_, i) => i !== idx))} aria-label="Remover">×</button>
               </div>
               {semEnergia && <p className="aviso">A TACO não traz energia/macros deste alimento; ele não vai somar calorias.</p>}
+              <Medidas
+                medidas={medidasDe(it.alimento.id)}
+                gramas={numero(it.gramas[pessoasSel[0]?.id ?? ''])}
+                onEscolher={(g) => pessoasSel.forEach((p) => mudarGramas(idx, p.id, String(g)))}
+              />
               <div className="gramas">
                 {pessoasSel.map((p) => (
                   <label key={p.id}>

@@ -11,6 +11,7 @@ import {
 } from '../dados'
 import Exames from './Exames'
 import Familia, { Avatar } from './Familia'
+import { lerFotoRotulo } from '../ocr'
 
 function DadosPessoa({ ctx, p }: { ctx: Contexto; p: Pessoa }) {
   const [nome, setNome] = useState(p.nome)
@@ -208,29 +209,68 @@ function AlimentoRotulo({ ctx }: { ctx: Contexto }) {
   const [nome, setNome] = useState('')
   const [marca, setMarca] = useState('')
   const [porcao, setPorcao] = useState('')
+  const [medida, setMedida] = useState('')
+  // A tabela do rótulo novo tem as colunas "100 g" e "porção"; a do antigo, só a porção.
+  const [base, setBase] = useState<'porcao' | '100g'>('porcao')
   const [valores, setValores] = useState<Record<string, string>>({})
+  const [lidos, setLidos] = useState<Set<string>>(new Set())
+  const [foto, setFoto] = useState<string | null>(null)
+  const [textoOcr, setTextoOcr] = useState('')
+  const [lendo, setLendo] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [erro, setErro] = useState<string | null>(null)
+
+  async function lerFoto(arquivo: File | undefined) {
+    if (!arquivo) return
+    setErro(null)
+    setMsg(null)
+    if (foto) URL.revokeObjectURL(foto)
+    setFoto(URL.createObjectURL(arquivo))
+    try {
+      const leitura = await lerFotoRotulo(arquivo, setLendo)
+      setTextoOcr(leitura.texto)
+      const l = leitura.rotulo
+      const usa100 = Object.keys(l.por100).length >= Object.keys(l.porPorcao).length && Object.keys(l.por100).length > 0
+      const fonte = usa100 ? l.por100 : l.porPorcao
+      setBase(usa100 ? '100g' : 'porcao')
+      setValores(Object.fromEntries(Object.entries(fonte).map(([k, v]) => [k, String(v).replace('.', ',')])))
+      setLidos(new Set(Object.keys(fonte)))
+      if (l.porcaoG) setPorcao(String(l.porcaoG).replace('.', ','))
+      if (l.porcaoMedida) setMedida(l.porcaoMedida)
+      const n = Object.keys(fonte).length
+      if (!n) setErro('Não consegui ler a tabela. Tente outra foto, de frente, com luz e só a tabela no quadro, ou digite os números.')
+      else setMsg(`Li ${n} de ${CAMPOS_ROTULO.length} campos (em verde). Confira cada número com a embalagem antes de cadastrar.`)
+    } catch (e) {
+      setErro(`Não deu para ler a foto: ${erroTexto(e)}`)
+    } finally {
+      setLendo(null)
+    }
+  }
 
   async function salvar(ev: FormEvent) {
     ev.preventDefault()
     setErro(null)
     setMsg(null)
     const g = parseFloat(porcao.replace(',', '.'))
-    if (!(g > 0)) return setErro('Informe a porção do rótulo em gramas (ou mL).')
+    if (base === 'porcao' && !(g > 0)) return setErro('Informe a porção do rótulo em gramas (ou mL).')
+    const divisor = base === '100g' ? 100 : g
     const { data: nuts, error: e0 } = await supabase.from('nutriente').select('id, codigo').in('codigo', CAMPOS_ROTULO.map((c) => c.cod))
     if (e0) return setErro(erroTexto(e0))
+    const medidas = g > 0 ? [{ nome: medida.trim() || 'Porção do rótulo', g }] : []
     const { data: a, error } = await supabase
       .from('alimento')
-      .insert({ familia_id: ctx.familiaId, nome, marca: marca || null, fonte: 'rotulo', porcao_referencia_g: g })
+      .insert({
+        familia_id: ctx.familiaId, nome, marca: marca || null, fonte: 'rotulo', porcao_referencia_g: g > 0 ? g : 100,
+        medidas_caseiras: medidas,
+      })
       .select('id')
       .single()
     if (error) return setErro(erroTexto(error))
-    // O rótulo informa por porção; o banco guarda por 100 g.
+    // O banco guarda por 100 g.
     const linhas = nuts!
       .map((nu) => ({ nu, v: parseFloat((valores[nu.codigo] ?? '').replace(',', '.')) }))
       .filter((x) => Number.isFinite(x.v))
-      .map((x) => ({ alimento_id: a.id, nutriente_id: x.nu.id, valor_por_100g: Math.round((x.v * 10000) / g) / 100 }))
+      .map((x) => ({ alimento_id: a.id, nutriente_id: x.nu.id, valor_por_100g: Math.round((x.v * 10000) / divisor) / 100 }))
     if (linhas.length) {
       const { error: e2 } = await supabase.from('alimento_nutriente').insert(linhas)
       if (e2) return setErro(erroTexto(e2))
@@ -240,27 +280,53 @@ function AlimentoRotulo({ ctx }: { ctx: Contexto }) {
     setNome('')
     setMarca('')
     setPorcao('')
+    setMedida('')
     setValores({})
-    setMsg('Alimento cadastrado. Já aparece na busca ao registrar.')
+    setLidos(new Set())
+    setTextoOcr('')
+    if (foto) URL.revokeObjectURL(foto)
+    setFoto(null)
+    setMsg('Alimento cadastrado. Já aparece na busca ao registrar, com a porção do rótulo como medida.')
   }
 
   return (
     <form className="cartao" onSubmit={salvar}>
       <h2>Alimento pelo rótulo</h2>
-      <p className="dica">Para industrializados ou o que faltar na TACO (o leite de vaca, por exemplo, está sem calorias na TACO). Copie a tabela nutricional da embalagem.</p>
+      <p className="dica">Para industrializados ou o que faltar na lista. Tire uma foto da tabela nutricional: o app lê os números e você confere antes de salvar.</p>
+      <div className="foto-rotulo">
+        {foto && <img src={foto} alt="Foto do rótulo" />}
+        <label className="botao-arquivo">
+          {lendo ?? (foto ? 'Ler outra foto' : 'Fotografar a tabela nutricional')}
+          <input type="file" accept="image/*" capture="environment" hidden disabled={!!lendo}
+            onChange={(e) => { lerFoto(e.target.files?.[0]); e.target.value = '' }} />
+        </label>
+      </div>
       <div className="linha">
         <label>Nome<input required value={nome} onChange={(e) => setNome(e.target.value)} /></label>
         <label>Marca<input value={marca} onChange={(e) => setMarca(e.target.value)} /></label>
       </div>
-      <label>Porção do rótulo (g ou mL)<input inputMode="decimal" required value={porcao} onChange={(e) => setPorcao(e.target.value)} /></label>
+      <div className="linha">
+        <label>Porção do rótulo (g ou mL)<input inputMode="decimal" required={base === 'porcao'} value={porcao} onChange={(e) => setPorcao(e.target.value)} /></label>
+        <label>Medida da porção<input placeholder="1 xícara, 2 fatias…" value={medida} onChange={(e) => setMedida(e.target.value)} /></label>
+      </div>
+      <div className="chips" role="group" aria-label="Os números abaixo são">
+        <button type="button" className={base === 'porcao' ? 'ativa' : ''} onClick={() => setBase('porcao')}>Por porção</button>
+        <button type="button" className={base === '100g' ? 'ativa' : ''} onClick={() => setBase('100g')}>Por 100 g</button>
+      </div>
       <div className="grade">
         {CAMPOS_ROTULO.map((c) => (
-          <label key={c.cod}>
+          <label key={c.cod} className={lidos.has(c.cod) ? 'campo-lido' : ''}>
             {c.nome} ({c.un})
             <input inputMode="decimal" value={valores[c.cod] ?? ''} onChange={(e) => setValores({ ...valores, [c.cod]: e.target.value })} />
           </label>
         ))}
       </div>
+      {textoOcr && (
+        <details className="texto-ocr">
+          <summary>Texto lido da foto</summary>
+          <pre>{textoOcr}</pre>
+        </details>
+      )}
       <button>Cadastrar alimento</button>
       {erro && <p className="erro">{erro}</p>}
       {msg && <p className="ok">{msg}</p>}

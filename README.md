@@ -20,7 +20,7 @@ skills/
 ## Stack
 
 - **Banco:** Supabase, projeto `homefitness` (região São Paulo), Postgres + RLS por família.
-- **Dados de alimentos:** TACO 4ª edição (NEPA/UNICAMP), 597 alimentos importados da planilha original em `data/taco/`; alimentos de rótulo cadastrados pelo app.
+- **Dados de alimentos:** TACO 4ª edição (NEPA/UNICAMP), 597 alimentos importados da planilha original em `data/taco/`; a **lista de alimentos de dieta** (≈ 450 alimentos da TBCA/USP com nome simples e medidas caseiras, ver abaixo); alimentos de rótulo cadastrados pelo app, digitando ou pela foto da tabela nutricional.
 - **Front-end:** PWA (React + Vite) em `app/`, instalável no iPhone pela Tela de Início. Depois pode virar app nativo SwiftUI com o app Saúde usando o mesmo banco.
 
 ## App (`app/`)
@@ -58,6 +58,10 @@ Login com e-mail e senha; a sessão fica salva, então depois da primeira vez o 
 - Sair ou ser removido leva os próprios dados para uma família nova. Quem entra estando sozinho em outra família traz a família inteira junto.
 - Nenhum app consegue ler a lista da Família do iCloud nem do Google; por isso o convite é por link, código ou QR.
 - Android: o mesmo app; botão "Instalar o app" quando o Chrome oferece, e "Escolher dos contatos" no convite (Contact Picker do Chrome).
+
+**Lista de alimentos de dieta** (`scripts/tbca/`): os alimentos que costumam entrar numa dieta (arroz, feijão, carnes, ovos, laticínios, frutas, verduras, pães, bebidas, doces e pratos prontos), com os valores por 100 g da TBCA (Tabela Brasileira de Composição de Alimentos, FCF/USP) sem mudança e as medidas caseiras da própria TBCA em gramas (colher de sopa cheia, unidade média, copo americano...). `lista.txt` tem uma linha por alimento: grupo, nome no app e o código na TBCA (447 alimentos). `coletar.py` baixa a TBCA inteira para `data/tbca/tbca.jsonl` e roda pelo workflow `tbca.yml` (o site não abre das sessões do Claude); `gerar_sql.py` monta a migration `supabase/migrations/20261025000001_alimentos_dieta.sql` e avisa quando a energia de um alimento não fecha com P×4 + C×4 + G×9. No app, a busca traz esses alimentos logo depois dos da família; ao escolher um, as gramas já vêm na medida mais comum e os botões de medida trocam as gramas com um toque. O carboidrato é o total da TBCA (com a fibra), como na TACO.
+
+**Alimento pelo rótulo** (Perfil): "Fotografar a tabela nutricional" lê a foto no próprio celular (Tesseract, em português; ≈ 3 MB baixados na primeira vez) e preenche porção, medida da porção e os números, por porção ou por 100 g (rótulo novo, RDC 429/2020). O que foi lido fica em verde para conferir com a embalagem antes de cadastrar; nada é estimado. A porção do rótulo vira a medida caseira do alimento.
 
 **Fotos do catálogo** (`scripts/fotos/`): `receitas.json` lista cada receita com os termos de busca no Wikimedia Commons e, quando já escolhida, o arquivo fixado (`arquivo`). `baixar.mjs` pega até 4 candidatos por receita (só JPEG/PNG com licença livre), recorta a escolhida em 800×600 para `app/public/fotos/<slug>.jpg`, grava o crédito em `app/public/fotos/creditos.json` e monta folhas de contato (`scripts/fotos/contato-N.jpg`) para conferir. Roda pelo workflow `fotos.yml` (Actions › Fotos do catálogo › Run workflow; o campo `refazer` aceita slugs separados por vírgula ou `todos`), que faz o commit na branch escolhida. Foto de receita da família não passa por aqui: vai para o Storage pelo app.
 
